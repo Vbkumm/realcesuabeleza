@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+{% load static %}
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=description content="Um sal&atilde;o de beleza no centro de Florian&oacute;polis.">
+    <meta content=origin name=referrer>
+    <meta name=title content="Salão de Beleza em Florianópolis, L'unique Espaço de Beleza">
+    <meta name=keywords content="salão de beleza, Florianópolis, centro, dia da noiva, maquiagem, penteado, makeup, mechas olaplex, alongamento, henna, coloração inoa, visagismo, escova inteligente, progressiva, hidratação, tonalizante, x-tenso, unhas de fibra, esmaltação em gel, design de sobrancelha">
+    <meta name=author content="Vinicius B Kumm">
+    <meta name="robots" content="noodp">
+    <meta name="twitter:card" content="summary">
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+    <link rel=icon href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+    <title>{% block head_title %}Salão de Beleza em Florianópolis,{% endblock %} by L'unique Espaço de Beleza</title>
+
+    {% block head %}
+    {% endblock %}
+  </head>
+  <style>
+
+
+    {% block stylesheet %}
+    {% endblock %}
+  </style>
+  <body>
+
+    {% include 'includes/navbar.html' %}
+    {% include 'includes/messages.html' %}
+
+
+    {% block body %}
+
+    {% block breadcrumb %}{% endblock %}
+
+    {% block content %}
+
+    {% endblock %}
+
+    {% endblock body %}
+
+    {% include "includes/footer.html"%}
+
+
+    {% block javascript %}
+    {% endblock %}
+  </body>
+</html>

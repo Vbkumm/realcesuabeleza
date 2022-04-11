@@ -179,6 +179,25 @@ class ProfessionalAddressModel(models.Model):
             return '%s %s' % (self.professional, self.street)
 
 
+class ProfessionalPhoneModel(models.Model):
+    professional = models.ForeignKey(ProfessionalModel, related_name='professional_phone', on_delete=models.CASCADE, null=True, blank=True)
+    phone = models.CharField('Telefone', max_length=150, null=True, blank=True)
+    is_active = models.BooleanField(default=True, help_text='Designates whether this address should be treated as active. Unselect this instead of deleting address.', verbose_name='phone active')
+
+    updated_at = models.DateTimeField(null=True, blank=True)
+    updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
+    created_by = models.ForeignKey(User, related_name='professional_address_author', on_delete=models.SET_NULL, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "professional_phone_list"
+        verbose_name = "professional_phone"
+        db_table = 'professional_phone_db'
+
+        def __str__(self):
+            return '%s %s' % (self.phone, self.professional)
+
+
 class ProfessionalScheduleManager(models.Manager):
 
     def professional_schedule_day(self, professional, weekday):

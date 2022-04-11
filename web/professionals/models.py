@@ -186,7 +186,7 @@ class ProfessionalPhoneModel(models.Model):
 
     updated_at = models.DateTimeField(null=True, blank=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
-    created_by = models.ForeignKey(User, related_name='professional_address_author', on_delete=models.SET_NULL, blank=True, null=True)
+    created_by = models.ForeignKey(User, related_name='professional_phone_author', on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:

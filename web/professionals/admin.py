@@ -3,6 +3,7 @@ from .models import (ProfessionalCategoryModel,
                      ProfessionalModel,
                      ProfessionalUserModel,
                      ProfessionalAddressModel,
+                     ProfessionalPhoneModel,
                      ProfessionalScheduleModel,
                      OpenScheduleModel,
                      CloseScheduleModel,
@@ -77,6 +78,9 @@ class ProfessionalAddressAdmin(admin.ModelAdmin):
         (None,               {'fields': ['city']}),
         (None,               {'fields': ['state']}),
         (None,               {'fields': ['is_active']}),
+        (None,               {'fields': ['updated_at']}),
+        (None,               {'fields': ['updated_by']}),
+        (None,               {'fields': ['created_by']}),
     ]
     list_display = ('get_business', 'professional', 'street', 'is_active')
     list_filter = ['is_active']
@@ -98,15 +102,15 @@ class ProfessionalPhoneAdmin(admin.ModelAdmin):
         (None,               {'fields': ['updated_by']}),
         (None,               {'fields': ['created_by']}),
     ]
-    list_display = ('get_business', 'professional', 'street', 'is_active')
+    list_display = ('get_business', 'professional', 'phone', 'is_active')
     list_filter = ['is_active']
-    search_fields = ['professional', 'street']
+    search_fields = ['professional', 'phone']
 
     def get_business(self, obj):
         return obj.professional.business
 
 
-admin.site.register(ProfessionalAddressModel, ProfessionalAddressAdmin)
+admin.site.register(ProfessionalPhoneModel, ProfessionalPhoneAdmin)
 
 
 class ProfessionalScheduleAdmin(admin.ModelAdmin):

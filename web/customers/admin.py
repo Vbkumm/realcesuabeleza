@@ -38,12 +38,15 @@ class CustomerUserAdmin(admin.ModelAdmin):
         (None,               {'fields': ['created_by']}),
 
     ]
-    list_display = ('get_business', 'customer', 'user')
-    list_filter = ['professional']
-    search_fields = ['professional', 'user']
+    list_display = ('get_business', 'get_customer', 'user')
+    list_filter = ['customer']
+    search_fields = ['customer', 'user']
 
     def get_business(self, obj):
-        return obj.professional.business
+        return obj.customer.business
+
+    def get_customer(self, obj):
+        return obj.customer.name
 
 
 admin.site.register(CustomerUserModel, CustomerUserAdmin)
@@ -60,7 +63,7 @@ class CustomerAddressAdmin(admin.ModelAdmin):
         (None,               {'fields': ['state']}),
         (None,               {'fields': ['is_active']}),
     ]
-    list_display = ('get_business', 'customer', 'street', 'is_active')
+    list_display = ('get_business', 'customer', 'is_active')
     list_filter = ['is_active']
     search_fields = ['customer', 'street']
 
@@ -80,12 +83,12 @@ class CustomerPhoneAdmin(admin.ModelAdmin):
         (None,               {'fields': ['updated_by']}),
         (None,               {'fields': ['created_by']}),
     ]
-    list_display = ('get_business', 'customer', 'street', 'is_active')
+    list_display = ('get_business', 'customer', 'is_active')
     list_filter = ['is_active']
-    search_fields = ['customer', 'street']
+    search_fields = ['customer', 'phone']
 
     def get_business(self, obj):
-        return obj.professional.business
+        return obj.customer.business
 
 
-admin.site.register(CustomerPhoneModel, CustomerAddressAdmin)
+admin.site.register(CustomerPhoneModel, CustomerPhoneAdmin)

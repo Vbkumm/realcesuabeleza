@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     #own
     'accounts',
     'businesses',
+    'customers',
+    'professionals',
     'main',
 ]
 

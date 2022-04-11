@@ -17,7 +17,7 @@ class CustomerModel(models.Model):
     name = models.CharField('Qual nome da Cliente*',max_length=150, unique=True)
     is_active = models.BooleanField(default=True, help_text='Designates whether this customer should be treated as active. Unselect this instead of deleting customer.', verbose_name='customer active')
     birth_date = models.CharField('Data de nascimento*',max_length=150, blank=True, null=True)
-    id_federal = models.CharField('CNPJ ou CPF', max_length=15, unique=True, blank=True, null=True)
+    federal_id = models.CharField('CNPJ ou CPF', max_length=15, unique=True, blank=True, null=True)
     email = models.EmailField('E-mail', max_length=254, null=True, blank=False, validators=[validate_email])
     receive_email = models.BooleanField('Marque para bloquear emails automaticos', default=False)
     schedule_active = models.BooleanField('Cliente credenciada ao agendamento online', default=False)
@@ -33,8 +33,8 @@ class CustomerModel(models.Model):
         verbose_name = "customer"
         db_table = 'customer_db'
 
-        def __str__(self):
-            return '%s %s' % (self.pk, self.name)
+    def __str__(self):
+        return '%s %s %s' % (self.pk, self.name, self.business)
 
     def get_absolute_url(self):
         return reverse('customer:detail', kwargs={'pk': self.pk})

@@ -78,18 +78,18 @@ class BusinessAddressModel(models.Model):
 
 
 class BusinessPhoneModel(models.Model):
-    business_address = models.ForeignKey(BusinessAddressModel, related_name='address_phone', on_delete=models.CASCADE, null=True, blank=True)
+    business = models.ForeignKey(BusinessModel, related_name='business_phone', on_delete=models.CASCADE, null=True, blank=True)
     is_active = models.BooleanField(default=True, help_text='Designates whether this phone should be treated as active. Unselect this instead of deleting phone.', verbose_name='phone active')
-    phone_number = models.CharField('Telefone', max_length=150, null=True, blank=True)
+    phone = models.CharField('Telefone', max_length=150, null=True, blank=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
     updated_at = models.DateTimeField(null=True)
     created_by = models.ForeignKey(User, related_name='business_phone_author', on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name_plural = "business_address_phone_list"
-        verbose_name = "business_address_phone"
-        db_table = 'business_address_phone_db'
+        verbose_name_plural = "business_phone_list"
+        verbose_name = "business_phone"
+        db_table = 'business_phone_db'
 
         def __str__(self):
-            return '%s %s' % (self.business_address, self.phone_number)
+            return '%s %s' % (self.business, self.phone)

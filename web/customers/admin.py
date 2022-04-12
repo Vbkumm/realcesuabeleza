@@ -83,7 +83,7 @@ class CustomerPhoneAdmin(admin.ModelAdmin):
         (None,               {'fields': ['updated_by']}),
         (None,               {'fields': ['created_by']}),
     ]
-    list_display = ('get_business', 'customer', 'is_active')
+    list_display = ('get_business', 'customer', 'phone', 'is_active')
     list_filter = ['is_active']
     search_fields = ['customer', 'phone']
 

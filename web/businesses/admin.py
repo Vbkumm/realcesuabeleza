@@ -49,19 +49,19 @@ admin.site.register(BusinessAddressModel, BusinessAddressAdmin)
 
 class BusinessPhoneAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None,               {'fields': ['business_address']}),
-        (None,               {'fields': ['phone_number']}),
+        (None,               {'fields': ['business']}),
+        (None,               {'fields': ['phone']}),
         (None,               {'fields': ['updated_by']}),
         (None,               {'fields': ['updated_at']}),
         (None,               {'fields': ['created_by']}),
 
     ]
 
-    list_display = ('get_business', 'phone_number', 'is_active')
-    list_filter = ['business_address']
-    search_fields = ['business_address', 'phone_number']
+    list_display = ('get_business', 'phone', 'is_active')
+    list_filter = ['business']
+    search_fields = ['business', 'phone']
 
     def get_business(self, obj):
-        return obj.business_address.business
+        return obj.business.business
 
 admin.site.register(BusinessPhoneModel, BusinessPhoneAdmin)

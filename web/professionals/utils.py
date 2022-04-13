@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta
 from django.core.exceptions import ValidationError
+from django.utils.text import slugify
 
 
 def timer_increase(time_start, fraction):
@@ -20,3 +21,14 @@ def validate_date(date_):
     if date_ < date.today():
         raise ValidationError("Data do agendamento deve ser igual ou maior que o dia de hoje!")
 
+
+def _generate_unique_slug(self):
+    if self.business:
+        unique_slug = slugify(self.title + self.business.name)
+    else:
+        unique_slug = slugify(self.title)
+    num = 1
+    while self.__class__.objects.filter(slug=unique_slug).exclude(id=self.id).exists():
+        unique_slug = '{}-{}'.format(unique_slug, num)
+        num += 1
+    return unique_slug

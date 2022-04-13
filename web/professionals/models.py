@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from datetime import time
 from django.urls import reverse
 from django.utils.text import slugify
-from .utils import timer_increase, validate_date
+from .utils import timer_increase, validate_date, _generate_unique_slug
 from businesses.models import BusinessModel
 from services.models import ServiceModel, ServiceCategoryModel
 
@@ -19,7 +19,7 @@ class ProfessionalCategoryModel(models.Model):
     """
     id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     business = models.ForeignKey(BusinessModel, related_name='business_professional_category', on_delete=models.CASCADE,)
-    title = models.CharField('Qual nova categoria de profissional?', max_length=100, unique=True, )
+    title = models.CharField('Qual nova categoria de profissional?', max_length=100,)
     slug = models.CharField(unique=True, max_length=150)
     service_category = models.ManyToManyField(ServiceCategoryModel, blank=True, through="ProfessionalServiceCategoryModel")
     is_active = models.BooleanField(default=True, help_text='Designates whether this professional category should be treated as active. Unselect this instead of deleting professional category.', verbose_name='business category active')
@@ -36,7 +36,7 @@ class ProfessionalCategoryModel(models.Model):
         return '%s %s' % (self.pk, self.title)
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.title + self.business + self.id).lower()
+        self.slug = _generate_unique_slug(self)
         super(ProfessionalCategoryModel, self).save(*args, **kwargs)
 
     def get_absolute_url(self):

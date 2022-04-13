@@ -13,13 +13,19 @@ from .models import (ProfessionalCategoryModel,
                      )
 
 
-class ProfessionalServiceCategoryAdmin(admin.TabularInline):
+class ProfessionalServiceCategoryAdmin(admin.StackedInline):
 
     model = ProfessionalServiceCategoryModel
-    insert_after = 'title'
+    extra = 0
+    fields = ['service_category', 'created_by']
+
 
 
 class ProfessionalCategoryAdmin(admin.ModelAdmin):
+
+    inlines = [
+        ProfessionalServiceCategoryAdmin,
+    ]
 
     fieldsets = [
         (None,               {'fields': ['business']}),
@@ -28,26 +34,28 @@ class ProfessionalCategoryAdmin(admin.ModelAdmin):
         (None,               {'fields': ['created_by']}),
     ]
 
-    inlines = [
-        ProfessionalServiceCategoryAdmin,
-    ]
-
+    #readonly_fields = ['created_by']
+    raw_id_fields = ['business']
     list_display = ('business', 'title', 'is_active')
     list_filter = ['is_active']
     search_fields = ['business', 'title']
-    
+
 
 admin.site.register(ProfessionalCategoryModel, ProfessionalCategoryAdmin)
 
 
-class ProfessionalExtraSkillAdmin(admin.TabularInline):
+class ProfessionalExtraSkillAdmin(admin.StackedInline):
 
     model = ProfessionalExtraSkillModel
+    extra = 0
+    fields = ['service', 'created_by']
 
 
-class ProfessionalNoSkillAdmin(admin.TabularInline):
+class ProfessionalNoSkillAdmin(admin.StackedInline):
 
     model = ProfessionalNoSkillModel
+    extra = 0
+    fields = ['service', 'created_by']
 
 
 class ProfessionalAdmin(admin.ModelAdmin):

@@ -57,11 +57,9 @@ class BusinessPhoneAdmin(admin.ModelAdmin):
 
     ]
 
-    list_display = ('get_business', 'phone', 'is_active')
+    list_display = ('business', 'phone', 'is_active')
     list_filter = ['business']
     search_fields = ['business', 'phone']
 
-    def get_business(self, obj):
-        return obj.business.business
 
 admin.site.register(BusinessPhoneModel, BusinessPhoneAdmin)

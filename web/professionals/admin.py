@@ -1,5 +1,8 @@
 from django.contrib import admin
 from .models import (ProfessionalCategoryModel,
+                     ProfessionalServiceCategoryModel,
+                     ProfessionalExtraSkillModel,
+                     ProfessionalNoSkillModel,
                      ProfessionalModel,
                      ProfessionalUserModel,
                      ProfessionalAddressModel,
@@ -10,22 +13,45 @@ from .models import (ProfessionalCategoryModel,
                      )
 
 
+class ProfessionalServiceCategoryAdmin(admin.TabularInline):
+
+    model = ProfessionalServiceCategoryModel
+    insert_after = 'title'
+
+
 class ProfessionalCategoryAdmin(admin.ModelAdmin):
+
     fieldsets = [
         (None,               {'fields': ['business']}),
         (None,               {'fields': ['title']}),
         (None,               {'fields': ['is_active']}),
         (None,               {'fields': ['created_by']}),
     ]
+
+    inlines = [
+        ProfessionalServiceCategoryAdmin,
+    ]
+
     list_display = ('business', 'title', 'is_active')
     list_filter = ['is_active']
     search_fields = ['business', 'title']
-
+    
 
 admin.site.register(ProfessionalCategoryModel, ProfessionalCategoryAdmin)
 
 
+class ProfessionalExtraSkillAdmin(admin.TabularInline):
+
+    model = ProfessionalExtraSkillModel
+
+
+class ProfessionalNoSkillAdmin(admin.TabularInline):
+
+    model = ProfessionalNoSkillModel
+
+
 class ProfessionalAdmin(admin.ModelAdmin):
+    inlines = [ProfessionalExtraSkillAdmin, ProfessionalNoSkillAdmin]
     fieldsets = [
         (None,               {'fields': ['business']}),
         (None,               {'fields': ['name']}),

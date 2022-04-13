@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from .utils import timer_increase, validate_date
 from businesses.models import BusinessModel
+from services.models import ServiceModel, ServiceCategoryModel
 
 
 User = get_user_model()
@@ -16,8 +17,11 @@ class ProfessionalCategoryModel(models.Model):
     """
     Cadastro de categorias de profissionais do salao
     """
-    business = models.ForeignKey(BusinessModel, related_name='category_professional_business', on_delete=models.CASCADE,)
+    id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    business = models.ForeignKey(BusinessModel, related_name='business_professional_category', on_delete=models.CASCADE,)
     title = models.CharField('Qual nova categoria de profissional?', max_length=100, unique=True, )
+    slug = models.CharField(unique=True, max_length=150)
+    service_category = models.ManyToManyField(ServiceCategoryModel, blank=True, through="ProfessionalServiceCategoryModel")
     is_active = models.BooleanField(default=True, help_text='Designates whether this professional category should be treated as active. Unselect this instead of deleting professional category.', verbose_name='business category active')
     updated_at = models.DateTimeField(null=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
@@ -30,6 +34,23 @@ class ProfessionalCategoryModel(models.Model):
     def __str__(self):
 
         return '%s %s' % (self.pk, self.title)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title + self.business + self.id).lower()
+        super(ProfessionalCategoryModel, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('professionals:category',  kwargs={"slug": self.slug})
+
+
+class ProfessionalServiceCategoryModel(models.Model):
+    """
+    Relaciona as categorias de serviços do salão as categorias de profissional que as executam
+    """
+    service_category = models.ForeignKey(ServiceCategoryModel, on_delete=models.CASCADE)
+    professional_category = models.ForeignKey(ProfessionalCategoryModel, on_delete=models.CASCADE, blank=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
 
 
 class ProfessionalQuerySet(models.QuerySet):
@@ -68,7 +89,8 @@ class ProfessionalModel(models.Model):
     schedule_active = models.BooleanField('Profissional credenciado ao agendamento online. Marque se sim!', default=False)
     cancel_schedule_active = models.BooleanField('Profissional credenciado a cancelar agendamentos feitos por ele em sua agenda? Marque se sim!', default=False)
     _views = models.PositiveIntegerField(default=0)
-
+    extra_skills = models.ManyToManyField(ServiceModel, related_name='extra_skill', blank=True, through="ProfessionalExtraSkillModel")
+    no_skills = models.ManyToManyField(ServiceModel, related_name='no_skill', blank=True, through="ProfessionalNoSkillModel")
     updated_at = models.DateTimeField(null=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
@@ -85,10 +107,11 @@ class ProfessionalModel(models.Model):
         return '%s %s %s' % (self.pk, self.name, self.business)
 
     def get_absolute_url(self):
-        return reverse('professional:detail',  kwargs={"slug": self.slug})
+        return reverse('professionals:detail',  kwargs={"slug": self.slug})
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.slug).lower()
+
         super(ProfessionalModel, self).save(*args, **kwargs)
 
     def professional_grade(self, weekday, first_last_time_open_day=None, open_time_list=None, close_time_list=None):
@@ -137,6 +160,26 @@ class ProfessionalModel(models.Model):
                 professional_grade_day.append([professional_schedule_hour, professional_schedule_time, hour[1]])
 
         return professional_grade_day
+
+
+class ProfessionalExtraSkillModel(models.Model):
+    """
+    Relaciona serviços do salão o qual não fazem parte da categoria de profissional mas o profissional executa
+    """
+    service = models.ForeignKey(ServiceModel, on_delete=models.CASCADE)
+    professional = models.ForeignKey(ProfessionalModel, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+
+class ProfessionalNoSkillModel(models.Model):
+    """
+    Relaciona serviços do salão o qual fazem parte da categoria de profissional mas o profissional não executa
+    """
+    service = models.ForeignKey(ServiceModel, on_delete=models.CASCADE)
+    professional = models.ForeignKey(ProfessionalModel, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
 
 
 class ProfessionalUserModel(models.Model):

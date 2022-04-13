@@ -68,7 +68,7 @@ class CustomerAddressAdmin(admin.ModelAdmin):
     search_fields = ['customer', 'street']
 
     def get_business(self, obj):
-        return obj.professional.business
+        return obj.customer.business
 
 
 admin.site.register(CustomerAddressModel, CustomerAddressAdmin)

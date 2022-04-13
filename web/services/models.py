@@ -10,16 +10,19 @@ from businesses.models import BusinessModel
 from professionals.utils import _generate_unique_slug
 
 
-
 # Create your models here.
 
 User = get_user_model()
 
 
 class EquipmentModel(models.Model):
+    """
+    Cadastro de equipamentos para realizar o serviço no salao
+    """
     CHOICES = [(i, i) for i in range(1, 51)]
-    business = models.ForeignKey(BusinessModel, related_name='business_service_category', on_delete=models.CASCADE,)
-    title = models.CharField('Tipo de equipamento*',max_length=150)
+
+    business = models.ForeignKey(BusinessModel, related_name='equipment_business', on_delete=models.CASCADE,)
+    title = models.CharField('Tipo de equipamento*', max_length=150)
     slug = models.CharField(unique=True, max_length=150)
     description = models.CharField('Descrição*', max_length=1000, null=True, blank=True)
     qty = models.IntegerField('Quantidade deste equipamento?', choices=CHOICES, default=1)
@@ -35,10 +38,10 @@ class EquipmentModel(models.Model):
         db_table = 'equipments_db'
 
     def __str__(self):
-        return '%s %s %s' % (self.tittle, self.qty, self.business)
+        return '%s %s %s' % (self.title, self.qty, self.business)
 
     def get_description_as_markdown(self):
-        return mark_safe(markdown(self.equipment_description, safe_mode='escape'))
+        return mark_safe(markdown(self.description, safe_mode='escape'))
 
     def save(self, *args, **kwargs):
         self.slug = _generate_unique_slug(self)
@@ -98,7 +101,9 @@ class ServiceManager(models.Manager):
 
 
 class ServiceModel(models.Model):
-
+    """
+    Cadastros dos servicos realizados no salao separados por categoria de servico
+    """
     id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     business = models.ForeignKey(BusinessModel, related_name='category_professional_business', on_delete=models.CASCADE,)
     title = models.CharField('Título*', max_length=150)
@@ -108,7 +113,7 @@ class ServiceModel(models.Model):
     schedule_active = models.BooleanField('Permitir que o cliente agende online', default=False)
     cancel_schedule_active = models.BooleanField('Permitir que o cliente cancele o agendamento feito por ele online', default=False)
     service_category = models.ForeignKey(ServiceCategoryModel, related_name='service_category', on_delete=models.SET_NULL, blank=True, null=True)
-    equipments = models.ManyToManyField(EquipmentModel, blank=True, through="ServiceEquipmentModel")
+    equipments = models.ManyToManyField(EquipmentModel, blank=True, through_fields=('service', 'equipment'), through="ServiceEquipmentModel")
     updated_at = models.DateTimeField(null=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
@@ -137,7 +142,9 @@ class ServiceModel(models.Model):
 
 
 class ServiceEquipmentModel(models.Model):
-
+    """
+    Conecta equipamentos necessarios para realizar o servico no salao
+    """
     service = models.ForeignKey(ServiceModel, related_name='service', on_delete=models.CASCADE)
     equipment = models.ForeignKey(EquipmentModel, related_name='equipment', on_delete=models.CASCADE)
     ept_time = models.DurationField('Qual tempo de uso deste equipamento? Caso seja variavel estipule um tempo minimo.', default=timedelta(minutes=5))
@@ -156,6 +163,9 @@ class ServiceEquipmentModel(models.Model):
         db_table = 'service_equipments_db'
 
     def duration_string(self):
+        """
+        Formata duracao de tempo do servico
+        """
         days, hours, minutes, seconds, microseconds = _get_duration_components(self.ept_time)
         string = ''
 

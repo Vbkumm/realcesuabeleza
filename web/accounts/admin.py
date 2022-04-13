@@ -5,13 +5,12 @@ from .models import CustomUserModel
 
 class CustomUserAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None,               {'fields': ['username']}),
         (None,               {'fields': ['email']}),
         (None,               {'fields': ['phone']}),
         (None,               {'fields': ['is_active']}),
         (None,               {'fields': ['is_staff']}),
     ]
-    list_display = ('username', 'email', 'phone', 'is_active')
+    list_display = ('email', 'phone', 'is_active')
     list_filter = ['is_active']
     search_fields = ['username', 'email']
 

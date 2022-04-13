@@ -17,8 +17,7 @@ class ProfessionalServiceCategoryAdmin(admin.StackedInline):
 
     model = ProfessionalServiceCategoryModel
     extra = 0
-    fields = ['service_category', 'created_by']
-
+    fields = ['service_category', 'created_by', 'professional_category']
 
 
 class ProfessionalCategoryAdmin(admin.ModelAdmin):
@@ -48,14 +47,14 @@ class ProfessionalExtraSkillAdmin(admin.StackedInline):
 
     model = ProfessionalExtraSkillModel
     extra = 0
-    fields = ['service', 'created_by']
+    fields = ['service', 'professional', 'created_by']
 
 
 class ProfessionalNoSkillAdmin(admin.StackedInline):
 
     model = ProfessionalNoSkillModel
     extra = 0
-    fields = ['service', 'created_by']
+    fields = ['service', 'professional', 'created_by']
 
 
 class ProfessionalAdmin(admin.ModelAdmin):

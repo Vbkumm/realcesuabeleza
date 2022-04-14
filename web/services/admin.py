@@ -1,22 +1,39 @@
 from django.contrib import admin
 from .models import (ServiceCategoryModel,
                      ServiceModel,
+                     EquipmentAddressModel,
                      EquipmentModel,
                      ServiceEquipmentModel)
 # Register your models here.
 
 
+class EquipmentAddressAdmin(admin.StackedInline):
+    raw_id_fields = ['address']
+    model = EquipmentAddressModel
+    extra = 0
+    fieldsets = [
+        (None,               {'fields': ['address']}),
+        (None,               {'fields': ['equipment']}),
+        (None,               {'fields': ['qty']}),
+        (None,               {'fields': ['is_active']}),
+        (None,               {'fields': ['updated_at']}),
+        (None,               {'fields': ['updated_by']}),
+        (None,               {'fields': ['created_by']}),
+    ]
+
+
 class EquipmentAdmin(admin.ModelAdmin):
+
+    inlines = [EquipmentAddressAdmin, ]
+
     fieldsets = [
         (None,               {'fields': ['business']}),
         (None,               {'fields': ['title']}),
         (None,               {'fields': ['description']}),
-        (None,               {'fields': ['qty']}),
-        (None,               {'fields': ['is_active']}),
         (None,               {'fields': ['created_by']}),
     ]
-    list_display = ('business', 'title', 'slug', 'is_active')
-    list_filter = ['is_active']
+    list_display = ('business', 'title', 'slug')
+    list_filter = ['business', 'title',]
     search_fields = ['business', 'title']
 
 
@@ -31,7 +48,7 @@ class ServiceCategoryAdmin(admin.ModelAdmin):
         (None,               {'fields': ['created_by']}),
     ]
     list_display = ('business', 'title', 'slug', 'is_active')
-    list_filter = ['is_active']
+    list_filter = ['business', 'title', 'is_active']
     search_fields = ['business', 'title']
 
 
@@ -63,7 +80,7 @@ class ServiceAdmin(admin.ModelAdmin):
         (None,               {'fields': ['_views']}),
     ]
     list_display = ('business', 'title', 'slug', 'is_active')
-    list_filter = ['is_active']
+    list_filter = ['business', 'title', 'is_active']
     search_fields = ['business', 'title']
 
 

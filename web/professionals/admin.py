@@ -152,8 +152,8 @@ class ProfessionalPhoneAdmin(admin.ModelAdmin):
         (None,               {'fields': ['created_by']}),
     ]
     list_display = ('get_business', 'professional', 'phone', 'is_active')
-    list_filter = ['is_active']
-    search_fields = ['professional', 'phone']
+    list_filter = ['phone', 'professional', 'professional__business']
+    search_fields = ['professional', 'phone', 'get_business']
 
     def get_business(self, obj):
         return obj.professional.business
@@ -163,6 +163,9 @@ admin.site.register(ProfessionalPhoneModel, ProfessionalPhoneAdmin)
 
 
 class OpenScheduleAdmin(admin.ModelAdmin):
+
+    raw_id_fields = ['address']
+
     fieldsets = [
         (None,               {'fields': ['business']}),
         (None,               {'fields': ['address']}),
@@ -177,15 +180,18 @@ class OpenScheduleAdmin(admin.ModelAdmin):
         (None,               {'fields': ['updated_by']}),
         (None,               {'fields': ['created_by']}),
     ]
-    list_display = ('business', 'start_date')
-    list_filter = ['professionals']
-    search_fields = ['professionals', 'business']
+    list_display = ('business', 'start_date', 'end_date', 'start_hour', 'end_hour')
+    list_filter = ['professionals', 'business', 'address']
+    search_fields = ['professionals', 'business', 'address']
 
 
 admin.site.register(OpenScheduleModel, OpenScheduleAdmin)
 
 
 class CloseScheduleAdmin(admin.ModelAdmin):
+
+    raw_id_fields = ['address']
+
     fieldsets = [
         (None,               {'fields': ['business']}),
         (None,               {'fields': ['address']}),
@@ -199,9 +205,9 @@ class CloseScheduleAdmin(admin.ModelAdmin):
         (None,               {'fields': ['updated_by']}),
         (None,               {'fields': ['created_by']}),
     ]
-    list_display = ('business', 'start_date')
-    list_filter = ['professionals']
-    search_fields = ['professionals', 'business']
+    list_display = ('business', 'start_date', 'end_date', 'start_hour', 'end_hour')
+    list_filter = ['professionals', 'business', 'address']
+    search_fields = ['professionals', 'business', 'address']
 
 
 admin.site.register(CloseScheduleModel, CloseScheduleAdmin)

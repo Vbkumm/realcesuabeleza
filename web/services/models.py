@@ -6,7 +6,7 @@ from django.utils.duration import _get_duration_components
 from django.urls import reverse
 from django.utils.html import mark_safe
 from markdown import markdown
-from businesses.models import BusinessModel
+from businesses.models import BusinessModel, BusinessAddressModel
 from professionals.utils import _generate_unique_slug
 
 
@@ -19,14 +19,12 @@ class EquipmentModel(models.Model):
     """
     Cadastro de equipamentos para realizar o serviço no salao
     """
-    CHOICES = [(i, i) for i in range(1, 51)]
-
-    business = models.ForeignKey(BusinessModel, related_name='equipment_business', on_delete=models.CASCADE,)
+    business = models.ForeignKey(BusinessModel, related_name='business_equipment', on_delete=models.CASCADE,)
     title = models.CharField('Tipo de equipamento*', max_length=150)
     slug = models.CharField(unique=True, max_length=150)
     description = models.CharField('Descrição*', max_length=1000, null=True, blank=True)
-    qty = models.IntegerField('Quantidade deste equipamento?', choices=CHOICES, default=1)
-    is_active = models.BooleanField(default=True, help_text='Designates whether this equipments should be treated as active. Unselect this instead of deleting equipments.', verbose_name='business equipments active')
+    addresses = models.ManyToManyField(BusinessAddressModel, related_name='equipment_address', blank=True, through="EquipmentAddressModel")
+
     updated_at = models.DateTimeField(null=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
@@ -38,7 +36,8 @@ class EquipmentModel(models.Model):
         db_table = 'equipments_db'
 
     def __str__(self):
-        return '%s %s %s' % (self.title, self.qty, self.business)
+
+        return '%s %s' % (self.title, self.addresses)
 
     def get_description_as_markdown(self):
         return mark_safe(markdown(self.description, safe_mode='escape'))
@@ -49,6 +48,32 @@ class EquipmentModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('equipments:detail',  kwargs={"slug": self.slug})
+
+
+class EquipmentAddressModel(models.Model):
+    """
+    Cadastra equipamento por endereço do salao
+    """
+
+    CHOICES = [(i, i) for i in range(1, 51)]
+    address = models.ForeignKey(BusinessAddressModel, related_name='equipment_business_address', on_delete=models.CASCADE, null=True, blank=True)
+    equipment = models.ForeignKey(EquipmentModel, related_name='equipment_address', on_delete=models.CASCADE, null=True, blank=True)
+    qty = models.IntegerField('Quantidade deste equipamento?', choices=CHOICES, default=1)
+    is_active = models.BooleanField(default=True, help_text='Designates whether this equipments should be treated as active. Unselect this instead of deleting equipments.', verbose_name='business equipments active')
+
+    updated_at = models.DateTimeField(null=True)
+    updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "equipment_address_list"
+        verbose_name = "equipment_address"
+        db_table = 'equipment_address_db'
+
+    def __str__(self):
+
+        return '%s %s %s' % (self.equipment, self.qty, self.address)
 
 
 class ServiceCategoryModel(models.Model):

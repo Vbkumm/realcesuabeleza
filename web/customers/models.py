@@ -40,6 +40,9 @@ class CustomerModel(models.Model):
     def get_absolute_url(self):
         return reverse('customer:detail', kwargs={'pk': self.pk})
 
+    def get_customer_by_business(self, business):
+        return self.objects.get_queryset(business=business)
+
 
 class CustomerUserModel(models.Model):
 
@@ -77,8 +80,11 @@ class CustomerAddressModel(models.Model):
         verbose_name = "customer_address"
         db_table = 'customer_address_db'
 
-        def __str__(self):
-            return '%s %s' % (self.customer, self.street)
+    def __str__(self):
+        return '%s %s' % (self.customer, self.street)
+
+    def get_address_by_customer(self, customer):
+        return self.objects.get_queryset(customer=customer)
 
 
 class CustomerPhoneModel(models.Model):
@@ -96,6 +102,9 @@ class CustomerPhoneModel(models.Model):
         verbose_name = "customer_phone"
         db_table = 'customer_phone_db'
 
-        def __str__(self):
-            return '%s %s' % (self.customer, self.phone)
+    def __str__(self):
+        return '%s %s' % (self.customer, self.phone)
+
+    def get_phone_by_customer(self, customer):
+        return self.objects.get_queryset(customer=customer)
 

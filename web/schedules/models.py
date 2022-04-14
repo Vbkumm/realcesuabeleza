@@ -53,15 +53,36 @@ class ScheduleModel(models.Model):
     def get_absolute_url(self):
         return reverse('schedules:detail', kwargs={'pk': self.pk})
 
+    def schedule_by_address_by_date(self, address):
+        """
+        Filtra agendamentos por endereço do salao
+        """
+        upcoming = self.objects.get_queryset(date__gte=timezone.now(), address=address).order_by('date')
+        passed = self.objects.get_queryset(date__lt=timezone.now(), address=address).order_by('date')
+        return [upcoming, passed]
+
+    def schedule_by_professional_by_date(self, professional):
+        """
+       Filtra agendamentos por profissional do salao
+       """
+        upcoming = self.objects.get_queryset(date__gte=timezone.now(), professional=professional).order_by('date')
+        passed = self.objects.get_queryset(date__lt=timezone.now(), address=professional).order_by('date')
+        return [upcoming, passed]
+
+    def schedule_by_customer_by_date(self, customer):
+        """
+       Filtra agendamentos por cliente do salao
+       """
+        upcoming = self.objects.get_queryset(date__gte=timezone.now(), customer=customer).order_by('date')
+        passed = self.objects.get_queryset(date__lt=timezone.now(), address=customer).order_by('date')
+        return [upcoming, passed]
+    
     def schedule_check_is_future(self):
         time_now = datetime.today()
         hour = ('%s %s' % (self.date, self.hour))
         hour = datetime.strptime(hour, '%Y-%m-%d %H:%M:%S')
         if time_now < hour:
             return True
-
-    def schedule_by_date(self):
-        pass
 
     def schedule_is_available(self):
         available = True

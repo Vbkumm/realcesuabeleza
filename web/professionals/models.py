@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Q, F
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from datetime import time
+from datetime import time, timezone
 from django.urls import reverse
 from django.utils.text import slugify
 from .utils import timer_increase, validate_date, _generate_unique_slug
@@ -41,6 +41,9 @@ class ProfessionalCategoryModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('professionals:category',  kwargs={"slug": self.slug})
+
+    def get_professional_category_by_business(self, business):
+        return self.objects.get_queryset(business=business)
 
 
 class ProfessionalServiceCategoryModel(models.Model):
@@ -114,6 +117,9 @@ class ProfessionalModel(models.Model):
         self.slug = slugify(self.slug).lower()
 
         super(ProfessionalModel, self).save(*args, **kwargs)
+
+    def get_professional_by_business(self, business):
+        return self.objects.get_queryset(business=business)
 
     def professional_grade(self, weekday=None, first_last_time_open_day=None, open_time_list=None, close_time_list=None):
         """
@@ -219,8 +225,11 @@ class ProfessionalAddressModel(models.Model):
         verbose_name = "professional_address"
         db_table = 'professional_address_db'
 
-        def __str__(self):
-            return '%s %s' % (self.professional, self.street)
+    def __str__(self):
+        return '%s %s' % (self.professional, self.street)
+
+    def get_address_by_professional(self, professional):
+        return self.objects.get_queryset(professional=professional)
 
 
 class ProfessionalPhoneModel(models.Model):
@@ -238,8 +247,11 @@ class ProfessionalPhoneModel(models.Model):
         verbose_name = "professional_phone"
         db_table = 'professional_phone_db'
 
-        def __str__(self):
-            return '%s %s' % (self.phone, self.professional)
+    def __str__(self):
+        return '%s %s' % (self.phone, self.professional)
+
+    def get_phone_by_professional(self, professional):
+        return self.objects.get_queryset(professional=professional)
 
 
 class ProfessionalScheduleManager(models.Manager):
@@ -375,6 +387,18 @@ class OpenScheduleModel(models.Model):
                 name='open_start_before')
         ]
 
+    def future_open_schedule_professional(self, professional):
+        """
+        Filtra abertura de agendanda no futuro por profissional
+        """
+        return self.objects.get_queryset(professionals__in=professional, end_date__gte=timezone.now()).order_by('start_date')
+
+    def passed_open_schedule_professional(self, professional):
+        """
+        Filtra abertura de agendanda no passado por profissional
+        """
+        return self.objects.get_queryset(professionals__in=professional, end_date__lt=timezone.now())
+
 
 class CloseScheduleManager(models.Manager):
 
@@ -425,3 +449,15 @@ class CloseScheduleModel(models.Model):
                 check=Q(start_date__lte=F('end_date'), start_hour__lte=F('end_hour')),
                 name='close_start_before')
         ]
+
+    def future_close_schedule_professional(self, professional):
+        """
+        Filtra fechamento de agendanda no futuro por profissional
+        """
+        return self.objects.get_queryset(professionals__in=professional, end_date__gte=timezone.now()).order_by('start_date')
+
+    def passed_close_schedule_professional(self, professional):
+        """
+        Filtra fechamento de agendanda no passado por profissional
+        """
+        return self.objects.get_queryset(professionals__in=professional, end_date__lt=timezone.now())

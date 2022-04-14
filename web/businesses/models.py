@@ -47,7 +47,12 @@ class BusinessModel(models.Model):
         return self.title
 
     def __unicode__(self):
+
         return self.title
+
+    def get_business_by_owner(self, user):
+
+        return self.objects.get_queryset(owners__in=user)
 
 
 class BusinessAddressModel(models.Model):
@@ -72,6 +77,9 @@ class BusinessAddressModel(models.Model):
         def __str__(self):
             return '%s %s' % (self.business, self.street)
 
+        def get_address_by_business(self, business):
+            return self.objects.get_queryset(business=business)
+
 
 class BusinessPhoneModel(models.Model):
     address = models.ForeignKey(BusinessAddressModel, related_name='business_address_phone', on_delete=models.CASCADE, null=True, blank=True)
@@ -87,5 +95,8 @@ class BusinessPhoneModel(models.Model):
         verbose_name = "business_phone"
         db_table = 'business_phone_db'
 
-        def __str__(self):
-            return '%s %s' % (self.business, self.phone)
+    def __str__(self):
+        return '%s %s' % (self.address, self.phone)
+
+    def get_phone_by_address(self, address):
+        return self.objects.get_queryset(address=address)

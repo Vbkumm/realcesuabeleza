@@ -165,6 +165,9 @@ class ServiceModel(models.Model):
         self.slug = _generate_unique_slug(self)
         super(ServiceModel, self).save(*args, **kwargs)
 
+    def get_service_by_business(self, business):
+        return self.objects.get_queryset(business=business)
+
 
 class ServiceEquipmentModel(models.Model):
     """

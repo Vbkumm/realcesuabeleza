@@ -6,7 +6,7 @@ from datetime import time
 from django.urls import reverse
 from django.utils.text import slugify
 from .utils import timer_increase, validate_date, _generate_unique_slug
-from businesses.models import BusinessModel
+from businesses.models import BusinessModel, BusinessAddressModel
 from services.models import ServiceModel, ServiceCategoryModel
 
 
@@ -89,6 +89,7 @@ class ProfessionalModel(models.Model):
     schedule_active = models.BooleanField('Profissional credenciado ao agendamento online. Marque se sim!', default=False)
     cancel_schedule_active = models.BooleanField('Profissional credenciado a cancelar agendamentos feitos por ele em sua agenda? Marque se sim!', default=False)
     _views = models.PositiveIntegerField(default=0)
+    addresses = models.ManyToManyField(BusinessAddressModel, related_name='professional_addresses_work', blank=True, through="ProfessionalScheduleModel")
     extra_skills = models.ManyToManyField(ServiceModel, related_name='extra_skill', blank=True, through="ProfessionalExtraSkillModel")
     no_skills = models.ManyToManyField(ServiceModel, related_name='no_skill', blank=True, through="ProfessionalNoSkillModel")
     updated_at = models.DateTimeField(null=True)
@@ -114,7 +115,7 @@ class ProfessionalModel(models.Model):
 
         super(ProfessionalModel, self).save(*args, **kwargs)
 
-    def professional_grade(self, weekday, first_last_time_open_day=None, open_time_list=None, close_time_list=None):
+    def professional_grade(self, weekday=None, first_last_time_open_day=None, open_time_list=None, close_time_list=None):
         """
         Monta grade de horarios do profissional
         """
@@ -262,7 +263,7 @@ class ProfessionalScheduleModel(models.Model):
     """
     CHOICES_WEEKDAY = [(i, i) for i in range(0, 7)]
     CHOICES_MIN_TIME = [(i, i) for i in range(1, 300)]
-
+    address = models.ForeignKey(BusinessAddressModel, related_name='professional_address_work', on_delete=models.CASCADE, null=True, blank=True)
     professional = models.ForeignKey(ProfessionalModel, related_name='professional_schedule', on_delete=models.CASCADE)
     week_days = models.IntegerField('Qual dia da semana?', choices=CHOICES_WEEKDAY, default=1)
     start_hour = models.TimeField('Hora da abertura da agenda?', auto_now=False, auto_now_add=False, )
@@ -341,6 +342,7 @@ class OpenScheduleModel(models.Model):
     CHOICES_MIN_TIME = [(i, i) for i in range(1, 300)]
 
     business = models.ForeignKey(BusinessModel, related_name='open_business', on_delete=models.CASCADE,)
+    address = models.ForeignKey(BusinessAddressModel, related_name='open_address_schedule', on_delete=models.CASCADE, null=True, blank=True)
     start_date = models.DateField('Qual data inicial para abrir a agenda?', auto_now=False, auto_now_add=False, validators=[validate_date],)
     end_date = models.DateField('Qual data final para abrir a agenda?', auto_now=False, auto_now_add=False, validators=[validate_date],)
     start_hour = models.TimeField('Qual horário inicial para abrir a agenda?', auto_now=False, auto_now_add=False, default=time(00, 00))
@@ -392,6 +394,7 @@ class CloseScheduleModel(models.Model):
     Seleciona data inicial e data final e horarios que quer fechar nesse periodo.
     """
     business = models.ForeignKey(BusinessModel, related_name='close_business', on_delete=models.CASCADE,)
+    address = models.ForeignKey(BusinessAddressModel, related_name='close_address_schedule', on_delete=models.CASCADE, null=True, blank=True)
     start_date = models.DateField('Qual data inicial para fechar a agenda?', auto_now=False, auto_now_add=False, validators=[validate_date],)
     end_date = models.DateField('Qual data final para fechar a agenda?', auto_now=False, auto_now_add=False, validators=[validate_date],)
     start_hour = models.TimeField('Qual horário inicial para fechar a agenda?', auto_now=False, auto_now_add=False, default=time(00, 00))

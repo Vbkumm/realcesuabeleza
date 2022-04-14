@@ -17,11 +17,7 @@ class BusinessManager(models.Manager):
 class BusinessModel(models.Model):
     title = models.CharField(max_length=150)
     slug = models.CharField(unique=True, max_length=150)
-    email = models.EmailField(
-        verbose_name='business email address',
-        max_length=255,
-        unique=True,
-    )
+    email = models.EmailField(verbose_name='business email address', max_length=255, unique=True,)
     description = models.CharField('Descrição do salão*', max_length=1000, null=True, blank=True)
     birth_date = models.CharField('Data de criação do salão*',max_length=150, blank=True, null=True)
     federal_id = models.CharField(blank=True, max_length=15, null=True, unique=True, verbose_name='cnpj')
@@ -78,7 +74,7 @@ class BusinessAddressModel(models.Model):
 
 
 class BusinessPhoneModel(models.Model):
-    business = models.ForeignKey(BusinessModel, related_name='business_phone', on_delete=models.CASCADE, null=True, blank=True)
+    address = models.ForeignKey(BusinessAddressModel, related_name='business_address_phone', on_delete=models.CASCADE, null=True, blank=True)
     is_active = models.BooleanField(default=True, help_text='Designates whether this phone should be treated as active. Unselect this instead of deleting phone.', verbose_name='phone active')
     phone = models.CharField('Telefone', max_length=150, null=True, blank=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)

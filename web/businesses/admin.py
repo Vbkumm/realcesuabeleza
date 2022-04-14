@@ -48,8 +48,9 @@ admin.site.register(BusinessAddressModel, BusinessAddressAdmin)
 
 
 class BusinessPhoneAdmin(admin.ModelAdmin):
+    raw_id_fields = ['address']
     fieldsets = [
-        (None,               {'fields': ['business']}),
+        (None,               {'fields': ['address']}),
         (None,               {'fields': ['phone']}),
         (None,               {'fields': ['updated_by']}),
         (None,               {'fields': ['updated_at']}),
@@ -57,9 +58,16 @@ class BusinessPhoneAdmin(admin.ModelAdmin):
 
     ]
 
-    list_display = ('business', 'phone', 'is_active')
-    list_filter = ['business']
-    search_fields = ['business', 'phone']
+    list_display = ('get_business', 'phone', 'get_address', 'is_active')
+    list_filter = ['address__street', 'address__business']
+    search_fields = ['get_business', 'get_address', 'phone']
+
+    def get_business(self, obj):
+        return obj.address.business
+
+    def get_address(self, obj):
+        return obj.address.street
 
 
 admin.site.register(BusinessPhoneModel, BusinessPhoneAdmin)
+

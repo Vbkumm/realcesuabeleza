@@ -57,8 +57,24 @@ class ProfessionalNoSkillAdmin(admin.StackedInline):
     fields = ['service', 'professional', 'created_by']
 
 
+class ProfessionalScheduleAdmin(admin.StackedInline):
+
+    model = ProfessionalScheduleModel
+    extra = 0
+    fieldsets = [
+        (None,               {'fields': ['professional']}),
+        (None,               {'fields': ['week_days']}),
+        (None,               {'fields': ['start_hour']}),
+        (None,               {'fields': ['end_hour']}),
+        (None,               {'fields': ['fraction_time']}),
+        (None,               {'fields': ['updated_at']}),
+        (None,               {'fields': ['updated_by']}),
+        (None,               {'fields': ['created_by']}),
+    ]
+
+
 class ProfessionalAdmin(admin.ModelAdmin):
-    inlines = [ProfessionalExtraSkillAdmin, ProfessionalNoSkillAdmin]
+    inlines = [ProfessionalExtraSkillAdmin, ProfessionalNoSkillAdmin, ProfessionalScheduleAdmin]
     fieldsets = [
         (None,               {'fields': ['business']}),
         (None,               {'fields': ['name']}),
@@ -146,31 +162,10 @@ class ProfessionalPhoneAdmin(admin.ModelAdmin):
 admin.site.register(ProfessionalPhoneModel, ProfessionalPhoneAdmin)
 
 
-class ProfessionalScheduleAdmin(admin.ModelAdmin):
-    fieldsets = [
-        (None,               {'fields': ['professional']}),
-        (None,               {'fields': ['week_days']}),
-        (None,               {'fields': ['start_hour']}),
-        (None,               {'fields': ['end_hour']}),
-        (None,               {'fields': ['fraction_time']}),
-        (None,               {'fields': ['updated_at']}),
-        (None,               {'fields': ['updated_by']}),
-        (None,               {'fields': ['created_by']}),
-    ]
-    list_display = ('get_business', 'professional', 'week_days')
-    list_filter = ['professional']
-    search_fields = ['professional', 'week_days']
-
-    def get_business(self, obj):
-        return obj.professional.business
-
-
-admin.site.register(ProfessionalScheduleModel, ProfessionalScheduleAdmin)
-
-
 class OpenScheduleAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,               {'fields': ['business']}),
+        (None,               {'fields': ['address']}),
         (None,               {'fields': ['start_date']}),
         (None,               {'fields': ['end_date']}),
         (None,               {'fields': ['start_hour']}),
@@ -193,6 +188,7 @@ admin.site.register(OpenScheduleModel, OpenScheduleAdmin)
 class CloseScheduleAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,               {'fields': ['business']}),
+        (None,               {'fields': ['address']}),
         (None,               {'fields': ['start_date']}),
         (None,               {'fields': ['end_date']}),
         (None,               {'fields': ['start_hour']}),

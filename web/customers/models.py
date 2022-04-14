@@ -5,6 +5,7 @@ from django.core.validators import validate_email
 #from service.models import ServiceModel
 from businesses.models import BusinessModel
 
+
 User = get_user_model()
 
 
@@ -68,7 +69,7 @@ class CustomerAddressModel(models.Model):
 
     updated_at = models.DateTimeField(null=True, blank=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
-    created_by = models.ForeignKey(User, related_name='customer_address_author', on_delete=models.SET_NULL, blank=True, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:

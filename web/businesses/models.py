@@ -26,8 +26,8 @@ class BusinessModel(models.Model):
     is_active = models.BooleanField(default=True, help_text='Designates whether this business should be treated as active. Unselect this instead of deleting business.', verbose_name='business active')
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
     updated_at = models.DateTimeField(null=True)
-    created_by = models.ForeignKey(User, related_name='business_author', on_delete=models.SET_NULL, blank=True, null=True)
-    created = models.DateTimeField(default=timezone.now, verbose_name='business created')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
 
     objects = BusinessManager()
 
@@ -61,7 +61,7 @@ class BusinessAddressModel(models.Model):
     state = models.CharField('Estado', max_length=100, null=True, blank=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
     updated_at = models.DateTimeField(null=True)
-    created_by = models.ForeignKey(User, related_name='business_address_author', on_delete=models.SET_NULL, blank=True, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -79,7 +79,7 @@ class BusinessPhoneModel(models.Model):
     phone = models.CharField('Telefone', max_length=150, null=True, blank=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
     updated_at = models.DateTimeField(null=True)
-    created_by = models.ForeignKey(User, related_name='business_phone_author', on_delete=models.SET_NULL, blank=True, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -211,7 +211,7 @@ class ProfessionalAddressModel(models.Model):
 
     updated_at = models.DateTimeField(null=True, blank=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
-    created_by = models.ForeignKey(User, related_name='professional_address_author', on_delete=models.SET_NULL, blank=True, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -353,7 +353,7 @@ class OpenScheduleModel(models.Model):
 
     updated_at = models.DateTimeField(null=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
-    created_by = models.ForeignKey(User, related_name='open_schedule_user', on_delete=models.SET_NULL, blank=True, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     objects = OpenScheduleManager()
@@ -404,7 +404,7 @@ class CloseScheduleModel(models.Model):
 
     updated_at = models.DateTimeField(null=True, blank=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
-    created_by = models.ForeignKey(User, related_name='close_schedule_user', on_delete=models.SET_NULL, blank=True, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     objects = CloseScheduleManager()

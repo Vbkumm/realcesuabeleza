@@ -168,6 +168,9 @@ class ServiceModel(models.Model):
     def get_service_by_business(self, business):
         return self.objects.get_queryset(business=business)
 
+    def get_total_time_service(self):
+        equipment_list = self.equipments
+
 
 class ServiceEquipmentModel(models.Model):
     """
@@ -175,8 +178,7 @@ class ServiceEquipmentModel(models.Model):
     """
     service = models.ForeignKey(ServiceModel, related_name='service', on_delete=models.CASCADE)
     equipment = models.ForeignKey(EquipmentModel, related_name='equipment', on_delete=models.CASCADE)
-    ept_time = models.DurationField('Qual tempo de uso deste equipamento? Caso seja variavel estipule um tempo minimo.', default=timedelta(minutes=5))
-    #equipment_time_exact = models.BooleanField('Tempo de uso deste equipamento pode variar de acordo com cada cliente?', default=False)
+    ept_time = models.IntegerField('Qual tempo em minutos de uso deste equipamento?', default=0)
     ept_complement = models.BooleanField('Este equipamento é usado simutaniamente com algum outro equipamento?',default=False)
     ept_replaced = models.ForeignKey(EquipmentModel, related_name='equipment_replaced', on_delete=models.CASCADE, null=True, blank=True)
 
@@ -190,23 +192,16 @@ class ServiceEquipmentModel(models.Model):
         verbose_name = "service_equipments"
         db_table = 'service_equipments_db'
 
-    def duration_string(self):
+    def __str__(self):
+        return '%s %s %s %s %s' % (self.service, self.equipment, self.ept_time, self.ept_complement, self.ept_replaced)
+
+    def get_equipments_by_service(self, service):
+        return self.objects.get_queryset(service=service)
+
+    def get_equipment_time(self):
         """
-        Formata duracao de tempo do servico
+        Retorna tempo de uso do equipamento para execução do serviço se nao for usado como complementar ou substituto.
         """
-        days, hours, minutes, seconds, microseconds = _get_duration_components(self.ept_time)
-        string = ''
+        if not self.ept_complement or self.ept_replaced:
+            return self.ept_time
 
-        if minutes:
-            string = '{:02d} minutos'.format(minutes)
-
-        if hours and minutes:
-            string = ' e ' + string
-
-        if hours == 1:
-            string = '{:2d} hora'.format(hours) + string
-
-        if hours > 1:
-            string = '{:2d} horas'.format(hours) + string
-
-        return string

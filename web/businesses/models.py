@@ -74,11 +74,11 @@ class BusinessAddressModel(models.Model):
         verbose_name = "business_address"
         db_table = 'business_address_db'
 
-        def __str__(self):
-            return '%s %s' % (self.business, self.street)
+    def __str__(self):
+        return '%s %s' % (self.business, self.street)
 
-        def get_address_by_business(self, business):
-            return self.objects.get_queryset(business=business)
+    def get_address_by_business(self, business):
+        return self.objects.get_queryset(business=business)
 
 
 class BusinessPhoneModel(models.Model):

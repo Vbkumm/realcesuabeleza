@@ -169,6 +169,7 @@ class ServiceModel(models.Model):
         return self.objects.get_queryset(business=business)
 
     def get_total_time_service(self):
+
         equipment_list = self.equipments
 
 
@@ -198,10 +199,35 @@ class ServiceEquipmentModel(models.Model):
     def get_equipments_by_service(self, service):
         return self.objects.get_queryset(service=service)
 
-    def get_equipment_time(self):
+    def get_service_equipment_time(self, address=None, service=None, equipments_extra_time=None):
         """
         Retorna tempo de uso do equipamento para execução do serviço se nao for usado como complementar ou substituto.
         """
-        if not self.ept_complement or self.ept_replaced:
-            return self.ept_time
+        service_total_time = 0
+        equipments_extra_time = equipments_extra_time
+        equipment_qty_and_time = []
+        final_equipment_list_by_service = []
+        equipment_service_list = self.objects.get_queryset(service=service)
+        for equipment_service in equipment_service_list:
+            equipment_time = equipment_service.ept_time
+            if equipments_extra_time:
+                for extra_time in equipments_extra_time:
+                    if extra_time.service_equipment == equipment_service:
+                        equipment_time += extra_time.extra_time
+
+            equipment_replaced_list = self.objects.get_queryset(service=service, ept_replaced=equipment_service.equipment)
+            equipment_qtd_address = EquipmentAddressModel.objects.filter(address=address, equipment=equipment_service.equipment).first()
+            equipment_qtd = equipment_qtd_address.qty
+            if equipment_replaced_list:
+                for equipment_replaced in equipment_replaced_list:
+                    equipment_replaced_qtd_address = EquipmentAddressModel.objects.filter(address=address, equipment=equipment_replaced.equipment).first()
+                    equipment_replaced_qtd = equipment_replaced_qtd_address.qty
+                    equipment_qtd += equipment_replaced_qtd
+
+            if not equipment_service.ept_complement or equipment_service.ept_replaced:
+                service_total_time += equipment_time
+
+            equipment_qty_and_time.append([address, equipment_service, equipment_qtd, equipment_service.ept_complement, equipment_service.ept_replaced])
+
+        return final_equipment_list_by_service.append([service_total_time, equipment_qty_and_time])
 

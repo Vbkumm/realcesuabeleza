@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from datetime import datetime, time, timezone
+from django.core.exceptions import ValidationError
 from professionals.models import ProfessionalModel
 from customers.models import CustomerModel
 from services.models import ServiceModel, ServiceEquipmentModel
@@ -14,7 +15,42 @@ User = get_user_model()
 
 
 class ScheduleManager(models.Manager):
-    pass
+
+    def create(self, *args, **kwargs):
+
+        """
+        Verifica se horario ja nao esta ocupado por endereco, data, hora, profissional            que vai executar o serviço.
+        - self = agendamento a ser consultado
+        - schedule_list = lista de agendamentos no dia
+        - get_equipments_by_service = lista de equipamentos e tempo de uso por serviço
+        """
+        available = True
+
+        booking_equipments_extra_time = []
+        if self.equipments_extra_time:#lista
+            booking_equipments_extra_time = self.schedule_extra_time_set.filter(schedule=self)
+        schedule_list = self.__class__.objects.filter(address=self.address, date=self.date,)#lista com agendamentos no dia no endereco do agendamento desejado
+        booking_equipment_list = ServiceEquipmentModel.get_service_equipment_time(address=self.address, service=self.service, equipments_extra_time=booking_equipments_extra_time)#retorna tempo total servico e qtd e tempo por equipamento
+        booking_end = timer_increase(self.hour, booking_equipment_list[0])
+        #verificar agendamentos que utilizam equipamento q e utilizado como substitudo
+
+        for schedule in schedule_list:#agendamento na lista de agendamentos
+            if schedule.pk != self.pk:#se nao for o proprio agenadamento
+                schedule_equipments_extra_time = []
+                if schedule.equipments_extra_time:
+                    schedule_equipments_extra_time = schedule.schedule_extra_time_set.filter(schedule=schedule)
+                schedule_equipments = ServiceEquipmentModel.get_service_equipment_time(address=schedule.address, service=schedule.service, equipments_extra_time=schedule_equipments_extra_time)#pega equimapentos para realizar o agendamento
+                schedule_end = timer_increase(schedule.hour, schedule_equipments[0])
+
+                if time_is_between(fixed_hour(self.hour), (schedule.hour, schedule_end)):#verifica se hora agendada esta entre outros agendamentos
+                    if schedule.professional == self.professional:#se tiver outros agendametos na mesma hora do agendamento a ser realizado e e for o mesmo profissional
+                        available = False
+
+        if available:
+            return super(ScheduleManager, self).create(*args, **kwargs)
+        else:
+            raise ValidationError("No meio do processo de agendamento tivemos algum problema, parace que "
+                                  "este horario ou profissional já não estão mais disponiveis. Tente novamente!")
 
 
 class ScheduleModel(models.Model):
@@ -82,85 +118,18 @@ class ScheduleModel(models.Model):
         if datetime.today() < date_hour:
             return True
 
-    def schedule_is_available(self):
-        """
-        Verifica se horario ja nao esta ocupado por endereco, data, hora, profissional
-        que vai executar o serviço.
-        - self = agendamento a ser consultado
-        - schedule_list = lista de agendamentos no dia
-        - get_equipments_by_service = lista de equipamentos e tempo de uso por serviço
+    def equipments_extra_time_list(self):
+        if self.equipments_extra_time:
+            qs = self.equipments_extra_time
 
-        """
-        available = True
-        schedule_list = self.__class__.objects.filter(address=self.address, date=self.date,)#lista com agendamentos no dia
-        booking_equipments = ServiceEquipmentModel.objects.get(service=self.service)#pega equimapentos para realizar o agendamento
-        booking_equipments_extra_time = self.equipments_extra_time#lista
-
-        for schedule in schedule_list:#agendamento na lista de agendamentos
-            if schedule.pk != self.pk:#se nao for o proprio agenadamento
-                schedule_equipments = ServiceEquipmentModel.objects.get(service=schedule.service)#pega equimapentos para realizar o agendamento
-                schedule_equipments_extra_time = schedule.equipments_extra_time
-
-                schedule_total_time = schedule.extra_time       #lista com equipamentos do servico e tempo extra em cada um
-                schedule_equipment_obj_list = []
-                for equipment in schedule_equipments:# equipamentos do agendamento
-
-                    if ServiceEquipmentModel.get_equipment_time(equipment):
-                        equipment_time = ServiceEquipmentModel.get_equipment_time(equipment)#retorna inteiro = tempo de uso do equipamento em minutos
-                        schedule_equipment_obj_list.append()
-                        schedule_total_time += equipment_time
-                schedule_end = timer_increase(schedule.hour, schedule_total_time)
-
-                if time_is_between(fixed_hour(self.hour), (schedule.hour, schedule_end)):#verifica se hora agendada esta entre outros agendamentos
-                    if schedule.professional == self.professional:#se tiver outros agendametos na mesma hora do agendamento a ser realizado e e for o mesmo profissional
-                        available = False
-
-
-
-        return available
-
-    def busy_equipment_in_service_schedule_hour(self):
-        service = self.service
-        equipment_service_list = ServiceEquipmentModel.objects.filter(service=service)
-        service_time = time()
-        equipment_list = []
-        for count, equipment_service in enumerate(equipment_service_list):
-            equipment = service.tittle
-            equipment_name = equipment.equipment_tittle
-            equipment_in_use_time = equipment_service.equipment_time
-            equipment_qtd = equipment.equipment_quantity
-            equipment_replaced = equipment_service.equipment_replaced
-            if equipment_service.equipment_complement:#verifica se equipamento é utilizado ao mesmo tempo q outro ou na sequencia
-                if count < 1:#verifica se tempo de uso dos equipamentos substitui ou soma ao tempo do serviço
-                    equipment_initial_time = self.hour
-                    equipment_final_time = timer_increase(equipment_initial_time, total_minutes_int(equipment_in_use_time))
-                    service_time = equipment_final_time
-
-                else:
-                    equipment_initial_time = self.hour
-                    equipment_final_time = timer_increase(equipment_initial_time, total_minutes_int(equipment_in_use_time))
-                    if equipment_final_time > service_time:
-                        service_time = equipment_final_time
-                equipment_list.append([count, equipment_name, equipment_qtd, equipment_initial_time, equipment_final_time, equipment_replaced, False])
-
-            else:#equipamento não é utilizado ao mesmo tempo / se exitir equipment_replaced ele pode substituir o principal se não o equipamento é utilizado na sequencia
-                if count < 1:
-                    equipment_initial_time = self.hour
-                    equipment_final_time = timer_increase(equipment_initial_time, total_minutes_int(equipment_in_use_time))
-                    service_time = equipment_final_time
-                else:
-                    equipment_initial_time = service_time
-                    equipment_final_time = timer_increase(equipment_initial_time, total_minutes_int(equipment_in_use_time))
-                    service_time = equipment_final_time
-                equipment_list.append([count, equipment_name, equipment_qtd, equipment_initial_time, equipment_final_time, equipment_replaced, True])
-        return equipment_list
+        return self.equipments_extra_time
 
 
 class ScheduleExtraTimeModel(models.Model):
     """
     Adiciona tempo extra ao agendamento de acordo com o equipamento
     """
-    schedule = models.ForeignKey(ScheduleModel, on_delete=models.CASCADE,)
+    schedule = models.ForeignKey(ScheduleModel, related_name='schedule_extra_time', on_delete=models.CASCADE,)
     service_equipment = models.ForeignKey(ServiceEquipmentModel, on_delete=models.CASCADE)
     extra_time = models.IntegerField('Se necessario corrija o tempo de execução do serviço de acordo com a cliente:', default=0)
 

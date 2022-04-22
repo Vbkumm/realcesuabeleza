@@ -7,7 +7,7 @@ from professionals.models import ProfessionalModel
 from customers.models import CustomerModel
 from services.models import ServiceModel, ServiceEquipmentModel
 from businesses.models import BusinessAddressModel
-from services.utils import service_equipment_total_time, timer_increase, time_is_between
+from services.utils import timer_increase, time_is_between
 from .utils import validate_schedule_date, fixed_hour
 
 
@@ -32,7 +32,7 @@ class ScheduleManager(models.Manager):
         schedule_list = self.__class__.objects.filter(address=self.address, date=self.date,)#lista com agendamentos no dia no endereco do agendamento desejado
         booking_total_time_and_equipment_list = ServiceEquipmentModel.get_service_equipment_time(address=self.address, service=self.service, equipments_extra_time=booking_equipments_extra_time, hour=self.hour )#retorna tempo total servico e qtd e tempo por equipamento
         booking_end = timer_increase(self.hour, booking_total_time_and_equipment_list[0])
-        booking_equipment_list = booking_total_time_and_equipment_list[1][:]
+        booking_equipment_list = booking_total_time_and_equipment_list[1]
 
         for schedule in schedule_list:#agendamento na lista de agendamentos
             schedule_total_time_and_equipments = ServiceEquipmentModel.get_service_equipment_time(address=schedule.address, service=schedule.service, equipments_extra_time=schedule_equipments_extra_time, hour=schedule.hour)#pega equimapentos para realizar o agendamento

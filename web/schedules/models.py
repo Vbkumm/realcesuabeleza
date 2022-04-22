@@ -30,21 +30,30 @@ class ScheduleManager(models.Manager):
         if self.equipments_extra_time:#lista
             booking_equipments_extra_time = self.schedule_extra_time_set.filter(schedule=self)
         schedule_list = self.__class__.objects.filter(address=self.address, date=self.date,)#lista com agendamentos no dia no endereco do agendamento desejado
-        booking_equipment_list = ServiceEquipmentModel.get_service_equipment_time(address=self.address, service=self.service, equipments_extra_time=booking_equipments_extra_time)#retorna tempo total servico e qtd e tempo por equipamento
-        booking_end = timer_increase(self.hour, booking_equipment_list[0])
-        #verificar agendamentos que utilizam equipamento q e utilizado como substitudo
+        booking_total_time_and_equipment_list = ServiceEquipmentModel.get_service_equipment_time(address=self.address, service=self.service, equipments_extra_time=booking_equipments_extra_time, hour=self.hour )#retorna tempo total servico e qtd e tempo por equipamento
+        booking_end = timer_increase(self.hour, booking_total_time_and_equipment_list[0])
+        booking_equipment_list = booking_total_time_and_equipment_list[1][:]
 
         for schedule in schedule_list:#agendamento na lista de agendamentos
-            if schedule.pk != self.pk:#se nao for o proprio agenadamento
-                schedule_equipments_extra_time = []
-                if schedule.equipments_extra_time:
-                    schedule_equipments_extra_time = schedule.schedule_extra_time_set.filter(schedule=schedule)
-                schedule_equipments = ServiceEquipmentModel.get_service_equipment_time(address=schedule.address, service=schedule.service, equipments_extra_time=schedule_equipments_extra_time)#pega equimapentos para realizar o agendamento
-                schedule_end = timer_increase(schedule.hour, schedule_equipments[0])
+            schedule_total_time_and_equipments = ServiceEquipmentModel.get_service_equipment_time(address=schedule.address, service=schedule.service, equipments_extra_time=schedule_equipments_extra_time, hour=schedule.hour)#pega equimapentos para realizar o agendamento
+            schedule_end = timer_increase(schedule.hour, schedule_total_time_and_equipments[0])
 
-                if time_is_between(fixed_hour(self.hour), (schedule.hour, schedule_end)):#verifica se hora agendada esta entre outros agendamentos
-                    if schedule.professional == self.professional:#se tiver outros agendametos na mesma hora do agendamento a ser realizado e e for o mesmo profissional
-                        available = False
+            if time_is_between(fixed_hour(self.hour), (schedule.hour, schedule_end)):#verifica se hora agendada esta entre outros agendamentos
+                if schedule.professional == self.professional:#se tiver outros agendametos na mesma hora do agendamento a ser realizado e e for o mesmo profissional
+                    available = False
+                elif schedule.pk != self.pk:#se nao for o proprio agenadamento
+                    schedule_equipments_extra_time = []
+                    if schedule.equipments_extra_time:
+                        schedule_equipments_extra_time = schedule.schedule_extra_time_set.filter(schedule=schedule)
+                    schedule_total_time_and_equipments = ServiceEquipmentModel.get_service_equipment_time(address=schedule.address, service=schedule.service, equipments_extra_time=schedule_equipments_extra_time)#pega equimapentos para realizar o agendamento
+                    schedule_equipments = schedule_total_time_and_equipments[1]
+                    if [x[1] for x in schedule_equipments] in [x[1] for x in booking_equipment_list] or [x[1] for x in schedule_equipments] in [x[4] for x in booking_equipment_list]:#verifica se agendamento utiliza mesmo equipamento principal ou subistito em outro agendamento
+                        for booking_equipment in booking_equipment_list:
+                            for schedule_equipment in schedule_equipments:
+                                if time_is_between(fixed_hour(schedule_equipment[6]), (booking_equipment[6], booking_equipment[7])):
+                                    booking_equipment[3] -= 1#diminui numero de equipamentos disponivel para realizaçao do servico
+                                    if booking_equipment[3] < 1:
+                                        available = False
 
         if available:
             return super(ScheduleManager, self).create(*args, **kwargs)

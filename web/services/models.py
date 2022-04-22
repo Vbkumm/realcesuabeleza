@@ -6,6 +6,7 @@ from django.utils.duration import _get_duration_components
 from django.urls import reverse
 from django.utils.html import mark_safe
 from markdown import markdown
+from .utils import timer_increase
 from businesses.models import BusinessModel, BusinessAddressModel
 from professionals.utils import _generate_unique_slug
 
@@ -199,13 +200,14 @@ class ServiceEquipmentModel(models.Model):
     def get_equipments_by_service(self, service):
         return self.objects.get_queryset(service=service)
 
-    def get_service_equipment_time(self, address=None, service=None, equipments_extra_time=None):
+    def get_service_equipment_time(self, address=None, service=None, equipments_extra_time=None, hour=None):
         """
         Retorna tempo de uso do equipamento para execução do serviço se nao for usado como complementar ou substituto.
         """
         service_total_time = 0
         equipments_extra_time = equipments_extra_time
         equipment_qty_and_time = []
+        schedule_hour = hour
         final_equipment_list_by_service = []
         equipment_service_list = self.objects.get_queryset(service=service)
         for equipment_service in equipment_service_list:
@@ -218,6 +220,8 @@ class ServiceEquipmentModel(models.Model):
             equipment_replaced_list = self.objects.get_queryset(service=service, ept_replaced=equipment_service.equipment)
             equipment_qtd_address = EquipmentAddressModel.objects.filter(address=address, equipment=equipment_service.equipment).first()
             equipment_qtd = equipment_qtd_address.qty
+            equipment_hour = schedule_hour#hora inicial do equipamento
+            schedule_hour = timer_increase(schedule_hour, equipment_time)#hora final do equipameto
             if equipment_replaced_list:
                 for equipment_replaced in equipment_replaced_list:
                     equipment_replaced_qtd_address = EquipmentAddressModel.objects.filter(address=address, equipment=equipment_replaced.equipment).first()
@@ -227,7 +231,7 @@ class ServiceEquipmentModel(models.Model):
             if not equipment_service.ept_complement or equipment_service.ept_replaced:
                 service_total_time += equipment_time
 
-            equipment_qty_and_time.append([address, equipment_service, equipment_qtd, equipment_service.ept_complement, equipment_service.ept_replaced])
+            equipment_qty_and_time.append([address, equipment_service, equipment_qtd, equipment_service.ept_complement, equipment_service.ept_replaced, equipment_hour, schedule_hour])
 
         return final_equipment_list_by_service.append([service_total_time, equipment_qty_and_time])
 

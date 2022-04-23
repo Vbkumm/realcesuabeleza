@@ -180,9 +180,9 @@ class ServiceEquipmentModel(models.Model):
     """
     service = models.ForeignKey(ServiceModel, related_name='service', on_delete=models.CASCADE)
     equipment = models.ForeignKey(EquipmentModel, related_name='equipment', on_delete=models.CASCADE)
-    ept_time = models.IntegerField('Qual tempo em minutos de uso deste equipamento?', default=0)
-    ept_complement = models.BooleanField('Este equipamento é usado simutaniamente com algum outro equipamento?',default=False)
-    ept_replaced = models.ForeignKey(EquipmentModel, related_name='equipment_replaced', on_delete=models.CASCADE, null=True, blank=True)
+    equipment_time = models.IntegerField('Qual tempo em minutos de uso deste equipamento?', default=0)
+    equipment_complement = models.BooleanField('Este equipamento é usado simutaniamente com algum outro equipamento?',default=False)
+    equipment_replaced = models.ForeignKey(EquipmentModel, related_name='equipment_replaced', on_delete=models.CASCADE, null=True, blank=True)
 
     updated_at = models.DateTimeField(null=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
@@ -195,7 +195,7 @@ class ServiceEquipmentModel(models.Model):
         db_table = 'service_equipments_db'
 
     def __str__(self):
-        return '%s %s %s %s %s' % (self.service, self.equipment, self.ept_time, self.ept_complement, self.ept_replaced)
+        return '%s %s %s %s %s' % (self.service, self.equipment, self.equipment_time, self.equipment_complement, self.equipment_replaced)
 
     def get_equipments_by_service(self, service):
         return self.objects.get_queryset(service=service)
@@ -231,7 +231,7 @@ class ServiceEquipmentModel(models.Model):
             if not equipment_service.ept_complement or equipment_service.ept_replaced:
                 service_total_time += equipment_time
 
-            equipment_qty_and_time.append([address, equipment_service, equipment_qtd, equipment_service.ept_complement, equipment_service.ept_replaced, equipment_hour, schedule_hour])
+            equipment_qty_and_time.append([address, equipment_service, equipment_qtd, equipment_service.equipment_complement, equipment_service.equipment_replaced, equipment_hour, schedule_hour])
 
         return final_equipment_list_by_service.append([service_total_time, equipment_qty_and_time])
 

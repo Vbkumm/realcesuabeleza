@@ -6,7 +6,7 @@ class ScheduleExtraTimeAdmin(admin.StackedInline):
 
     model = ScheduleExtraTimeModel
     extra = 0
-    fields = ['service_equipment', 'updated_by', 'updated_at', 'created_by']
+    fields = ['service_equipment', 'extra_time', 'updated_by', 'updated_at', 'created_by']
 
 
 class ScheduleAdmin(admin.ModelAdmin):
@@ -31,7 +31,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         (None,               {'fields': ['created_by']}),
     ]
     list_display = ('get_business', 'address', 'service', 'professional')
-    list_filter = ['address__business', 'customer', 'professional']
+    list_filter = ['address', 'customer', 'professional']
     search_fields = ['address', 'service']
 
     def get_business(self, obj):

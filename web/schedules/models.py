@@ -64,13 +64,13 @@ class ScheduleManager(models.Manager):
 
 class ScheduleModel(models.Model):
 
-    address = models.ForeignKey(BusinessAddressModel, related_name='schedule_business_address', on_delete=models.CASCADE, null=True, blank=True)
+    address = models.ForeignKey(BusinessAddressModel, related_name='schedule_business_address', on_delete=models.CASCADE, null=False, blank=False)
     service = models.ForeignKey(ServiceModel, related_name='schedule_service', on_delete=models.SET_NULL, blank=True, null=True)
     customer = models.ForeignKey(CustomerModel, related_name='schedule_customer', on_delete=models.SET_NULL, blank=True, null=True)
     professional = models.ForeignKey(ProfessionalModel, related_name='schedule_professional', on_delete=models.SET_NULL, blank=True, null=True)
 
-    date = models.DateField('Qual dia você deseja agendar?', auto_now=False, auto_now_add=False, validators=[validate_schedule_date],)
-    hour = models.TimeField('Qual horário você deseja agendar?', auto_now=False, auto_now_add=False, default=time(00, 00))
+    date = models.DateField('Qual dia você deseja agendar?', auto_now=False, auto_now_add=False, validators=[validate_schedule_date], null=False, blank=False)
+    hour = models.TimeField('Qual horário você deseja agendar?', auto_now=False, auto_now_add=False, default=time(00, 00), null=False, blank=False)
     description = models.CharField('Observações:', max_length=1000, null=True, blank=True)
 
     _done = models.BooleanField('Escolha a opção?', default=False)

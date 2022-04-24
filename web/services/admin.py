@@ -59,7 +59,7 @@ class ServiceEquipmentAdmin(admin.StackedInline):
 
     model = ServiceEquipmentModel
     extra = 0
-    fields = ['service', 'equipment', 'ept_time', 'ept_complement', 'ept_replaced', 'created_by']
+    fields = ['service', 'equipment', 'equipment_time', 'equipment_complement', 'equipment_replaced', 'created_by']
 
 
 class ServiceAdmin(admin.ModelAdmin):

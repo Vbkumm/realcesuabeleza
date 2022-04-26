@@ -10,6 +10,7 @@ class BusinessCreateSerializer(serializers.Serializer):
     description = serializers.CharField()
     owners = PublicCustomUserSerializer(source='user.CustomUserModel', read_only=True) # serializers.SerializerMethodField(read_only=True)
     birth_date = serializers.SerializerMethodField(read_only=True)
+    #url = serializers.CharField(source='get_absolute_url', read_only=True)
 
     class Meta:
         model = BusinessModel
@@ -24,5 +25,5 @@ class BusinessCreateSerializer(serializers.Serializer):
         Check that the business name is unique.
         """
         if 'django' not in value.lower():
-            raise serializers.ValidationError("Blog post is not about Django")
+            raise serializers.ValidationError("Ups erro!")
         return value

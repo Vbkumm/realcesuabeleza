@@ -1,9 +1,12 @@
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from django.core.exceptions import ValidationError
 
 
-def validate_schedule_date(date):
-    if date < datetime.date.today() + datetime.timedelta(days=1):
+def validate_schedule_date(user_date):
+    """
+    Verifica se a data do agendamento é maior que a data do dia
+    """
+    if user_date < date.today() + timedelta(days=0):
         raise ValidationError("Data do agendamento deve ser a partir do dia de amanha")
 
 

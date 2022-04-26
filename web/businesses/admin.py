@@ -16,7 +16,9 @@ class BusinessAdmin(admin.ModelAdmin):
         (None,               {'fields': ['owners']}),
         (None,               {'fields': ['users']}),
         (None,               {'fields': ['is_active']}),
-        (None,               {'fields': ['created']}),
+        (None,               {'fields': ['updated_by']}),
+        (None,               {'fields': ['updated_at']}),
+        (None,               {'fields': ['created_by']}),
     ]
     list_display = ('title', 'email', 'is_active')
     list_filter = ['is_active']
@@ -37,6 +39,7 @@ class BusinessAddressAdmin(admin.ModelAdmin):
         (None,               {'fields': ['state']}),
         (None,               {'fields': ['updated_by']}),
         (None,               {'fields': ['updated_at']}),
+        (None,               {'fields': ['created_by']}),
 
     ]
     list_display = ('business', 'zip_code', 'street', 'is_active')

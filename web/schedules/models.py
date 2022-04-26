@@ -25,7 +25,7 @@ class ScheduleManager(models.Manager):
         - get_equipments_by_service = lista de equipamentos e tempo de uso por serviço
         """
         available = True
-
+        print(available)
         booking_equipments_extra_time = []
         if self.equipments_extra_time:#lista
             booking_equipments_extra_time = self.schedule_extra_time_set.filter(schedule=self)

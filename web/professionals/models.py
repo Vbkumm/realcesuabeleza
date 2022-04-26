@@ -84,7 +84,7 @@ class ProfessionalModel(models.Model):
     business = models.ForeignKey(BusinessModel, related_name='professional_business', on_delete=models.CASCADE,)
     began_date = models.DateField('Qual data de inicio do profissional?', null=True)
     name = models.CharField('Qual o nome do profissional?', max_length=150, null=True)
-    federal_id = models.CharField(blank=True, max_length=15, null=True, unique=True, verbose_name='cnpj')
+    federal_id = models.CharField(blank=True, max_length=15, null=True, unique=True, verbose_name='cpf')
     birth_date = models.CharField('Data de aniversário do profissional*', max_length=150, blank=True, null=True)
     slug = models.CharField(unique=True, max_length=150)
     category = models.ManyToManyField(ProfessionalCategoryModel, related_name='professional_category', blank=True)

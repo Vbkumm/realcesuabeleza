@@ -1,9 +1,11 @@
 from rest_framework import serializers
 from accounts.serializers import PublicCustomUserSerializer
-from .models import BusinessModel
+from .models import (BusinessModel,
+                     BusinessAddressModel,
+                     BusinessPhoneModel,)
 
 
-class BusinessCreateSerializer(serializers.Serializer):
+class BusinessSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=150)
     slug = serializers.CharField(max_length=150)
     federal_id = serializers.CharField(max_length=15,)
@@ -14,7 +16,8 @@ class BusinessCreateSerializer(serializers.Serializer):
 
     class Meta:
         model = BusinessModel
-        fields = ['title', 'id', 'slug', 'description', 'owners',  'birth_date']
+        fields = ['title', 'id', 'slug', 'description', 'owners',  'birth_date', 'updated_by', 'updated_at',
+                  'created_by', 'created',]
 
     def __init__(self, *args, **kwargs):
         kwargs['federal_id'] = serializers.RegexField(regex='(/(^\d{3}\.\d{3}\.\d{3}\-\d{2}$)|(^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$)/$)')
@@ -27,3 +30,18 @@ class BusinessCreateSerializer(serializers.Serializer):
         if 'django' not in value.lower():
             raise serializers.ValidationError("Ups erro!")
         return value
+
+
+class BusinessAddressSerializer(serializers.Serializer):
+
+    class Meta:
+        model = BusinessAddressModel
+        fields = ['business', 'id', 'is_active', 'zip_code', 'street',  'street_number', 'district', 'city', 'state',
+                  'updated_by', 'updated_at', 'created_by', 'created',]
+
+
+class BusinessPhoneSerializer(serializers.Serializer):
+
+    class Meta:
+        model = BusinessPhoneModel
+        fields = ['address', 'id', 'is_active', 'phone', 'updated_by', 'updated_at', 'created_by', 'created',]

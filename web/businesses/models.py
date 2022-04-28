@@ -80,6 +80,9 @@ class BusinessAddressModel(models.Model):
     def get_address_by_business(self, business):
         return self.objects.get_queryset(business=business)
 
+    def get_absolute_url(self):
+        return reverse("businesses:business_address_detail", kwargs={"pk": self.pk})
+
 
 class BusinessPhoneModel(models.Model):
     address = models.ForeignKey(BusinessAddressModel, related_name='business_address_phone', on_delete=models.CASCADE, null=True, blank=True)
@@ -100,3 +103,6 @@ class BusinessPhoneModel(models.Model):
 
     def get_phone_by_address(self, address):
         return self.objects.get_queryset(address=address)
+
+    def get_absolute_url(self):
+        return reverse("businesses:address_phone_detail", kwargs={"pk": self.pk})

@@ -41,4 +41,67 @@ class BusinessViewSet(viewsets.ViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class BusinessAddressViewSet(viewsets.ViewSet):
+
+    def list(self, request, *args, **kwargs):
+        business_address = BusinessAddressModel.objects.All()
+        serializer = BusinessAddressSerializer(business_address, many=True)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        serializer = BusinessAddressModel(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def retrieve(self, request, *args, **kwargs):
+        business_address = BusinessAddressModel.objects.get(id=kwargs['pk'])
+        serializer = BusinessAddressSerializer(instance=business_address)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        business_address = BusinessAddressModel.objects.get(id=kwargs['pk'])
+        serializer = BusinessAddressSerializer(instance=business_address, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+    def destroy(self, request, *args, **kwargs):
+        business_address = BusinessAddressModel.objects(id=kwargs['pk'])
+        business_address.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class BusinessPhoneViewSet(viewsets.ViewSet):
+
+    def list(self, request, *args, **kwargs):
+        business_phone = BusinessPhoneModel.objects.All()
+        serializer = BusinessPhoneSerializer(business_phone, many=True)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        serializer = BusinessPhoneModel(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def retrieve(self, request, *args, **kwargs):
+        business_phone = BusinessPhoneModel.objects.get(id=kwargs['pk'])
+        serializer = BusinessPhoneSerializer(instance=business_phone)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        business_phone = BusinessPhoneModel.objects.get(id=kwargs['pk'])
+        serializer = BusinessPhoneSerializer(instance=business_phone, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+    def destroy(self, request, *args, **kwargs):
+        business_phone = BusinessPhoneModel.objects(id=kwargs['pk'])
+        business_phone.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 

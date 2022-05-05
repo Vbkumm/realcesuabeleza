@@ -6,12 +6,11 @@ from .models import (BusinessModel,
 
 
 class BusinessSerializer(serializers.Serializer):
-    # title = serializers.CharField(max_length=150)
-    # slug = serializers.CharField(max_length=150)
-    # federal_id = serializers.CharField(max_length=15,)
-    # description = serializers.CharField()
-    # owners = PublicCustomUserSerializer(source='user.CustomUserModel', read_only=True) # serializers.SerializerMethodField(read_only=True)
-    # birth_date = serializers.SerializerMethodField(read_only=True)
+    title = serializers.CharField(max_length=150)
+    slug = serializers.CharField(max_length=150)
+    federal_id = serializers.CharField(max_length=15,)
+    description = serializers.CharField()
+    owners = PublicCustomUserSerializer(source='user.CustomUserModel', read_only=True) # serializers.SerializerMethodField(read_only=True)
     url = serializers.CharField(source='get_absolute_url', read_only=True)
 
     class Meta:

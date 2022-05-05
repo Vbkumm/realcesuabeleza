@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import BusinessViewSet
+from .views import BusinessViewSet, BusinessDetailView
 
 
 urlpatterns = [
@@ -12,4 +12,6 @@ urlpatterns = [
         'put': 'update',
         'delete': 'destroy'
     })),
+    path('business_detail/<slug>/', BusinessDetailView.as_view(), name='business_detail'),
+
 ]

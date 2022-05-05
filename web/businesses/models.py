@@ -41,7 +41,7 @@ class BusinessModel(models.Model):
         super(BusinessModel, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse("businesses:business_detail", kwargs={"slug": self.slug})
+        return reverse("business_detail", kwargs={"slug": self.slug})
 
     def __str__(self):
         return self.title

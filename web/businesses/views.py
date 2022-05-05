@@ -1,12 +1,15 @@
 from django.shortcuts import render
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from django.views.generic import ListView, DetailView, DeleteView, UpdateView
+
 from .models import (BusinessModel,
                      BusinessAddressModel,
                      BusinessPhoneModel)
 from .serializers import (BusinessSerializer,
                           BusinessAddressSerializer,
                           BusinessPhoneSerializer)
+
 
 
 class BusinessViewSet(viewsets.ViewSet):
@@ -39,6 +42,20 @@ class BusinessViewSet(viewsets.ViewSet):
         business = BusinessModel.objects(slug=kwargs['slug'])
         business.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class BusinessDetailView(DetailView):
+    model = BusinessModel
+    template_name = 'businesses/detail.html'
+    pk_url_kwarg = 'slug'
+    context_object_name = 'business'
+
+    def get_context_data(self, **kwargs):
+        context = super(BusinessDetailView, self).get_context_data(**kwargs)
+
+        self.request.session['business_name'] = True
+
+        return context
 
 
 class BusinessAddressViewSet(viewsets.ViewSet):

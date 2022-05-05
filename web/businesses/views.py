@@ -11,7 +11,6 @@ from .serializers import (BusinessSerializer,
                           BusinessPhoneSerializer)
 
 
-
 class BusinessViewSet(viewsets.ViewSet):
 
     def list(self, request, *args, **kwargs):
@@ -47,13 +46,13 @@ class BusinessViewSet(viewsets.ViewSet):
 class BusinessDetailView(DetailView):
     model = BusinessModel
     template_name = 'businesses/detail.html'
-    pk_url_kwarg = 'slug'
+    slug_url_kwarg = 'slug'
     context_object_name = 'business'
 
     def get_context_data(self, **kwargs):
         context = super(BusinessDetailView, self).get_context_data(**kwargs)
 
-        self.request.session['business_name'] = True
+        self.request.session['business_slug'] = self.object.slug
 
         return context
 

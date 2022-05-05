@@ -4,10 +4,10 @@
         <button class="navbar-toggler ml-md-auto border-0" type="button" data-toggle="collapse" data-target="#conteudoNavbarSuportado" aria-controls="conteudoNavbarSuportado" aria-expanded="false" aria-label="Alterna navegação">
             <span class="navbar-toggler-icon"></span>
         </button>
-        {% if request.session.business_name %}
+        {% if request.session.business_slug %}
 
-        <a class="btn mt-auto text-white  order-md-3" href="{% url 'business:detail' request.session.business.slug %}" style="background-color: #000000; width: 3rem; height: 3rem" title="Minhas compras">
-            {{ request.session.business_name }}
+        <a class="btn mt-auto text-white  order-md-3" href="{% url 'business_detail' request.session.business_slug %}" style="background-color: #000000; width: 3rem; height: 3rem" title="{{ request.session.business_slug.slug }}">
+            {{ request.session.business_slug }}
         </a>
         {% else %}
 
@@ -16,22 +16,22 @@
         {% endif %}
         <div class="collapse navbar-collapse" id="conteudoNavbarSuportado">
             <div class="row justify-content-between">
-                {% if request.session.business_name %}
+                {% if request.session.business_slug %}
 
                 <div class="col-8">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ request.session.business_name }}/#about">Sobre</a>
+                        <a class="nav-link" href="{{ request.session.business_slug }}/#about">Sobre</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ request.session.business_name }}/#services">Serviços</a>
+                        <a class="nav-link" href="{{ request.session.business_slug }}/#services">Serviços</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ request.session.business_name }}/#professional">Profissionais</a>
+                        <a class="nav-link" href="{{ request.session.business_slug }}/#professional">Profissionais</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ request.session.business_name }}/#contato">Contato</a>
+                        <a class="nav-link" href="{{ request.session.business_slug }}/#contato">Contato</a>
                     </li>
                 </ul>
                 </div>

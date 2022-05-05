@@ -19,8 +19,8 @@ class BusinessSerializer(serializers.Serializer):
                   'is_active', 'updated_by', 'updated_at', 'created_by', 'created', 'url']
 
     # def __init__(self, *args, **kwargs):
-    #     kwargs['federal_id'] = serializers.RegexField(regex='(/(^\d{3}\.\d{3}\.\d{3}\-\d{2}$)|(^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$)/$)')
-    #     super().__init__(*args, **kwargs)
+    #      kwargs['federal_id'] = serializers.RegexField(regex='(/(^\d{3}\.\d{3}\.\d{3}\-\d{2}$)|(^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$)/$)')
+    #      super().__init__(*args, **kwargs)
 
     # def title_business_serializer(self, value):
     #     """

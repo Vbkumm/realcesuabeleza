@@ -9,9 +9,9 @@ User = get_user_model()
 
 # Create your models here.
 
-
-class BusinessManager(models.Manager):
-    pass
+#
+# class BusinessManager(models.Manager):
+#     pass
 
 
 class BusinessModel(models.Model):
@@ -29,7 +29,7 @@ class BusinessModel(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
-    objects = BusinessManager()
+    #objects = BusinessManager()
 
     class Meta:
         verbose_name_plural = "business_list"

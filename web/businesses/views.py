@@ -12,7 +12,7 @@ from .serializers import (BusinessSerializer,
 class BusinessViewSet(viewsets.ViewSet):
 
     def list(self, request, *args, **kwargs):
-        businesses = BusinessModel.objects.All()
+        businesses = BusinessModel.objects.all()
         serializer = BusinessSerializer(businesses, many=True)
         return Response(serializer.data)
 

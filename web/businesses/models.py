@@ -16,6 +16,7 @@ User = get_user_model()
 
 class BusinessModel(models.Model):
     title = models.CharField(max_length=150)
+    logo_url = models.URLField(null=True)
     slug = models.CharField(unique=True, max_length=150)
     email = models.EmailField(verbose_name='business email address', max_length=255, unique=True,)
     description = models.CharField('Descrição do salão*', max_length=1000, null=True, blank=True)

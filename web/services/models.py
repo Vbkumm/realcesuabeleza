@@ -102,7 +102,7 @@ class ServiceCategoryModel(models.Model):
         super(ServiceCategoryModel, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('services:category',  kwargs={"slug": self.slug})
+        return reverse('service:category',  kwargs={"slug": self.slug})
 
 
 class ServiceQuerySet(models.QuerySet):
@@ -157,7 +157,8 @@ class ServiceModel(models.Model):
         return '%s %s %s' % (self.pk, self.title, self.business)
 
     def get_absolute_url(self):
-        return reverse('services:detail',  kwargs={"slug": self.slug})
+        business_slug = self.business.slug
+        return reverse('service_detail',  kwargs={"slug": business_slug, "service_slug": self.slug})
 
     def get_description_as_markdown(self):
         return mark_safe(markdown(self.description, safe_mode='escape'))

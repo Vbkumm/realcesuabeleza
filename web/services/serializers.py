@@ -6,35 +6,39 @@ from .models import (EquipmentModel,
                      ServiceModel)
 
 
-class EquipmentCreateSerializer(serializers.Serializer):
+class EquipmentSerializer(serializers.Serializer):
 
     class Meta:
         model = EquipmentModel
         fields = ['business', 'title', 'id', 'slug', 'description', 'addresses', 'updated_at', 'updated_by', 'created_by',  'created']
 
 
-class EquipmentAddressCreateSerializer(serializers.Serializer):
+class EquipmentAddressSerializer(serializers.Serializer):
 
     class Meta:
         model = EquipmentAddressModel
         fields = ['address', 'equipment', 'id', 'qty', 'is_active', 'updated_at', 'updated_by', 'created_by',  'created']
 
 
-class ServiceEquipmentCreateSerializer(serializers.Serializer):
+class ServiceEquipmentSerializer(serializers.Serializer):
 
     class Meta:
         model = ServiceEquipmentModel
         fields = ['service', 'equipment', 'id', 'equipment_time', 'equipment_complement', 'equipment_replaced', 'updated_at', 'updated_by', 'created_by',  'created']
 
 
-class ServiceCategoryCreateSerializer(serializers.Serializer):
+class ServiceCategorySerializer(serializers.Serializer):
 
     class Meta:
         model = ServiceCategoryModel
         fields = ['business', 'title', 'id', 'slug', 'is_active', 'updated_at', 'updated_by', 'created_by',  'created']
 
 
-class ServiceCreateSerializer(serializers.Serializer):
+class ServiceSerializer(serializers.Serializer):
+    title = serializers.CharField(max_length=150)
+    slug = serializers.CharField(max_length=150)
+    description = serializers.CharField()
+    url = serializers.CharField(source='get_absolute_url', read_only=True)
 
     class Meta:
         model = ServiceModel

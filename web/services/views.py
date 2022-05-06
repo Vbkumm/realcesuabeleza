@@ -64,6 +64,8 @@ class ServiceCategoryDetailView(DetailView):
 
 class ServiceViewSet(viewsets.ViewSet):
 
+    lookup_field = 'slug'
+
     def list(self, request, *args, **kwargs):
         service = ServiceModel.objects.all()
         serializer = ServiceSerializer(service, many=True)

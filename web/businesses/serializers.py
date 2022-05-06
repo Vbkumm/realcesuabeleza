@@ -32,6 +32,8 @@ class BusinessSerializer(serializers.Serializer):
 
 
 class BusinessAddressSerializer(serializers.Serializer):
+    street = serializers.CharField(max_length=150)
+    zip_code = serializers.CharField(max_length=150)
 
     class Meta:
         model = BusinessAddressModel

@@ -102,7 +102,8 @@ class ServiceCategoryModel(models.Model):
         super(ServiceCategoryModel, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('service:category',  kwargs={"slug": self.slug})
+        business_slug = self.business.slug
+        return reverse('service_category_detail',  kwargs={"slug": business_slug, "service_category_slug": self.slug})
 
 
 class ServiceQuerySet(models.QuerySet):

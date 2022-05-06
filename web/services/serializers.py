@@ -39,6 +39,7 @@ class EquipmentAddressSerializer(serializers.Serializer):
 class ServiceCategorySerializer(serializers.Serializer):
     title = serializers.CharField(max_length=150)
     slug = serializers.CharField(max_length=150)
+    url = serializers.CharField(source='get_absolute_url', read_only=True)
 
     class Meta:
         model = ServiceCategoryModel

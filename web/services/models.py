@@ -24,7 +24,7 @@ class EquipmentModel(models.Model):
     title = models.CharField('Tipo de equipamento*', max_length=150)
     slug = models.CharField(unique=True, max_length=150)
     description = models.CharField('Descrição*', max_length=1000, null=True, blank=True)
-    addresses = models.ManyToManyField(BusinessAddressModel, related_name='equipment_address', blank=True, through="EquipmentAddressModel")
+    addresses = models.ManyToManyField(BusinessAddressModel, related_name='equipment_through_address', blank=True, through="EquipmentAddressModel")
 
     updated_at = models.DateTimeField(null=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)

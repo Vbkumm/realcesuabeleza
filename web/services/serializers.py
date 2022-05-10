@@ -6,7 +6,18 @@ from .models import (EquipmentModel,
                      ServiceModel)
 
 
+class EquipmentAddressSerializer(serializers.Serializer):
+    address = serializers.StringRelatedField(many=False)
+    qty = serializers.CharField()
+
+    class Meta:
+        model = EquipmentAddressModel
+        fields = ['address', 'equipment', 'id', 'qty', 'is_active', 'updated_at', 'updated_by', 'created_by',  'created']
+        depth = 1
+
+
 class ServiceEquipmentSerializer(serializers.Serializer):
+
     equipment_time = serializers.CharField(max_length=150)
     equipment_complement = serializers.BooleanField(required=False)#se complementa algum equipamento para realizacao do servico
     equipment_replaced = serializers.StringRelatedField(many=False)#se junto com a aterior indica equipamento q ele complenta para realizar o servico, se sozinha equipamento substitui o principal
@@ -19,21 +30,12 @@ class ServiceEquipmentSerializer(serializers.Serializer):
 class EquipmentSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=150)
     slug = serializers.CharField(max_length=150)
+    equipment = ServiceEquipmentSerializer(many=True)
+    addresses = EquipmentAddressSerializer(source='equipment_address', many=True)
 
     class Meta:
         model = EquipmentModel
         fields = ['business', 'title', 'id', 'slug', 'description', 'addresses', 'updated_at', 'updated_by', 'created_by',  'created']
-
-
-class EquipmentAddressSerializer(serializers.Serializer):
-    CHOICES = EquipmentAddressModel.CHOICES
-    equipment = EquipmentSerializer(many=False)
-    address = serializers.StringRelatedField(many=False)
-    qty = serializers.ChoiceField(choices=CHOICES, default=1)
-
-    class Meta:
-        model = EquipmentAddressModel
-        fields = ['address', 'equipment', 'id', 'qty', 'is_active', 'updated_at', 'updated_by', 'created_by',  'created']
 
 
 class ServiceCategorySerializer(serializers.Serializer):

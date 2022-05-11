@@ -18,7 +18,8 @@ from .serializers import (ServiceCategorySerializer,
 class ServiceCategoryViewSet(viewsets.ViewSet):
 
     def list(self, request, *args, **kwargs):
-        service_category = ServiceCategoryModel.objects.all()
+        business = self.kwargs['slug']
+        service_category = ServiceCategoryModel.objects.filter(business__slug=business)
         serializer = ServiceCategorySerializer(service_category, many=True)
         return Response(serializer.data)
 
@@ -30,19 +31,19 @@ class ServiceCategoryViewSet(viewsets.ViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, *args, **kwargs):
-        service_category = ServiceCategoryModel.objects.get(slug=kwargs['slug'])
+        service_category = ServiceCategoryModel.objects.get(slug=kwargs['service_category_slug'])
         serializer = ServiceCategorySerializer(instance=service_category)
         return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
-        service_category = ServiceCategoryModel.objects.get(slug=kwargs['slug'])
+        service_category = ServiceCategoryModel.objects.get(slug=kwargs['service_category_slug'])
         serializer = ServiceCategorySerializer(instance=service_category, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
     def destroy(self, request, *args, **kwargs):
-        service_category = ServiceCategoryModel.objects.get(slug=kwargs['slug'])
+        service_category = ServiceCategoryModel.objects.get(slug=kwargs['service_category_slug'])
         service_category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -67,7 +68,8 @@ class ServiceViewSet(viewsets.ViewSet):
     lookup_field = 'slug'
 
     def list(self, request, *args, **kwargs):
-        service = ServiceModel.objects.all()
+        business = self.kwargs['slug']
+        service = ServiceModel.objects.filter(business__slug=business)
         serializer = ServiceSerializer(service, many=True)
         return Response(serializer.data)
 
@@ -79,19 +81,19 @@ class ServiceViewSet(viewsets.ViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, *args, **kwargs):
-        service = ServiceModel.objects.get(slug=kwargs['slug'])
+        service = ServiceModel.objects.get(slug=kwargs['service_slug'])
         serializer = ServiceSerializer(instance=service)
         return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
-        service = ServiceModel.objects.get(slug=kwargs['slug'])
+        service = ServiceModel.objects.get(slug=kwargs['service_slug'])
         serializer = ServiceSerializer(instance=service, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
     def destroy(self, request, *args, **kwargs):
-        service = ServiceModel.objects.get(slug=kwargs['slug'])
+        service = ServiceModel.objects.get(slug=kwargs['service_slug'])
         service.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -114,7 +116,8 @@ class ServiceDetailView(DetailView):
 class EquipmentViewSet(viewsets.ViewSet):
 
     def list(self, request, *args, **kwargs):
-        equipment = EquipmentModel.objects.all()
+        business = self.kwargs['slug']
+        equipment = EquipmentModel.objects.filter(business__slug=business)
         serializer = EquipmentSerializer(equipment, many=True)
         return Response(serializer.data)
 
@@ -126,19 +129,19 @@ class EquipmentViewSet(viewsets.ViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, *args, **kwargs):
-        equipment = EquipmentModel.objects.get(slug=kwargs['slug'])
+        equipment = EquipmentModel.objects.get(slug=kwargs['equipment_slug'])
         serializer = EquipmentSerializer(instance=equipment)
         return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
-        equipment = EquipmentModel.objects.get(slug=kwargs['slug'])
+        equipment = EquipmentModel.objects.get(slug=kwargs['equipment_slug'])
         serializer = EquipmentSerializer(instance=equipment, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
     def destroy(self, request, *args, **kwargs):
-        equipment = EquipmentModel.objects.get(slug=kwargs['slug'])
+        equipment = EquipmentModel.objects.get(slug=kwargs['equipment_slug'])
         equipment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

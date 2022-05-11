@@ -12,7 +12,6 @@ from .models import (ProfessionalModel,
                      CloseScheduleModel,
                      )
 from services.serializers import ServiceCategorySerializer
-from businesses.serializers import BusinessAddressSerializer
 
 
 class ProfessionalServiceCategorySerializer(serializers.Serializer):
@@ -57,10 +56,34 @@ class ProfessionalNoSkillSerializer(serializers.Serializer):
 
 class ProfessionalExtraSkillSerializer(serializers.Serializer):
     service = serializers.StringRelatedField(many=False)
-    
+
     class Meta:
         model = ProfessionalExtraSkillModel
         fields = ['service', 'professional', 'created_by',  'created']
+
+
+class ProfessionalPhoneSerializer(serializers.Serializer):
+
+    phone = serializers.CharField(max_length=150)
+
+    class Meta:
+        model = ProfessionalPhoneModel
+        fields = ['professional', 'phone', 'id', 'is_active', 'updated_at', 'updated_by', 'created_by',
+                  'created']
+
+
+class ProfessionalAddressSerializer(serializers.Serializer):
+    zip_code = serializers.CharField(max_length=150)
+    street = serializers.CharField(max_length=150)
+    street_number = serializers.CharField(max_length=150)
+    district = serializers.CharField(max_length=150)
+    city = serializers.CharField(max_length=150)
+    state = serializers.CharField(max_length=150)
+    
+    class Meta:
+        model = ProfessionalAddressModel
+        fields = ['professional', 'id', 'is_active', 'zip_code', 'street', 'street_number',
+                  'district', 'city', 'state', 'updated_at', 'updated_by', 'created_by',  'created']
 
 
 class ProfessionalSerializer(serializers.Serializer):
@@ -74,6 +97,8 @@ class ProfessionalSerializer(serializers.Serializer):
     addresses = ProfessionalScheduleSerializer(source='professional_schedule', many=True)
     extra_skills = ProfessionalExtraSkillSerializer(source='professional_extra_skill_set', many=True)
     no_skills = ProfessionalNoSkillSerializer(source='professional_no_skill_set', many=True)
+    phones = ProfessionalPhoneSerializer(source='professional_phone', many=True, read_only=True)
+    home_addresses = ProfessionalAddressSerializer(source='professional_address', many=True, read_only=True)
 
     url = serializers.CharField(source='get_absolute_url', read_only=True)
 
@@ -82,14 +107,6 @@ class ProfessionalSerializer(serializers.Serializer):
         fields = ['business', 'began_date', 'name', 'id', 'is_active', 'birth_date', 'federal_id', 'slug',
                   'category', 'schedule_active', 'cancel_schedule_active', 'addresses', 'extra_skills',
                   'no_skills','_views', 'updated_at', 'updated_by', 'created_by',  'created']
-
-
-class ProfessionalPhoneSerializer(serializers.Serializer):
-
-    class Meta:
-        model = ProfessionalPhoneModel
-        fields = ['professional', 'phone', 'id', 'is_active', 'updated_at', 'updated_by', 'created_by',
-                  'created']
 
 
 class ProfessionalUserSerializer(serializers.Serializer):

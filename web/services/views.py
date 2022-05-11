@@ -159,3 +159,50 @@ class EquipmentDetailView(DetailView):
         self.request.session['equipment_title'] = self.object.title
 
         return context
+
+
+class ServiceEquipmentViewSet(viewsets.ViewSet):
+
+    def list(self, request, *args, **kwargs):
+        business = self.kwargs['slug']
+        service_equipment = ServiceEquipmentModel.objects.filter(service__business__slug=business)
+        serializer = ServiceEquipmentSerializer(service_equipment, many=True)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        serializer = ServiceEquipmentModel(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def retrieve(self, request, *args, **kwargs):
+        service_equipment = ServiceEquipmentModel.objects.get(pk=kwargs['pk'])
+        serializer = ServiceEquipmentSerializer(instance=service_equipment)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        service_equipment = ServiceEquipmentModel.objects.get(pk=kwargs['pk'])
+        serializer = ServiceEquipmentSerializer(instance=service_equipment, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+    def destroy(self, request, *args, **kwargs):
+        service_equipment = ServiceEquipmentModel.objects.get(pk=kwargs['pk'])
+        service_equipment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ServiceEquipmentDetailView(DetailView):
+    model = ServiceEquipmentModel
+    template_name = 'services/service_equipment_detail.html'
+    pk_url_kwarg = 'pk'
+    context_object_name = 'service_equipment'
+
+    def get_context_data(self, **kwargs):
+        context = super(ServiceEquipmentDetailView, self).get_context_data(**kwargs)
+
+        self.request.session['service_equipment_time'] = self.object.equipment_time
+
+        return context

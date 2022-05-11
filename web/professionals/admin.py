@@ -63,6 +63,7 @@ class ProfessionalScheduleAdmin(admin.StackedInline):
     extra = 0
     fieldsets = [
         (None,               {'fields': ['professional']}),
+        (None,               {'fields': ['address']}),
         (None,               {'fields': ['week_days']}),
         (None,               {'fields': ['start_hour']}),
         (None,               {'fields': ['end_hour']}),

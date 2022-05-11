@@ -11,9 +11,71 @@ from .models import (ProfessionalModel,
                      OpenScheduleModel,
                      CloseScheduleModel,
                      )
+from services.serializers import ServiceCategorySerializer
+from businesses.serializers import BusinessAddressSerializer
 
 
-class ProfessionalCreateSerializer(serializers.Serializer):
+class ProfessionalServiceCategorySerializer(serializers.Serializer):
+    service_category = ServiceCategorySerializer(many=False, read_only=True)
+
+    class Meta:
+        model = ProfessionalServiceCategoryModel
+        fields = ['service_category', 'professional_category', 'created_by',  'created']
+
+
+class ProfessionalCategorySerializer(serializers.Serializer):
+    title = serializers.CharField(max_length=150)
+    slug = serializers.CharField(max_length=150)
+    url = serializers.CharField(source='get_absolute_url', read_only=True)
+    service_category = ProfessionalServiceCategorySerializer(source='professional_category_set', many=True)
+
+    class Meta:
+        model = ProfessionalCategoryModel
+        fields = ['business', 'title', 'id', 'is_active', 'birth_date', 'service_category', 'updated_at', 'updated_by',
+                  'created_by',  'created']
+
+
+class ProfessionalScheduleSerializer(serializers.Serializer):
+    address = serializers.StringRelatedField(many=False)
+    week_days = serializers.IntegerField()
+    start_hour = serializers.TimeField()
+    end_hour = serializers.TimeField()
+
+    class Meta:
+        model = ProfessionalScheduleModel
+        fields = ['id', 'address', 'professional', 'week_days', 'start_hour', 'end_hour', 'fraction_time',
+                  'updated_at', 'updated_by', 'created_by',  'created']
+
+
+class ProfessionalNoSkillSerializer(serializers.Serializer):
+    service = serializers.StringRelatedField(many=False)
+
+    class Meta:
+        model = ProfessionalNoSkillModel
+        fields = ['service', 'professional', 'created_by',  'created']
+
+
+class ProfessionalExtraSkillSerializer(serializers.Serializer):
+    service = serializers.StringRelatedField(many=False)
+    
+    class Meta:
+        model = ProfessionalExtraSkillModel
+        fields = ['service', 'professional', 'created_by',  'created']
+
+
+class ProfessionalSerializer(serializers.Serializer):
+    business = serializers.StringRelatedField(many=False)
+    category = ProfessionalCategorySerializer(many=True, read_only=True)
+    name = serializers.CharField(max_length=150)
+    slug = serializers.CharField(max_length=150)
+    federal_id = serializers.CharField()
+    schedule_active = serializers.BooleanField()
+    cancel_schedule_active = serializers.BooleanField()
+    addresses = ProfessionalScheduleSerializer(source='professional_schedule', many=True)
+    extra_skills = ProfessionalExtraSkillSerializer(source='professional_extra_skill_set', many=True)
+    no_skills = ProfessionalNoSkillSerializer(source='professional_no_skill_set', many=True)
+
+    url = serializers.CharField(source='get_absolute_url', read_only=True)
 
     class Meta:
         model = ProfessionalModel
@@ -22,15 +84,7 @@ class ProfessionalCreateSerializer(serializers.Serializer):
                   'no_skills','_views', 'updated_at', 'updated_by', 'created_by',  'created']
 
 
-class ProfessionalCategorySerializer(serializers.Serializer):
-
-    class Meta:
-        model = ProfessionalCategoryModel
-        fields = ['business', 'title', 'id', 'is_active', 'birth_date', 'updated_at', 'updated_by',
-                  'created_by',  'created']
-
-
-class ProfessionalPhoneModelCreateSerializer(serializers.Serializer):
+class ProfessionalPhoneSerializer(serializers.Serializer):
 
     class Meta:
         model = ProfessionalPhoneModel
@@ -38,14 +92,14 @@ class ProfessionalPhoneModelCreateSerializer(serializers.Serializer):
                   'created']
 
 
-class ProfessionalUserCreateSerializer(serializers.Serializer):
+class ProfessionalUserSerializer(serializers.Serializer):
 
     class Meta:
         model = ProfessionalUserModel
         fields = ['user', 'professional', 'updated_at', 'updated_by', 'created_by',  'created']
 
 
-class ProfessionalAddressModelSerializer(serializers.Serializer):
+class ProfessionalAddressSerializer(serializers.Serializer):
 
     class Meta:
         model = ProfessionalAddressModel
@@ -53,36 +107,7 @@ class ProfessionalAddressModelSerializer(serializers.Serializer):
                   'district', 'city', 'state', 'updated_at', 'updated_by', 'created_by',  'created']
 
 
-class ProfessionalScheduleModelCreateSerializer(serializers.Serializer):
-
-    class Meta:
-        model = ProfessionalScheduleModel
-        fields = ['id', 'address', 'professional', 'week_days', 'start_hour', 'end_hour', 'fraction_time',
-                  'updated_at', 'updated_by', 'created_by',  'created']
-
-
-class ProfessionalNoSkillCreateSerializer(serializers.Serializer):
-
-    class Meta:
-        model = ProfessionalNoSkillModel
-        fields = ['service', 'professional', 'created_by',  'created']
-
-
-class ProfessionalExtraSkillCreateSerializer(serializers.Serializer):
-
-    class Meta:
-        model = ProfessionalExtraSkillModel
-        fields = ['service', 'professional', 'created_by',  'created']
-
-
-class ProfessionalServiceCategoryCreateSerializer(serializers.Serializer):
-
-    class Meta:
-        model = ProfessionalServiceCategoryModel
-        fields = ['service_category', 'professional_category', 'created_by',  'created']
-
-
-class OpenScheduleCreateSerializer(serializers.Serializer):
+class OpenScheduleSerializer(serializers.Serializer):
 
     class Meta:
         model = OpenScheduleModel
@@ -90,7 +115,7 @@ class OpenScheduleCreateSerializer(serializers.Serializer):
                   'professionals', 'description', 'updated_at', 'updated_by', 'created_by',  'created']
 
 
-class CloseScheduleCreateSerializer(serializers.Serializer):
+class CloseScheduleSerializer(serializers.Serializer):
 
     class Meta:
         model = CloseScheduleModel

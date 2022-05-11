@@ -52,7 +52,7 @@ class ServiceCategoryDetailView(DetailView):
     model = ServiceCategoryModel
     template_name = 'services/service_category_detail.html'
     slug_url_kwarg = 'service_category_slug'
-    context_object_name = 'service_category'
+    #context_object_name = 'service_category'
 
     def get_context_data(self, **kwargs):
         context = super(ServiceCategoryDetailView, self).get_context_data(**kwargs)
@@ -102,7 +102,7 @@ class ServiceDetailView(DetailView):
     model = ServiceModel
     template_name = 'services/service_detail.html'
     slug_url_kwarg = 'service_slug'
-    context_object_name = 'service'
+    #context_object_name = 'service'
 
     def get_context_data(self, **kwargs):
         context = super(ServiceDetailView, self).get_context_data(**kwargs)
@@ -150,7 +150,7 @@ class EquipmentDetailView(DetailView):
     model = EquipmentModel
     template_name = 'services/equipment_detail.html'
     slug_url_kwarg = 'equipment_slug'
-    context_object_name = 'equipment'
+    #context_object_name = 'equipment'
 
     def get_context_data(self, **kwargs):
         context = super(EquipmentDetailView, self).get_context_data(**kwargs)
@@ -198,11 +198,58 @@ class ServiceEquipmentDetailView(DetailView):
     model = ServiceEquipmentModel
     template_name = 'services/service_equipment_detail.html'
     pk_url_kwarg = 'pk'
-    context_object_name = 'service_equipment'
+    #context_object_name = 'service_equipment'
 
     def get_context_data(self, **kwargs):
         context = super(ServiceEquipmentDetailView, self).get_context_data(**kwargs)
 
         self.request.session['service_equipment_time'] = self.object.equipment_time
+
+        return context
+
+
+class EquipmentAddressViewSet(viewsets.ViewSet):
+
+    def list(self, request, *args, **kwargs):
+        business = self.kwargs['slug']
+        equipment_address = EquipmentAddressModel.objects.filter(address__business__slug=business)
+        serializer = EquipmentAddressSerializer(equipment_address, many=True)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        serializer = EquipmentAddressModel(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def retrieve(self, request, *args, **kwargs):
+        equipment_address = EquipmentAddressModel.objects.get(pk=kwargs['pk'])
+        serializer = EquipmentAddressSerializer(instance=equipment_address)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        equipment_address = EquipmentAddressModel.objects.get(pk=kwargs['pk'])
+        serializer = EquipmentAddressSerializer(instance=equipment_address, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+    def destroy(self, request, *args, **kwargs):
+        equipment_address = EquipmentAddressModel.objects.get(pk=kwargs['pk'])
+        equipment_address.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class EquipmentAddressDetailView(DetailView):
+    model = EquipmentAddressModel
+    template_name = 'services/equipment_address_detail.html'
+    pk_url_kwarg = 'pk'
+    #context_object_name = 'equipment_address'
+
+    def get_context_data(self, **kwargs):
+        context = super(EquipmentAddressDetailView, self).get_context_data(**kwargs)
+
+        self.request.session['equipment_address'] = self.object.address
 
         return context

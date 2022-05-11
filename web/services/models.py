@@ -76,6 +76,10 @@ class EquipmentAddressModel(models.Model):
 
         return '%s %s %s' % (self.equipment, self.qty, self.address)
 
+    def get_absolute_url(self):
+        business_slug = self.address.business.slug
+        return reverse('equipment_address_detail',  kwargs={"slug": business_slug, "pk": self.pk})
+
 
 class ServiceCategoryModel(models.Model):
     """
@@ -198,6 +202,10 @@ class ServiceEquipmentModel(models.Model):
 
     def __str__(self):
         return '%s %s %s %s %s' % (self.service, self.equipment, self.equipment_time, self.equipment_complement, self.equipment_replaced)
+
+    def get_absolute_url(self):
+        business_slug = self.service.business.slug
+        return reverse('service_equipment_detail',  kwargs={"slug": business_slug, "pk": self.pk})
 
     def get_equipments_by_service(self, service):
         return self.objects.get_queryset(service=service)

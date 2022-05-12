@@ -74,7 +74,6 @@ class ProfessionalDetailView(DetailView):
         return context
 
 
-
 class ProfessionalCategoryViewSet(viewsets.ViewSet):
 
     def list(self, request, *args, **kwargs):

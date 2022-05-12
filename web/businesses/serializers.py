@@ -34,6 +34,7 @@ class BusinessSerializer(serializers.Serializer):
     federal_id = serializers.CharField(max_length=15,)
     description = serializers.CharField()
     owners = CustomUserSerializer(read_only=True, many=True) # serializers.SerializerMethodField(read_only=True)
+    users = CustomUserSerializer(read_only=True, many=True) # serializers.SerializerMethodField(read_only=True)
     url = serializers.CharField(source='get_absolute_url', read_only=True)
     addresses = BusinessAddressSerializer(source='business', many=True, read_only=True)
 

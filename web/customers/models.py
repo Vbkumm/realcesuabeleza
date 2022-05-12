@@ -38,7 +38,8 @@ class CustomerModel(models.Model):
         return '%s %s %s' % (self.pk, self.name, self.business)
 
     def get_absolute_url(self):
-        return reverse('customer:detail', kwargs={'pk': self.pk})
+
+        return reverse('customer_detail', kwargs={"slug": self.business.slug, 'pk': self.pk})
 
     def get_customer_by_business(self, business):
         return self.objects.get_queryset(business=business)

@@ -79,17 +79,53 @@ class ProfessionalAddressSerializer(serializers.Serializer):
     district = serializers.CharField(max_length=150)
     city = serializers.CharField(max_length=150)
     state = serializers.CharField(max_length=150)
-    
+
     class Meta:
         model = ProfessionalAddressModel
         fields = ['professional', 'id', 'is_active', 'zip_code', 'street', 'street_number',
                   'district', 'city', 'state', 'updated_at', 'updated_by', 'created_by',  'created']
 
 
+class ProfessionalUserSerializer(serializers.Serializer):
+    user = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
+
+    class Meta:
+        model = ProfessionalUserModel
+        fields = ['user', 'professional', 'updated_at', 'updated_by', 'created_by',  'created']
+
+
+class OpenScheduleSerializer(serializers.Serializer):
+    start_date = serializers.DateField()
+    end_date = serializers.DateField()
+    start_hour = serializers.TimeField()
+    end_hour = serializers.TimeField()
+    fraction_time = serializers.IntegerField()
+    description = serializers.CharField()
+
+    class Meta:
+        model = OpenScheduleModel
+        fields = ['id', 'business', 'address', 'start_date', 'end_date', 'start_hour', 'end_hour', 'fraction_time',
+                  'professionals', 'description', 'updated_at', 'updated_by', 'created_by',  'created']
+
+
+class CloseScheduleSerializer(serializers.Serializer):
+    start_date = serializers.DateField()
+    end_date = serializers.DateField()
+    start_hour = serializers.TimeField()
+    end_hour = serializers.TimeField()
+    description = serializers.CharField()
+
+    class Meta:
+        model = CloseScheduleModel
+        fields = ['id', 'business', 'address', 'start_date', 'end_date', 'start_hour', 'end_hour', 'fraction_time',
+                  'professionals', 'description', 'updated_at', 'updated_by', 'created_by',  'created']
+
+
 class ProfessionalSerializer(serializers.Serializer):
     business = serializers.StringRelatedField(many=False)
     category = ProfessionalCategorySerializer(many=True, read_only=True)
     name = serializers.CharField(max_length=150)
+    user = ProfessionalUserSerializer(source='professional_user', many=False, read_only=True)
     slug = serializers.CharField(max_length=150)
     federal_id = serializers.CharField()
     schedule_active = serializers.BooleanField()
@@ -99,6 +135,8 @@ class ProfessionalSerializer(serializers.Serializer):
     no_skills = ProfessionalNoSkillSerializer(source='professional_no_skill_set', many=True)
     phones = ProfessionalPhoneSerializer(source='professional_phone', many=True, read_only=True)
     home_addresses = ProfessionalAddressSerializer(source='professional_address', many=True, read_only=True)
+    open_schedule = OpenScheduleSerializer(source='open_professionals', many=True, read_only=True)
+    close_schedule = CloseScheduleSerializer(source='close_professionals', many=True, read_only=True)
 
     url = serializers.CharField(source='get_absolute_url', read_only=True)
 
@@ -108,33 +146,3 @@ class ProfessionalSerializer(serializers.Serializer):
                   'category', 'schedule_active', 'cancel_schedule_active', 'addresses', 'extra_skills',
                   'no_skills','_views', 'updated_at', 'updated_by', 'created_by',  'created']
 
-
-class ProfessionalUserSerializer(serializers.Serializer):
-
-    class Meta:
-        model = ProfessionalUserModel
-        fields = ['user', 'professional', 'updated_at', 'updated_by', 'created_by',  'created']
-
-
-class ProfessionalAddressSerializer(serializers.Serializer):
-
-    class Meta:
-        model = ProfessionalAddressModel
-        fields = ['professional', 'id', 'is_active', 'zip_code', 'street', 'street_number',
-                  'district', 'city', 'state', 'updated_at', 'updated_by', 'created_by',  'created']
-
-
-class OpenScheduleSerializer(serializers.Serializer):
-
-    class Meta:
-        model = OpenScheduleModel
-        fields = ['id', 'business', 'address', 'start_date', 'end_date', 'start_hour', 'end_hour', 'fraction_time',
-                  'professionals', 'description', 'updated_at', 'updated_by', 'created_by',  'created']
-
-
-class CloseScheduleSerializer(serializers.Serializer):
-
-    class Meta:
-        model = CloseScheduleModel
-        fields = ['id', 'business', 'address', 'start_date', 'end_date', 'start_hour', 'end_hour', 'fraction_time',
-                  'professionals', 'description', 'updated_at', 'updated_by', 'created_by',  'created']

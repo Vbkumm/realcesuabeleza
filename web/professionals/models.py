@@ -428,7 +428,7 @@ class CloseScheduleModel(models.Model):
     end_date = models.DateField('Qual data final para fechar a agenda?', auto_now=False, auto_now_add=False, validators=[validate_date],)
     start_hour = models.TimeField('Qual horário inicial para fechar a agenda?', auto_now=False, auto_now_add=False, default=time(00, 00))
     end_hour = models.TimeField('Qual horário final para fechar a agenda?', auto_now=False, auto_now_add=False, default=time(00, 00))
-    professionals = models.ManyToManyField(ProfessionalModel, related_name='close_professional', blank=True)
+    professionals = models.ManyToManyField(ProfessionalModel, related_name='close_professionals', blank=True)
     description = models.CharField('Observações:', max_length=1000, null=True, blank=True)
 
     updated_at = models.DateTimeField(null=True, blank=True)

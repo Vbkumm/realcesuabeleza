@@ -1,8 +1,31 @@
 from rest_framework import serializers
-from accounts.serializers import PublicCustomUserSerializer
+from accounts.serializers import CustomUserSerializer
 from .models import (BusinessModel,
                      BusinessAddressModel,
                      BusinessPhoneModel,)
+
+
+class BusinessPhoneSerializer(serializers.Serializer):
+    phone = serializers.CharField(max_length=150)
+
+    class Meta:
+        model = BusinessPhoneModel
+        fields = ['address', 'id', 'is_active', 'phone', 'updated_by', 'updated_at', 'created_by', 'created',]
+
+
+class BusinessAddressSerializer(serializers.Serializer):
+    zip_code = serializers.CharField(max_length=150)
+    street = serializers.CharField(max_length=150)
+    street_number = serializers.CharField(max_length=150)
+    district = serializers.CharField(max_length=150)
+    city = serializers.CharField(max_length=150)
+    state = serializers.CharField(max_length=150)
+    phones = BusinessPhoneSerializer(source='business_address_phone', many=True, read_only=True)
+
+    class Meta:
+        model = BusinessAddressModel
+        fields = ['business', 'id', 'is_active', 'zip_code', 'street',  'street_number', 'district', 'city', 'state',
+                  'updated_by', 'updated_at', 'created_by', 'created',]
 
 
 class BusinessSerializer(serializers.Serializer):
@@ -10,8 +33,9 @@ class BusinessSerializer(serializers.Serializer):
     slug = serializers.CharField(max_length=150)
     federal_id = serializers.CharField(max_length=15,)
     description = serializers.CharField()
-    owners = PublicCustomUserSerializer(source='user.CustomUserModel', read_only=True) # serializers.SerializerMethodField(read_only=True)
+    owners = CustomUserSerializer(read_only=True, many=True) # serializers.SerializerMethodField(read_only=True)
     url = serializers.CharField(source='get_absolute_url', read_only=True)
+    addresses = BusinessAddressSerializer(source='business', many=True, read_only=True)
 
     class Meta:
         model = BusinessModel
@@ -30,19 +54,7 @@ class BusinessSerializer(serializers.Serializer):
     #         raise serializers.ValidationError("Ups erro!")
     #     return value
 
-
-class BusinessAddressSerializer(serializers.Serializer):
-    street = serializers.CharField(max_length=150)
-    zip_code = serializers.CharField(max_length=150)
-
-    class Meta:
-        model = BusinessAddressModel
-        fields = ['business', 'id', 'is_active', 'zip_code', 'street',  'street_number', 'district', 'city', 'state',
-                  'updated_by', 'updated_at', 'created_by', 'created',]
-
-
-class BusinessPhoneSerializer(serializers.Serializer):
-
-    class Meta:
-        model = BusinessPhoneModel
-        fields = ['address', 'id', 'is_active', 'phone', 'updated_by', 'updated_at', 'created_by', 'created',]
+        # user = None
+        # request = self.context.get("request")
+        # if request and hasattr(request, "user"):
+        #     user = request.user

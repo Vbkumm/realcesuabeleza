@@ -1,28 +1,19 @@
 from rest_framework import serializers
+from django.contrib.auth import get_user_model
 
-from .models import CustomUserModel
+User = get_user_model()
 
 
-class PublicCustomUserSerializer(serializers.ModelSerializer):
-    first_name = serializers.SerializerMethodField(read_only=True)
-    last_name = serializers.SerializerMethodField(read_only=True)
-    federal_id = serializers.SerializerMethodField(read_only=True)
-    email = serializers.SerializerMethodField(read_only=True)
-    phone = serializers.SerializerMethodField(read_only=True)
+class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = CustomUserModel
+        model = User
         fields = [
             "first_name",
             "last_name",
             "id",
             "federal_id",
+            "email",
             "phone",
-
         ]
 
-    def get_first_name(self, obj):
-        return obj.user.first_name
-
-    def get_last_name(self, obj):
-        return obj.user.last_name

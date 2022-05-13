@@ -8,10 +8,10 @@ urlpatterns = [
         'get': 'list',
         'post': 'create'
     })),
-    path('<str:slug>/customer/api/<pk>/', CustomerViewSet.as_view({
+    path('<str:slug>/customer/api/<int:pk>/', CustomerViewSet.as_view({
         'get': 'retrieve',
         'put': 'update',
         'delete': 'destroy'
     })),
-    path('<str:slug>/customer/<pk>/', CustomerDetailView.as_view(), name='customer_detail'),
+    path('<str:slug>/customer/<int:pk>/', CustomerDetailView.as_view(), name='customer_detail'),
 ]

@@ -18,9 +18,10 @@
     <link rel="stylesheet" href="{% static 'bin/fontawesome-free-5.15.4-web/css/all.css' %}">
     <link rel="stylesheet" href="{% static 'bin/fontawesome-free-5.15.4-web/css/v4-shims.css' %}">
 
-
+    {% if request.get_full_path == "/" %}
     <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
     <link rel=icon href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+    {% endif %}
 
     <title>{% block head_title %}Faça parte dessa comunidade empreendedora,{% endblock %} App da Beleza</title>
 

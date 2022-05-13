@@ -52,23 +52,23 @@ urlpatterns = [
         'get': 'list',
         'post': 'create'
     })),
-    path('<str:slug>/service_equipment/api/<pk>/', ServiceEquipmentViewSet.as_view({
+    path('<str:slug>/service_equipment/api/<int:pk>/', ServiceEquipmentViewSet.as_view({
         'get': 'retrieve',
         'put': 'update',
         'delete': 'destroy'
     })),
-    path('<str:slug>/service_equipment/<pk>/', ServiceEquipmentDetailView.as_view(), name='service_equipment_detail'),
+    path('<str:slug>/service_equipment/<int:pk>/', ServiceEquipmentDetailView.as_view(), name='service_equipment_detail'),
 
 
     path('<str:slug>/equipment_address/api/', EquipmentAddressViewSet.as_view({
         'get': 'list',
         'post': 'create'
     })),
-    path('<str:slug>/equipment_address/api/<pk>/', EquipmentAddressViewSet.as_view({
+    path('<str:slug>/equipment_address/api/<int:pk>/', EquipmentAddressViewSet.as_view({
         'get': 'retrieve',
         'put': 'update',
         'delete': 'destroy'
     })),
-    path('<str:slug>/equipment_address/<pk>/', EquipmentAddressDetailView.as_view(), name='equipment_address_detail'),
+    path('<str:slug>/equipment_address/<int:pk>/', EquipmentAddressDetailView.as_view(), name='equipment_address_detail'),
 
 ]

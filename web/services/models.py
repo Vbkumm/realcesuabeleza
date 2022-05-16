@@ -81,6 +81,11 @@ class EquipmentAddressModel(models.Model):
         return reverse('equipment_address_detail',  kwargs={"slug": business_slug, "pk": self.pk})
 
 
+class ServiceCategoryManager(models.Manager):
+
+    pass
+
+
 class ServiceCategoryModel(models.Model):
     """
     Categoria de serviços fica relacionada a categoria de profissional que a executa e ao salão
@@ -95,6 +100,8 @@ class ServiceCategoryModel(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
+    objects = ServiceCategoryManager()
+
     class Meta:
         verbose_name_plural = "service_category_list"
 
@@ -108,6 +115,10 @@ class ServiceCategoryModel(models.Model):
     def get_absolute_url(self):
         business_slug = self.business.slug
         return reverse('service_category_detail',  kwargs={"slug": business_slug, "service_category_slug": self.slug})
+
+
+def get_categories_by_business(business=None):
+    return ServiceCategoryModel.objects.filter(business=business, is_active=True)
 
 
 class ServiceQuerySet(models.QuerySet):

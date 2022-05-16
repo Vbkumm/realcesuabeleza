@@ -1,5 +1,8 @@
 from django.urls import path
-from .views import BusinessViewSet, BusinessDetailView
+from .views import (BusinessViewSet,
+                    BusinessDetailView,
+                    BusinessAddressDetailView,
+                    )
 
 
 urlpatterns = [
@@ -13,5 +16,6 @@ urlpatterns = [
         'delete': 'destroy'
     })),
     path('<str:slug>/', BusinessDetailView.as_view(), name='business_detail'),
+    path('<str:slug>/address/<int:pk>', BusinessAddressDetailView.as_view(), name='business_address_detail'),
 
 ]

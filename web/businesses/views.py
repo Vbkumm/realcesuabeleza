@@ -5,10 +5,14 @@ from django.views.generic import ListView, DetailView, DeleteView, UpdateView
 
 from .models import (BusinessModel,
                      BusinessAddressModel,
-                     BusinessPhoneModel)
+                     BusinessPhoneModel,
+                     get_phones_by_addresses_by_business)
 from .serializers import (BusinessSerializer,
                           BusinessAddressSerializer,
                           BusinessPhoneSerializer)
+from services.models import get_categories_by_business
+from professionals.models import get_professionals_by_business
+
 
 
 class BusinessViewSet(viewsets.ViewSet):
@@ -51,7 +55,9 @@ class BusinessDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(BusinessDetailView, self).get_context_data(**kwargs)
-
+        context['services_categories'] = get_categories_by_business(business=self.object)
+        context['professional_list'] = get_professionals_by_business(business=self.object)
+        context['phone_and_address_list'] = get_phones_by_addresses_by_business(business=self.object)
         self.request.session['business_slug'] = self.object.slug
         self.request.session['business_title'] = self.object.title
         self.request.session['business_logo'] = self.object.logo_url
@@ -89,6 +95,13 @@ class BusinessAddressViewSet(viewsets.ViewSet):
         business_address = BusinessAddressModel.objects.get(id=kwargs['pk'])
         business_address.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class BusinessAddressDetailView(DetailView):
+    model = BusinessModel
+    template_name = 'businesses/business_address_detail.html'
+    pk_url_kwarg = 'pk'
+    #context_object_name = 'business_address'
 
 
 class BusinessPhoneViewSet(viewsets.ViewSet):

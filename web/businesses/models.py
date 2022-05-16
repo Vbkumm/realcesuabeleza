@@ -82,7 +82,11 @@ class BusinessAddressModel(models.Model):
         return self.objects.get_queryset(business=business)
 
     def get_absolute_url(self):
-        return reverse("businesses:business_address_detail", kwargs={"pk": self.pk})
+        return reverse("business_address_detail", kwargs={"slug": self.business, "pk": self.pk})
+
+
+def get_addresses_by_business(business=None):
+    return BusinessAddressModel.objects.filter(business=business, is_active=True)
 
 
 class BusinessPhoneModel(models.Model):
@@ -102,8 +106,39 @@ class BusinessPhoneModel(models.Model):
     def __str__(self):
         return '%s %s' % (self.address, self.phone)
 
-    def get_phone_by_address(self, address):
-        return self.objects.get_queryset(address=address)
+    def save(self, *args, **kwargs):
+        numeric_filter = filter(str.isdigit, self.phone)
+        numeric_string = "".join(numeric_filter)
+        self.phone = numeric_string
+        super(BusinessPhoneModel, self).save(*args, **kwargs)
+
+    def get_phone_format(self):
+        phone = self.phone
+        phone = phone.lstrip('0')
+        if len(phone) < 11:
+            return f'({phone[0:2]}) {phone[2:6]}-{phone[6:]}'
+        else:
+            return f'({phone[0:2]}) {phone[2:7]}-{phone[7:]}'
+
+    def get_phone_to_call(self):
+        phone = self.phone
+        phone = phone.lstrip('0')
+        return phone
 
     def get_absolute_url(self):
         return reverse("businesses:address_phone_detail", kwargs={"pk": self.pk})
+
+
+def get_phones_by_address(address=None):
+    return BusinessPhoneModel.objects.filter(address=address, is_active=True)
+
+
+def get_phones_by_addresses_by_business(business=None):
+    addresses = get_addresses_by_business(business)
+    address_and_phone = []
+    if addresses:
+        for address in addresses:
+            phones = get_phones_by_address(address)
+            address_and_phone.append([address, phones])
+
+    return address_and_phone

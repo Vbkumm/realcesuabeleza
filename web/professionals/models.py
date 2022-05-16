@@ -174,6 +174,10 @@ class ProfessionalModel(models.Model):
         return professional_grade_day
 
 
+def get_professionals_by_business(business=None):
+    return ProfessionalModel.objects.filter(business=business, is_active=True)
+
+
 class ProfessionalExtraSkillModel(models.Model):
     """
     Relaciona serviços do salão o qual não fazem parte da categoria de profissional mas o profissional executa

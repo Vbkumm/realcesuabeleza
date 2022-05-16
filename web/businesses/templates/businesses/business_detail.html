@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head_title %}{{ business.title|slice:":35" }}{% endblock %}
+{% block head %}
+
+<link rel="shortcut icon" href="{{ business.logo_url }}" type="image/x-icon">
+<link rel=icon href="{{ business.logo_url }}" type="image/x-icon">
+
+{% endblock %}
+
+{% block stylesheet %}
+
+{% endblock %}
+{% block breadcrumb %}{% endblock %}
+{% block content %}
+<!--==========================
+    Business navbar
+  ============================-->
+
+<nav class="navbar navbar-dark pb-xl-3 fixed-top navbar-expand-md" style="background-color: #000000;">
+    <div class="container-fluid">
+        <button class="navbar-toggler ml-md-auto border-0" type="button" data-toggle="collapse" data-target="#conteudoNavbarSuportado" aria-controls="conteudoNavbarSuportado" aria-expanded="false" aria-label="Alterna navegação">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+            <img class="d-block p-0 m-1" style="width: 9rem" src="{{ business.logo_url }}" alt="espacolunique">
+
+        <div class="text-white">{{ business.name }}</div>
+
+        <div class="collapse navbar-collapse" id="conteudoNavbarSuportado">
+            <div class="row justify-content-between">
+
+
+                <div class="col-8">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+
+                            <a class="nav-link" href="{% url 'business_detail' business.slug %}#about">Sobre</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'business_detail' business.slug %}#services">Serviços</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'business_detail' business.slug %}#professionals">Profissionais</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'business_detail' business.slug %}#contato">Contato</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col d-none d-md-block order-md-4">
+                <i class="fas fa-3x py-2 fa-sign-in-alt" aria-hidden="true"></i>
+            </div>
+        </div>
+
+    </div>
+
+</nav>
+
+<!--==========================
+    Business Title and about
+  ============================-->
+<br><br>
+<div id='about' class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <div class="row rounded-top p-3 text-white align-items-center"  style="background-color: #111111;">
+                <h1>{{ business.title }}</h1>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row p-4">
+                <h4>{{ business.description }}</h4>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!--==========================
+    Business service category
+  ============================-->
+
+<div id='service' class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <div class="row rounded-top p-3 text-white align-items-center"  style="background-color: #111111;">
+                <h6>Serviços por Categoria</h6>
+            </div>
+            {% for category in services_categories %}
+
+            <a class="border-0 text-dark" href="{% url 'service_category_detail' business.slug category.slug  %}">
+
+            {{ category.title }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+
+<!--==========================
+    Business professionals
+  ============================-->
+
+<div class="container mt-5">
+    <div id='professionals' class="card">
+        <div class="card-header">
+            <div class="row rounded-top p-3 text-white align-items-center"  style="background-color: #111111;">
+                <h6>Profissionais</h6>
+            </div>
+            {% for professional in professional_list %}
+
+            <a class="border-0 text-dark" href="{% url 'professional_detail' business.slug professional.slug  %}">
+
+                {{ professional.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!--==========================
+    Business Footer
+  ============================-->
+
+<div class="container mt-5">
+    <div id='contato' class="card">
+        <div class="card-header">
+            <div class="row rounded-top p-3 text-white align-items-center"  style="background-color: #111111;">
+                <h6>Contato</h6>
+            </div>
+            {% for address, phones in phone_and_address_list %}
+
+            <a class="border-0 text-dark" href="{% url 'business_address_detail' business.slug address.pk  %}">
+
+                {{ address.zip_code }}<br>
+                {{ address.street }}, {{ address.street_number }} - {{ address.district }}<br>
+                {{ address.city }} - {{ address.state }}<br>
+
+
+
+            </a>
+            {% for phone in phones %}
+            <p class="card-text">
+                <a href="https://api.whatsapp.com/send?phone=+55{{ phone.get_phone_to_call }}&text= Olá, gostaria de fazer um agendamento!'" target=_blank class="rounded-circle text-success" title="Agende por whatsapp">
+                    <i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+                <a class="text-dark" href="tel:0{{ phone.get_phone_to_call }}"><i class="fa fa-phone" aria-hidden="true"></i> {{ phone.get_phone_format }} </a></p>
+            <p class="card-text"><small class="text-muted"><i class="far fa-clock" aria-hidden="true"></i> Segunda a Sábado: 9h às 19h - Domingo: Fechado</small></p>
+
+
+            {% endfor %}
+
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block javascript %}
+
+{% endblock %}

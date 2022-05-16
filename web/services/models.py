@@ -117,10 +117,6 @@ class ServiceCategoryModel(models.Model):
         return reverse('service_category_detail',  kwargs={"slug": business_slug, "service_category_slug": self.slug})
 
 
-def get_categories_by_business(business=None):
-    return ServiceCategoryModel.objects.filter(business=business, is_active=True)
-
-
 class ServiceQuerySet(models.QuerySet):
     def search(self, query=None):
         qs = self
@@ -189,6 +185,21 @@ class ServiceModel(models.Model):
     def get_total_time_service(self):
 
         equipment_list = self.equipments
+
+
+def get_service_active_by_category(business, category):
+    services = ServiceModel.objects.filter(business=business, service_category=category, is_active=True)
+    return set(x.service_category for x in services)
+
+
+def get_categories_by_business(business=None):
+    category_list = []
+    categories = ServiceCategoryModel.objects.filter(business=business, is_active=True)
+    for category in categories:
+        service_active = get_service_active_by_category(business, category)
+        if service_active:
+            category_list.append(category)
+    return category_list
 
 
 class ServiceEquipmentModel(models.Model):

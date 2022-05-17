@@ -61,7 +61,6 @@ class BusinessDetailView(DetailView):
         self.request.session['business_slug'] = self.object.slug
         self.request.session['business_title'] = self.object.title
         self.request.session['business_logo'] = self.object.logo_url
-
         return context
 
 

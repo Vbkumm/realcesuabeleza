@@ -2,7 +2,9 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from lib.templatetags.validators import validate_file_extension
 from django.utils.text import slugify
+from .utils import img_creator, qr_code_generator
 
 
 User = get_user_model()
@@ -17,6 +19,7 @@ User = get_user_model()
 class BusinessModel(models.Model):
     title = models.CharField(max_length=150)
     logo_url = models.URLField(null=True)
+    qrcode_img = models.FileField(upload_to='img/businesses_qr_code/', blank=True, null=True, validators=[validate_file_extension])
     slug = models.CharField(unique=True, max_length=150)
     email = models.EmailField(verbose_name='business email address', max_length=255, unique=True,)
     description = models.CharField('Descrição do salão*', max_length=1000, null=True, blank=True)
@@ -37,12 +40,15 @@ class BusinessModel(models.Model):
         verbose_name = "business"
         db_table = 'business_db'
 
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.slug).lower()
-        super(BusinessModel, self).save(*args, **kwargs)
-
     def get_absolute_url(self):
         return reverse("business_detail", kwargs={"slug": self.slug})
+
+    def save(self, *args, **kwargs):
+
+        self.slug = slugify(self.slug).lower()
+        self.qrcode_img = img_creator(qr_code_generator(self.get_absolute_url()))
+
+        super(BusinessModel, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.title

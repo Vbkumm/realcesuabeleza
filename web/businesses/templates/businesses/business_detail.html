@@ -74,6 +74,9 @@
         <div class="card-body">
             <div class="row p-4">
                 <h4>{{ business.description }}</h4>
+
+                <img src="{{MEDIA_URL}}{{ business.qrcode_img }}" alt="qr_code">
+
             </div>
         </div>
     </div>

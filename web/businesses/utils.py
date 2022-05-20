@@ -20,35 +20,23 @@ def qr_code_generator(slug):
     return img
 
 
-def img_creator(obj):
-    if obj and obj.name.split('.')[1] != 'jpg':
-        if 'heic' in obj.name.split('.')[1]:
-            import pyheif
-            picture = obj
-            heif_file = pyheif.read_heif(picture)
-            picture = Image.frombytes(mode=heif_file.mode, size=heif_file.size, data=heif_file.data)
+def get_logo_img(obj):
+
+    if 'heic' in obj.name.split('.')[1]:
+        import pyheif
+        picture = obj
+        heif_file = pyheif.read_heif(picture)
+        picture = Image.frombytes(mode=heif_file.mode, size=heif_file.size, data=heif_file.data)
+    else:
+        picture = Image.open(obj)
+    if picture.mode in ('RGBA', 'LA'):
+        picture.convert('RGB')
+    (width, height) = picture.size
+    if width > 50:
+        if 40 / width < 40 / height:
+            factor = 40 / height
         else:
-            picture = Image.open(obj.picture)
-
-        filename = "%s.jpg" % obj.picture.name.split('.')[0]
-        if picture.mode in ('RGBA', 'LA'):
-            background = Image.new(picture.mode[:-1], picture.size, '#fff')
-            background.paste(picture, picture.split()[-1])
-            picture = background
-        image_io = BytesIO()
-        picture.save(image_io, format='JPEG', quality=100)
-
-        obj.save(filename, ContentFile(image_io.getvalue()), save=False)
-        img = Image.open(obj.picture)
-        (width, height) = img.size
-        if width > 900:
-            if 800 / width < 800 / height:
-                factor = 800 / height
-            else:
-                factor = 800 / width
-
-            size = (int(width * factor), int(height * factor))
-            img = img.resize(size, Image.ANTIALIAS)
-            img.save(obj.picture.path, optimize=True)
-
-    return img
+            factor = 40 / width
+        size = (int(width * factor), int(height * factor))
+        picture = picture.resize(size, Image.ANTIALIAS)
+    return picture

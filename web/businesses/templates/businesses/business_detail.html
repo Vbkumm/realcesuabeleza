@@ -74,7 +74,6 @@
         <div class="card-body">
             <div class="row p-4">
                 <h4>{{ business.description }}</h4>
-                <img src="{{MEDIA_URL}}{{ business.qrcode_img }}" alt="qr_code{{ business.qrcode_img.name }}">
 
             </div>
         </div>
@@ -136,6 +135,8 @@
             <div class="row rounded-top p-3 text-white align-items-center"  style="background-color: #111111;">
                 <h6>Contato</h6>
             </div>
+            <img src="{{MEDIA_URL}}{{ business.qrcode_img }}" alt="qr_code{{ business.qrcode_img.name }}">
+
             {% for address, phones in phone_and_address_list %}
 
             <a class="border-0 text-dark" href="{% url 'business_address_detail' business.slug address.pk  %}">

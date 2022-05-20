@@ -10,7 +10,7 @@ class BusinessAdmin(admin.ModelAdmin):
         (None,               {'fields': ['title']}),
         (None,               {'fields': ['slug']}),
         (None,               {'fields': ['email']}),
-        (None,               {'fields': ['logo_url']}),
+        (None,               {'fields': ['logo_img']}),
         (None,               {'fields': ['description']}),
         (None,               {'fields': ['birth_date']}),
         (None,               {'fields': ['federal_id']}),

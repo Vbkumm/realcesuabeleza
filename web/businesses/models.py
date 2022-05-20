@@ -8,7 +8,7 @@ from io import BytesIO, StringIO
 from django.core.files.base import ContentFile
 import webp
 from django.utils.text import slugify
-from .utils import qr_code_generator
+from .utils import qr_code_generator, get_logo_img
 
 
 User = get_user_model()
@@ -23,6 +23,7 @@ User = get_user_model()
 class BusinessModel(models.Model):
     title = models.CharField(max_length=150)
     logo_url = models.URLField(null=True)
+    logo_img = models.FileField(upload_to='img/businesses_logo/', blank=True, null=True, validators=[validate_file_extension])
     qrcode_img = models.FileField(upload_to='img/businesses_qr_code/', blank=True, null=True, validators=[validate_file_extension])
     slug = models.CharField(unique=True, max_length=150)
     email = models.EmailField(verbose_name='business email address', max_length=255, unique=True,)
@@ -50,11 +51,19 @@ class BusinessModel(models.Model):
     def save(self, *args, **kwargs):
 
         self.slug = slugify(self.slug).lower()
-        img = qr_code_generator(self.slug)
+
         thumb_io = BytesIO()
-        img.save(thumb_io, format='JPEG', quality=100)
-        webp.save_image(img, self.slug + ".webp", quality=99)
+        qr_code_img = qr_code_generator(self.slug)
+        qr_code_img.save(thumb_io, format='JPEG', quality=100)
+        webp.save_image(qr_code_img, self.slug + ".webp", quality=99)
         self.qrcode_img.save(self.slug + ".webp", ContentFile(thumb_io.getvalue()), save=False)
+
+        if self.logo_img:
+            logo_img = get_logo_img(self.logo_img)
+            logo_img.save(thumb_io, format='JPEG', quality=100)
+            webp.save_image(logo_img, self.slug + ".webp", quality=99)
+            self.logo_img.save(self.slug + ".webp", ContentFile(thumb_io.getvalue()), save=False)
+
         super(BusinessModel, self).save(*args, **kwargs)
 
     def __str__(self):

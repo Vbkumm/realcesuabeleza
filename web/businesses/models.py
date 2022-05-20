@@ -3,8 +3,12 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from lib.templatetags.validators import validate_file_extension
+from PIL import Image
+from io import BytesIO, StringIO
+from django.core.files.base import ContentFile
+import webp
 from django.utils.text import slugify
-from .utils import img_creator, qr_code_generator
+from .utils import qr_code_generator
 
 
 User = get_user_model()
@@ -46,8 +50,11 @@ class BusinessModel(models.Model):
     def save(self, *args, **kwargs):
 
         self.slug = slugify(self.slug).lower()
-        self.qrcode_img = img_creator(qr_code_generator(self.get_absolute_url()))
-
+        img = qr_code_generator(self.slug)
+        thumb_io = BytesIO()
+        img.save(thumb_io, format='JPEG', quality=100)
+        webp.save_image(img, self.slug + ".webp", quality=99)
+        self.qrcode_img.save(self.slug + ".webp", ContentFile(thumb_io.getvalue()), save=False)
         super(BusinessModel, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -56,6 +63,9 @@ class BusinessModel(models.Model):
     def __unicode__(self):
 
         return self.title
+
+    def get_qr_code(self):
+        return qr_code_generator(self.slug)
 
     def get_business_by_owner(self, user):
 

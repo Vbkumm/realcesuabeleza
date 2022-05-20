@@ -60,7 +60,6 @@ class BusinessDetailView(DetailView):
         context['phone_and_address_list'] = get_phones_by_addresses_by_business(business=self.object)
         self.request.session['business_slug'] = self.object.slug
         self.request.session['business_title'] = self.object.title
-        self.request.session['business_logo'] = self.object.logo_url
         return context
 
 

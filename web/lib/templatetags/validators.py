@@ -5,9 +5,9 @@ import datetime
 
 def validate_file_extension(value):
     ext = os.path.splitext(value.name)[1]  # [0] returns path+filename
-    valid_extensions = ['.svg', '.gif', '.jpeg', '.jpg', '.png', '.heic']
+    valid_extensions = ['.svg', '.gif', '.jpeg', '.jpg', '.png', '.heic', '.webp']
     if not ext.lower() in valid_extensions:
-        raise ValidationError(u'Arquivo não suportado! Somente svg, gif, jpeg, png, heic')
+        raise ValidationError(u'Arquivo não suportado! Somente svg, gif, jpeg, png, heic, webp')
 
 
 def validate_schedule_date(date):

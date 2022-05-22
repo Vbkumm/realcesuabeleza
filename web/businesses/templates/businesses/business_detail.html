@@ -26,7 +26,7 @@
 <div id='about' class="container mt-5">
     <div class="card">
         <div class="card-header">
-            <div class="row rounded-top p-3 text-white align-items-center"  style="background-color: #111111;">
+            <div class="row rounded-top p-3 {{ bg_color.1 }} align-items-center"  style="background-color: {{ bg_color.0 }};">
                 <h1>{{ business.title }}</h1>
             </div>
         </div>
@@ -47,7 +47,7 @@
 <div id='service' class="container mt-5">
     <div class="card">
         <div class="card-header">
-            <div class="row rounded-top p-3 text-white align-items-center"  style="background-color: #111111;">
+            <div class="row rounded-top p-3 {{ bg_color.1 }} align-items-center"  style="background-color: {{ bg_color.0 }};">
                 <h6>Serviços por Categoria</h6>
             </div>
             {% for category in services_categories %}
@@ -70,7 +70,7 @@
 <div class="container mt-5">
     <div id='professionals' class="card">
         <div class="card-header">
-            <div class="row rounded-top p-3 text-white align-items-center"  style="background-color: #111111;">
+            <div class="row rounded-top p-3 {{ bg_color.1 }} align-items-center"  style="background-color: {{ bg_color.0 }};">
                 <h6>Profissionais</h6>
             </div>
             {% for professional in professional_list %}
@@ -91,7 +91,7 @@
 <div class="container mt-5">
     <div id='contato' class="card">
         <div class="card-header">
-            <div class="row rounded-top p-3 text-white align-items-center"  style="background-color: #111111;">
+            <div class="row rounded-top p-3 {{ bg_color.1 }} align-items-center"  style="background-color: {{ bg_color.0 }};">
                 <h6>Contato</h6>
             </div>
             <div class="row justify-items-center">

@@ -6,7 +6,15 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 
 
-def qr_code_generator(slug):
+def rgb_color_generator(string):
+    vowels = "'[]"
+    print(string)
+    for i in vowels:
+        string = string.replace(i, '')
+    return string
+
+
+def qr_code_generator(slug, color=None):
     img = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_H,
@@ -15,7 +23,14 @@ def qr_code_generator(slug):
     )
     img.add_data(str('http://127.0.0.1:8000/' + slug + '/'))
     img.make(fit=True)
-    img = img.make_image(fill_color="black", back_color="white").convert('RGB')
+    if color:
+        if color[1] == 'text-light':
+            back_color = "white"
+        else:
+            back_color = "black"
+        img = img.make_image(fill_color=color[0], back_color=back_color).convert('RGB')
+    else:
+        img = img.make_image(fill_color="black", back_color="white").convert('RGB')
 
     return img
 
@@ -29,8 +44,8 @@ def get_logo_img(obj):
         picture = Image.frombytes(mode=heif_file.mode, size=heif_file.size, data=heif_file.data)
     else:
         picture = Image.open(obj)
-    if picture.mode in ('RGBA', 'LA'):
-        picture.convert('RGB')
+    if picture.mode != 'RGB':
+        picture = picture.convert('RGB')
     (width, height) = picture.size
     if width > 50:
         if 40 / width < 40 / height:
@@ -43,15 +58,21 @@ def get_logo_img(obj):
     return picture
 
 
+def get_logo_rgb(obj):
+    rgb = max(obj.getcolors(obj.size[0]*obj.size[1]))
+    if (rgb[1][0] * 0.299 + rgb[1][1] * 0.587 + rgb[1][2] * 0.114) > 186:
+        rgb_contrast = 'text-dark'
+    else:
+        rgb_contrast = 'text-light'
+
+    rgb = '#%02x%02x%02x' % rgb[1]
+
+    return [rgb, rgb_contrast]
+
+
 def get_favicon(obj):
     picture = Image.open(obj)
-    (width, height) = picture.size
-    if width > 5:
-        if 4 / width < 4 / height:
-            factor = 4 / height
-        else:
-            factor = 4 / width
-        size = (int(width * factor), int(height * factor))
-        picture = picture.resize(size, Image.ANTIALIAS)
+    size = (32, 32)
+    picture = picture.resize(size, Image.ANTIALIAS)
 
     return picture

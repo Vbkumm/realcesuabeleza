@@ -7,12 +7,12 @@ from .models import (BusinessModel,
                      BusinessAddressModel,
                      BusinessPhoneModel,
                      get_phones_by_addresses_by_business)
+from .utils import rgb_color_generator
 from .serializers import (BusinessSerializer,
                           BusinessAddressSerializer,
                           BusinessPhoneSerializer)
 from services.models import get_categories_by_business
 from professionals.models import get_professionals_by_business
-
 
 
 class BusinessViewSet(viewsets.ViewSet):
@@ -55,6 +55,10 @@ class BusinessDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(BusinessDetailView, self).get_context_data(**kwargs)
+        string = self.object.logo_rgb_color
+
+        context['bg_color'] = rgb_color_generator(string).split(",")
+
         context['services_categories'] = get_categories_by_business(business=self.object)
         context['professional_list'] = get_professionals_by_business(business=self.object)
         context['phone_and_address_list'] = get_phones_by_addresses_by_business(business=self.object)

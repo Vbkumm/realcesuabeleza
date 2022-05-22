@@ -8,7 +8,10 @@ from io import BytesIO, StringIO
 from django.core.files.base import ContentFile
 import webp
 from django.utils.text import slugify
-from .utils import qr_code_generator, get_logo_img, get_favicon
+from .utils import (qr_code_generator,
+                    get_logo_img,
+                    get_favicon,
+                    get_logo_rgb)
 
 
 User = get_user_model()
@@ -24,6 +27,7 @@ class BusinessModel(models.Model):
     title = models.CharField(max_length=150)
     logo_url = models.URLField(null=True)
     logo_img = models.FileField(upload_to='img/businesses_logo/', blank=True, null=True, validators=[validate_file_extension])
+    logo_rgb_color = models.CharField(max_length=150, null=True)
     favicon = models.FileField(upload_to='img/businesses_favicon/', blank=True, null=True, validators=[validate_file_extension])
     qrcode_img = models.FileField(upload_to='img/businesses_qr_code/', blank=True, null=True, validators=[validate_file_extension])
     slug = models.CharField(unique=True, max_length=150)
@@ -54,24 +58,27 @@ class BusinessModel(models.Model):
         self.slug = slugify(self.slug).lower()
         icon_io = BytesIO()
         thumb_io = BytesIO()
+        qrcode_io = BytesIO()
+
+        qr_code_img = qr_code_generator(self.slug)
         if self.logo_img:
             logo_img = get_logo_img(self.logo_img)
             logo_img.save(thumb_io, format='JPEG', quality=100)
+            rgb = get_logo_rgb(logo_img)
+            self.logo_rgb_color = rgb
+            qr_code_img = qr_code_generator(self.slug, rgb)
+            logo_img = get_logo_img(self.logo_img)
+            logo_pos = ((qr_code_img.size[0] - logo_img.size[0]) // 2, (qr_code_img.size[1] - logo_img.size[1]) // 2)
+            qr_code_img.paste(logo_img, logo_pos)
             webp.save_image(logo_img, self.slug + ".webp", quality=99)
             self.logo_img.save(self.slug + ".webp", ContentFile(thumb_io.getvalue()), save=False)
             favicon = get_favicon(self.logo_img)
             favicon.save(icon_io, format='JPEG', quality=80)
             self.favicon.save(self.slug + ".ico", ContentFile(icon_io.getvalue()), save=False)
 
-        thumb_io = BytesIO()
-        qr_code_img = qr_code_generator(self.slug)
-        if self.logo_img:
-            logo_img = get_logo_img(self.logo_img)
-            logo_pos = ((qr_code_img.size[0] - logo_img.size[0]) // 2, (qr_code_img.size[1] - logo_img.size[1]) // 2)
-            qr_code_img.paste(logo_img, logo_pos)
-        qr_code_img.save(thumb_io, format='JPEG', quality=100)
+        qr_code_img.save(qrcode_io, format='JPEG', quality=100)
         webp.save_image(qr_code_img, self.slug + ".webp", quality=99)
-        self.qrcode_img.save(self.slug + ".webp", ContentFile(thumb_io.getvalue()), save=False)
+        self.qrcode_img.save(self.slug + ".webp", ContentFile(qrcode_io.getvalue()), save=False)
 
         super(BusinessModel, self).save(*args, **kwargs)
 

@@ -39,4 +39,19 @@ def get_logo_img(obj):
             factor = 40 / width
         size = (int(width * factor), int(height * factor))
         picture = picture.resize(size, Image.ANTIALIAS)
+
+    return picture
+
+
+def get_favicon(obj):
+    picture = Image.open(obj)
+    (width, height) = picture.size
+    if width > 5:
+        if 4 / width < 4 / height:
+            factor = 4 / height
+        else:
+            factor = 4 / width
+        size = (int(width * factor), int(height * factor))
+        picture = picture.resize(size, Image.ANTIALIAS)
+
     return picture

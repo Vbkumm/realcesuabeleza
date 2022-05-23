@@ -7,7 +7,7 @@ from django.core.files.base import ContentFile
 
 
 def rgb_color_generator(string):
-    vowels = "'[]"
+    vowels = "'[] "
     print(string)
     for i in vowels:
         string = string.replace(i, '')
@@ -23,12 +23,8 @@ def qr_code_generator(slug, color=None):
     )
     img.add_data(str('http://127.0.0.1:8000/' + slug + '/'))
     img.make(fit=True)
-    if color:
-        if color[1] == 'text-light':
-            back_color = "white"
-        else:
-            back_color = "black"
-        img = img.make_image(fill_color=color[0], back_color=back_color).convert('RGB')
+    if color and color[1] == "light":
+         img = img.make_image(fill_color=color[0], back_color="white").convert('RGB')
     else:
         img = img.make_image(fill_color="black", back_color="white").convert('RGB')
 
@@ -61,12 +57,12 @@ def get_logo_img(obj):
 def get_logo_rgb(obj):
     rgb = max(obj.getcolors(obj.size[0]*obj.size[1]))
     if (rgb[1][0] * 0.299 + rgb[1][1] * 0.587 + rgb[1][2] * 0.114) > 186:
-        rgb_contrast = 'text-dark'
+        rgb_contrast = 'dark'
     else:
-        rgb_contrast = 'text-light'
+        rgb_contrast = 'light'
 
     rgb = '#%02x%02x%02x' % rgb[1]
-
+    print(rgb_contrast)
     return [rgb, rgb_contrast]
 
 

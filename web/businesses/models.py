@@ -59,8 +59,6 @@ class BusinessModel(models.Model):
         icon_io = BytesIO()
         thumb_io = BytesIO()
         qrcode_io = BytesIO()
-
-        qr_code_img = qr_code_generator(self.slug)
         if self.logo_img:
             logo_img = get_logo_img(self.logo_img)
             logo_img.save(thumb_io, format='JPEG', quality=100)
@@ -75,7 +73,8 @@ class BusinessModel(models.Model):
             favicon = get_favicon(self.logo_img)
             favicon.save(icon_io, format='JPEG', quality=80)
             self.favicon.save(self.slug + ".ico", ContentFile(icon_io.getvalue()), save=False)
-
+        else:
+            qr_code_img = qr_code_generator(self.slug)
         qr_code_img.save(qrcode_io, format='JPEG', quality=100)
         webp.save_image(qr_code_img, self.slug + ".webp", quality=99)
         self.qrcode_img.save(self.slug + ".webp", ContentFile(qrcode_io.getvalue()), save=False)

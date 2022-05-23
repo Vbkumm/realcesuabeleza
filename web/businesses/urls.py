@@ -3,6 +3,7 @@ from .views import (BusinessViewSet,
                     BusinessDetailView,
                     BusinessAddressDetailView,
                     )
+from main.views import TermsView, CookiesView
 
 
 urlpatterns = [
@@ -17,5 +18,6 @@ urlpatterns = [
     })),
     path('<str:slug>/', BusinessDetailView.as_view(), name='business_detail'),
     path('<str:slug>/address/<int:pk>', BusinessAddressDetailView.as_view(), name='business_address_detail'),
-
+    path('<str:slug>/terms/', TermsView.as_view(), name="terms"),
+    path('<str:slug>/cookies/', CookiesView.as_view(), name="cookies"),
 ]

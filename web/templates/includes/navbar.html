@@ -6,7 +6,7 @@
         </button>
 
 
-        <h6 class="text-light ml-auto mr-auto ml-md-2 mr-md-2">realcesuabeleza.com.br</h6>
+        <h6 class="text-light ml-auto mr-auto mt-2 ml-md-2 mr-md-2">realcesuabeleza.com.br</h6>
 
         <div class="collapse navbar-collapse" id="conteudoNavbarSuportado">
             <div class="row justify-content-between">
@@ -30,9 +30,26 @@
                 </div>
             </div>
         </div>
+        {% if user.is_authenticated %}
         <div class="text-white order-3">
-            <i class="fas fa-2x py-2 fa-sign-in-alt" aria-hidden="true"></i>
+            <form method="post" class="text-light" action="{% url 'account_logout' %}">
+                {% csrf_token %}
+                {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                {% endif %}
+                <button class="btn text-light" type="submit" style="background-color: #000000;" title="Sair"><i class="fas fa-2x fa-sign-out-alt" aria-hidden="true"></i></button>
+            </form>
+
         </div>
+        {% else %}
+        <div class="text-white order-3">
+                <a class="text-light" href="{% url 'account_login' %}" title="Entrar">
+                <i class="fas fa-2x py-2 fa-sign-in-alt" aria-hidden="true"></i>
+                </a>
+            </li>
+        </div>
+        {% endif %}
+
     </div>
 
 </nav>

@@ -57,13 +57,16 @@ class BusinessDetailView(DetailView):
         context = super(BusinessDetailView, self).get_context_data(**kwargs)
         string = self.object.logo_rgb_color
 
-        context['bg_color'] = rgb_color_generator(string).split(",")
-
+        bg_color= rgb_color_generator(string).split(",")
+        context['bg_color'] = bg_color
         context['services_categories'] = get_categories_by_business(business=self.object)
         context['professional_list'] = get_professionals_by_business(business=self.object)
         context['phone_and_address_list'] = get_phones_by_addresses_by_business(business=self.object)
         self.request.session['business_slug'] = self.object.slug
         self.request.session['business_title'] = self.object.title
+        self.request.session['text_color'] = bg_color[1]
+        self.request.session['bg_color'] = bg_color[0]
+
         return context
 
 

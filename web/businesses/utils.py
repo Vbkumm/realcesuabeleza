@@ -8,7 +8,6 @@ from django.core.files.base import ContentFile
 
 def rgb_color_generator(string):
     vowels = "'[] "
-    print(string)
     for i in vowels:
         string = string.replace(i, '')
     return string

@@ -19,7 +19,7 @@ from django.conf.urls import url
 from django.conf import settings
 from django.conf.urls.static import static
 from allauth.account.views import confirm_email
-from main.views import home_view
+from main.views import home_view, TermsView, CookiesView
 
 
 urlpatterns = [
@@ -29,11 +29,12 @@ urlpatterns = [
     path('', include('customers.urls')),
     path('', include('professionals.urls')),
     path('', include('services.urls')),
-
-    url(r'^rest-auth/', include('rest_auth.urls')),
-    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
-    url(r'^account/', include('allauth.urls')),
-    url(r'^accounts-rest/registration/account-confirm-email/(?P<key>.+)/$', confirm_email, name='account_confirm_email'),
+    path('terms/', TermsView.as_view(), name="terms"),
+    path('cookies/', CookiesView.as_view(), name="cookies"),
+    path('rest-auth/', include('rest_auth.urls')),
+    path('rest-auth/registration/', include('rest_auth.registration.urls')),
+    path('accounts/', include('allauth.urls')),
+    path('accounts-rest/registration/account-confirm-email/(<key>.+)/', confirm_email, name='account_confirm_email'),
 
 ]
 

@@ -41,6 +41,11 @@ INSTALLED_APPS = [
     'django_cleanup.apps.CleanupConfig',
 
     #3 parties
+    'bootstrap4',
+    'widget_tweaks',
+    'crispy_forms',
+    'formtools',
+
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
@@ -50,6 +55,7 @@ INSTALLED_APPS = [
 
     #own
     'main',
+    'lib',
     'accounts',
     'businesses',
     'customers',

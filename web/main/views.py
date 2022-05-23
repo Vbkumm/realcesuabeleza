@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from django.views.generic import TemplateView
 # Create your views here.
 
 
@@ -8,3 +8,12 @@ def home_view(request, *args, **kwargs):
         del request.session['business_slug']
 
     return render(request, "home.html")
+
+
+class TermsView(TemplateView):
+    template_name = "main/terms.html"
+
+
+class CookiesView(TemplateView):
+    template_name = "main/cookies.html"
+

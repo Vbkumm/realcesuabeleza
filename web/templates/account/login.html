@@ -1,0 +1,61 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Convida" %}{% endblock %}
+
+{% block content %}
+
+  <div class="row mt-md-3 justify-content-center">
+    <div class="col-8 col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h3>{% trans "Entrar" %}</h3>
+        </div>
+        <div class="card-body text-dark">
+
+
+          <p>{% blocktrans %}Se não possui uma conta ainda,
+          <a href="{{ signup_url }}">cadastre</a> first.{% endblocktrans %}</p>
+
+          <form class="login" method="POST" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            {% include 'includes/form.html' %}
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+
+            <div class="text-right pb-2">
+              <small>
+              <a class="secondaryAction text-muted" href="{% url 'account_reset_password' %}">{% trans "Esqueceu a senha?" %}</a>
+              </small>
+            </div>
+
+            <button class="primaryAction py-2 text-{{ request.session.text_color }} rounded w-100" type="submit" style="background-color: {{ request.session.bg_color }};">{% trans "Entrar" %}</button>
+          </form>
+
+        <div class="align-middle text-center">
+            Nossos {% if request.session.business_slug %}
+            <a href="{% url 'terms' request.session.business_slug %}" style="color: #2a363a;">
+            {% else %}
+            <a href="{% url 'terms' %}" style="color: #2a363a;">
+            {% endif %}
+
+          <strong>Termos</strong></a> e
+              {% if request.session.business_slug %}
+              <a href="{% url 'cookies' request.session.business_slug %}" style="color: #2a363a;">
+                {% else %}
+                <a href="{% url 'cookies' %}" style="color: #2a363a;">
+                {% endif %}
+                Política de Cookies.</a>
+            </div>
+          </div>
+        <div class="card-footer text-muted text-center">
+          Novo por aqui? <a class="text-dark" href="{{ signup_url }}">Cadastre-se</a>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

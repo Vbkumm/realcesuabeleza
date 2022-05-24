@@ -1,0 +1,16 @@
+
+<form method='POST'
+      action='{% if action_url %}{{ action_url }}{% else %}{% url "account_login" %}{% endif %}'>
+    {% csrf_token %}
+    <div class='row justify-content-around'>
+
+    {% if next_url %}
+    <input type='hidden' name='next' value='{{ next_url }}' />
+    {% endif %}
+        {% include 'includes/form.html' %}
+
+    </div>
+    <div class='row justify-content-center'>
+    <button type='submit' class='btn py-2 px-5 m-2 btn-sm btn-dark'>Continue como convidado</button>
+    </div>
+</form>

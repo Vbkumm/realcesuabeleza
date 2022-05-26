@@ -151,9 +151,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-#ACCOUNT_ADAPTER = 'lib.templatetags.adapter.MyLoginAccountAdapter'
-
+ACCOUNT_ADAPTER = 'lib.templatetags.adapter.MyAccountAdapter'
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True

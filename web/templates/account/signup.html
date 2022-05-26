@@ -10,7 +10,7 @@
     <div class="col-lg-4 col-md-6 col-sm-8">
       <div class="card">
         <div class="card-body text-dark">
-          <h3>{% trans "Faça parte!" %}</h3>
+          <h3>Faça parte {{ request.session.business_title }}!</h3>
 
 
           <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
@@ -24,16 +24,16 @@
           </form>
           <div class="align-middle text-center">
             Nossos {% if request.session.business_slug %}
-            <a href="{% url 'terms' request.session.business_slug %}" style="color: #2a363a;">
+            <a href="{% url 'terms' request.session.business_slug %}" style="color: {{ request.session.bg_color }};">
               {% else %}
               <a href="{% url 'terms' %}" style="color: #2a363a;">
                 {% endif %}
 
                 <strong>Termos</strong></a> e
               {% if request.session.business_slug %}
-              <a href="{% url 'cookies' request.session.business_slug %}" style="color: #2a363a;">
+              <a href="{% url 'cookies' request.session.business_slug %}" target=_blank style="color: {{ request.session.bg_color }};">
                 {% else %}
-                <a href="{% url 'cookies' %}" style="color: #2a363a;">
+                <a href="{% url 'cookies' %}" target=_blank style="color: {{ request.session.bg_color }};">
                   {% endif %}
                   Política de Cookies.</a>
             </div>

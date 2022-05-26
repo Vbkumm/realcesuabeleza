@@ -16,9 +16,12 @@ class CustomUserManager(BaseUserManager):
         if not email:
             raise ValueError('The given email must be set')
         email = self.normalize_email(email)
+
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
+
         user.save(using=self._db)
+
         return user
 
     def create_user(self, email, password=None, **extra_fields):
@@ -42,6 +45,7 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUserModel(AbstractUser):
     username = None
+
     first_name = models.CharField(blank=True, max_length=150, verbose_name='first name')
     last_name = models.CharField(blank=True, max_length=150, verbose_name='last name')
     email = models.EmailField(
@@ -51,7 +55,8 @@ class CustomUserModel(AbstractUser):
     )
     federal_id = models.CharField('CNPJ ou CPF', max_length=15, unique=True, blank=True, null=True)
     phone = models.CharField(max_length=17, unique=True, null=True)
-    #business_bookmark = models.ManyToManyField('business', related_name='business_bookmark')
+    #businesses = models.ManyToManyField('business', related_name='business_user')
+    business = models.CharField(blank=True, max_length=350,)
     date_joined = models.DateTimeField(default=timezone.now, verbose_name='date joined')
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

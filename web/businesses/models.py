@@ -3,6 +3,8 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from lib.templatetags.validators import validate_file_extension
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 from PIL import Image
 from io import BytesIO, StringIO
 from django.core.files.base import ContentFile
@@ -80,6 +82,14 @@ class BusinessModel(models.Model):
         self.qrcode_img.save(self.slug + ".webp", ContentFile(qrcode_io.getvalue()), save=False)
 
         super(BusinessModel, self).save(*args, **kwargs)
+
+    @receiver(post_save, sender=User)
+    def save_user_in_business(sender, instance, **kwargs):
+        if User.business:
+            if BusinessModel.objects.filter(slug=User.business):
+                business = BusinessModel.objects.get(slug=User.business)
+                business.users.set(User)
+                business.save()
 
     def __str__(self):
         return self.title

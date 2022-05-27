@@ -12,7 +12,6 @@ class MyAccountAdapter(DefaultAccountAdapter):
 
         user = super(MyAccountAdapter, self).save_user(request, user, form, commit=False)
         user.business = request.session.get("business_slug", None)
-
         user.save()
 
     def get_login_redirect_url(self, request):
@@ -43,7 +42,7 @@ class MyAccountAdapter(DefaultAccountAdapter):
         if request.session.get("business_slug", None):
             slug = request.session.get("business_slug", None)
             path = "/{slug}/"
-            
+
             return path.format(slug=slug)
         else:
             return settings.LOGIN_REDIRECT_URL

@@ -57,6 +57,10 @@
             {{ category.title }}
             </a>
             {% endfor %}
+            {% for user in business.users.all %}
+            {{ user.email }}<br>
+
+            {% endfor %}
         </div>
     </div>
 </div>

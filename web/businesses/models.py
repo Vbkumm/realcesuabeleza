@@ -84,11 +84,12 @@ class BusinessModel(models.Model):
         super(BusinessModel, self).save(*args, **kwargs)
 
     @receiver(post_save, sender=User)
-    def save_user_in_business(sender, instance, **kwargs):
-        if User.business:
-            if BusinessModel.objects.filter(slug=User.business):
-                business = BusinessModel.objects.get(slug=User.business)
-                business.users.set(User)
+    def set_business_users(sender, instance, **kwargs):
+        if instance.business:
+            if BusinessModel.objects.filter(slug=instance.business):
+                business = BusinessModel.objects.get(slug=instance.business)
+                if instance not in business.users.all():
+                    business.users.add(instance)
                 business.save()
 
     def __str__(self):

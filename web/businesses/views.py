@@ -1,4 +1,7 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import HttpResponseRedirect, Http404, get_object_or_404
+from django.urls import reverse_lazy
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView
@@ -7,6 +10,7 @@ from .models import (BusinessModel,
                      BusinessAddressModel,
                      BusinessPhoneModel,
                      get_phones_by_addresses_by_business)
+from .forms import BusinessUserInnForm
 from .utils import rgb_color_generator
 from .serializers import (BusinessSerializer,
                           BusinessAddressSerializer,
@@ -56,8 +60,10 @@ class BusinessDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(BusinessDetailView, self).get_context_data(**kwargs)
         string = self.object.logo_rgb_color
-
-        bg_color= rgb_color_generator(string).split(",")
+        if self.request.user:
+            context['user_in'] = self.request.user in self.object.users.all()
+            context['user_id'] = self.request.user.id
+        bg_color = rgb_color_generator(string).split(",")
         context['bg_color'] = bg_color
         context['services_categories'] = get_categories_by_business(business=self.object)
         context['professional_list'] = get_professionals_by_business(business=self.object)
@@ -68,6 +74,20 @@ class BusinessDetailView(DetailView):
         self.request.session['bg_color'] = bg_color[0]
 
         return context
+
+
+@login_required
+def user_service_bookmark_add(request, slug):
+    business = get_object_or_404(BusinessModel, slug=slug)
+    business_user_inn_form = BusinessUserInnForm(request.POST or None)
+    if request.method == 'GET':
+        return HttpResponseRedirect((reverse_lazy("business_detail",  kwargs={'slug': business.slug})))
+    else:
+        if request.method == 'POST' and business_user_inn_form.is_valid():
+            business.users.add(business_user_inn_form.cleaned_data['users'])
+            business.save()
+            return HttpResponseRedirect(reverse_lazy("business_detail",  kwargs={'slug': business.slug}))
+        raise Http404()
 
 
 class BusinessAddressViewSet(viewsets.ViewSet):

@@ -59,7 +59,7 @@
             {% endif %}
         {% else %}
             <div class="text-{{ bg_color.1 }}  order-3">
-                <a class="text-{{ bg_color.1 }}" href="{% url 'account_login' %}?next={% url 'user_business_add' business.slug %}" title="Entrar {{ business.title }}">
+                <a class="text-{{ bg_color.1 }}" href="{% url 'account_login' %}" title="Entrar {{ business.title }}">
                 <i class="fas fa-2x py-2 fa-sign-in-alt" aria-hidden="true"></i>
                 </a>
             </div>

@@ -55,7 +55,6 @@ class CustomUserModel(AbstractUser):
     )
     federal_id = models.CharField('CNPJ ou CPF', max_length=15, unique=True, blank=True, null=True)
     phone = models.CharField(max_length=17, unique=True, null=True)
-    #businesses = models.ManyToManyField('business', related_name='business_user')
     business = models.CharField(blank=True, max_length=350,)
     date_joined = models.DateTimeField(default=timezone.now, verbose_name='date joined')
     USERNAME_FIELD = 'email'

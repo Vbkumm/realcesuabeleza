@@ -18,11 +18,15 @@ from .utils import (qr_code_generator,
 
 User = get_user_model()
 
-# Create your models here.
 
-#
-# class BusinessManager(models.Manager):
-#     pass
+class BusinessManager(models.Manager):
+
+    def get_new_business_user(self, user, slug):
+        business = self.get_queryset().get(slug=slug,)
+        if user not in business.users.all():
+            business.users.add(user)
+            business.save()
+        return business
 
 
 class BusinessModel(models.Model):
@@ -45,7 +49,7 @@ class BusinessModel(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
-    #objects = BusinessManager()
+    objects = BusinessManager()
 
     class Meta:
         verbose_name_plural = "business_list"

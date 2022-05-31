@@ -4,6 +4,7 @@ from django.shortcuts import reverse
 from allauth.account.adapter import DefaultAccountAdapter
 from accounts.models import CustomUserModel
 from realcesuabeleza import settings
+from businesses.models import BusinessModel
 
 
 class MyAccountAdapter(DefaultAccountAdapter):
@@ -13,19 +14,14 @@ class MyAccountAdapter(DefaultAccountAdapter):
         user.business = request.session.get("business_slug", None)
         user.save()
 
-    # def get_login_redirect_url(self, request):
-    #     print(f"GET request dict is {request.GET}")
-    #     return reverse('business', kwargs={'slug': request.session['slug']})
-    #
-    # def get_login_redirect_url(self, request):
-    #
-    #     if request.session.get("business_slug", None):
-    #         slug = request.session.get("business_slug", None)
-    #         path = "/{slug}/"
-    #
-    #         return path.format(slug=slug)
-    #     else:
-    #         return settings.LOGIN_REDIRECT_URL
+    def get_login_redirect_url(self, request):
+        if request.session.get("business_slug", None):
+            slug = request.session.get("business_slug", None)
+            path = "/{slug}/"
+            business = BusinessModel.objects.get_new_business_user(request.user, slug)
+            return path.format(slug=slug)
+        else:
+            return settings.LOGIN_REDIRECT_URL
 
     def get_logout_redirect_url(self, request):
 

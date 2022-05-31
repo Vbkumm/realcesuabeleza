@@ -9,20 +9,23 @@ from realcesuabeleza import settings
 class MyAccountAdapter(DefaultAccountAdapter):
 
     def save_user(self, request, user, form, commit=True):
-
         user = super(MyAccountAdapter, self).save_user(request, user, form, commit=False)
         user.business = request.session.get("business_slug", None)
         user.save()
 
-    def get_login_redirect_url(self, request):
-
-        if request.session.get("business_slug", None):
-            slug = request.session.get("business_slug", None)
-            path = "/{slug}/"
-
-            return path.format(slug=slug)
-        else:
-            return settings.LOGIN_REDIRECT_URL
+    # def get_login_redirect_url(self, request):
+    #     print(f"GET request dict is {request.GET}")
+    #     return reverse('business', kwargs={'slug': request.session['slug']})
+    #
+    # def get_login_redirect_url(self, request):
+    #
+    #     if request.session.get("business_slug", None):
+    #         slug = request.session.get("business_slug", None)
+    #         path = "/{slug}/"
+    #
+    #         return path.format(slug=slug)
+    #     else:
+    #         return settings.LOGIN_REDIRECT_URL
 
     def get_logout_redirect_url(self, request):
 

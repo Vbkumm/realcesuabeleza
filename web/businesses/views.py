@@ -77,7 +77,7 @@ class BusinessDetailView(DetailView):
 
 
 @login_required
-def user_service_bookmark_add(request, slug):
+def user_business_add(request, slug):
     business = get_object_or_404(BusinessModel, slug=slug)
     business_user_inn_form = BusinessUserInnForm(request.POST or None)
     if request.method == 'GET':

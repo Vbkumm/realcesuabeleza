@@ -32,18 +32,34 @@
         </div>
 
         {% if user.is_authenticated %}
-        <div class="text-white order-3">
-            <form method="post" class="text-{{ bg_color.1 }}" action="{% url 'account_logout' %}?next={{request.path}}">
-                {% csrf_token %}
-                {% if redirect_field_value %}
-                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
-                {% endif %}
-                <button class="btn text-{{ bg_color.1 }}" type="submit" style="background-color: {{ bg_color.0 }};" title="Sair"><i class="fas fa-2x fa-sign-out-alt" aria-hidden="true"></i></button>
-            </form>
-        </div>
+            {% if user_in is True %}
+                <div class="text-white order-3">
+                    <form method="post" class="text-{{ bg_color.1 }}" action="{% url 'account_logout' %}?next={{request.path}}">
+                        {% csrf_token %}
+                        {% if redirect_field_value %}
+                        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                        {% endif %}
+                        <button class="btn text-{{ bg_color.1 }}" type="submit" style="background-color: {{ bg_color.0 }};" title="Sair {{ business.title }}"><i class="fas fa-2x fa-sign-out-alt" aria-hidden="true"></i></button>
+                    </form>
+                </div>
+
+            {% else %}
+                <div class="text-white order-3">
+
+                    <form method="post" class="text-{{ bg_color.1 }}" action="{% url 'user_business_add' business.slug %}">
+                        {% csrf_token %}
+                        {% if redirect_field_value %}
+                        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                        {% endif %}
+                        <input type='hidden' name='users' value={{user_id}}>
+                        <button class="btn text-{{ bg_color.1 }}" type="submit" style="background-color: {{ bg_color.0 }};" title="Entrar {{ business.title }}"><i class="fas fa-2x py-2 fa-sign-in-alt" aria-hidden="true"></i></button>
+                    </form>
+                </div>
+
+            {% endif %}
         {% else %}
             <div class="text-{{ bg_color.1 }}  order-3">
-                <a class="text-{{ bg_color.1 }}" href="{% url 'account_login' %}?next={{request.path}}" title="Entrar">
+                <a class="text-{{ bg_color.1 }}" href="{% url 'account_login' %}?next={% url 'user_business_add' business.slug %}" title="Entrar {{ business.title }}">
                 <i class="fas fa-2x py-2 fa-sign-in-alt" aria-hidden="true"></i>
                 </a>
             </div>

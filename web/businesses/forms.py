@@ -12,3 +12,29 @@ class BusinessUserInnForm(forms.Form):
         model = BusinessModel
 
         fields = ('users', )
+
+
+class BusinessCreateForm1(forms.ModelForm):
+    title = forms.CharField(label='Qual nome do seu salão?',
+                                     widget=forms.TextInput(attrs={'placeholder': 'Ex. Salão da Cleide'})
+                                     )
+    slug = forms.CharField(label='Como gostaria de ser localizado realcesuabeleza.com.br/você?',
+                            widget=forms.TextInput(attrs={'placeholder': 'seusalao'})
+                            )
+
+    class Meta:
+        model = BusinessModel
+        fields = ['title', 'slug', ]
+
+
+class BusinessCreateForm2(forms.ModelForm):
+    email = forms.EmailField(label='E-mail', max_length=254, required=False,
+                             widget=forms.TextInput(attrs={'placeholder': 'email@email.com.br'})
+                             )
+    description = forms.CharField(label='Uma breve descrição do seu salão? poderá ser alterado no futuro',
+                           widget=forms.TextInput(attrs={'placeholder': 'Descreva aqui!'})
+                           )
+
+    class Meta:
+        model = BusinessModel
+        fields = ['title', 'slug', ]

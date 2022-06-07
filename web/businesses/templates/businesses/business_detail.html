@@ -57,14 +57,9 @@
             {{ category.title }}
             </a>
             {% endfor %}
-            {% for user in business.users.all %}
-            {{ user.email }}<br>
-
-            {% endfor %}
         </div>
     </div>
 </div>
-
 
 
 <!--==========================
@@ -83,6 +78,13 @@
 
                 {{ professional.name }}
             </a>
+            {% endfor %}
+            <div class="row rounded-top p-3 text-{{ bg_color.1 }} align-items-center"  style="background-color: {{ bg_color.0 }};">
+                <h6>Users:</h6>
+            </div>
+            {% for user in business.users.all %}
+            {{ user.email }}<br>
+
             {% endfor %}
         </div>
     </div>

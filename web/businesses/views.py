@@ -1,16 +1,25 @@
+import os
 from django.shortcuts import render
+from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import HttpResponseRedirect, Http404, get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
+from formtools.wizard.views import SessionWizardView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.core.files.storage import FileSystemStorage
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from realcesuabeleza import settings
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView
 
 from .models import (BusinessModel,
                      BusinessAddressModel,
                      BusinessPhoneModel,
                      get_phones_by_addresses_by_business)
-from .forms import BusinessUserInnForm
+from .forms import (BusinessUserInnForm,
+                    BusinessCreateForm1,
+                    BusinessCreateForm2,)
 from .utils import rgb_color_generator
 from .serializers import (BusinessSerializer,
                           BusinessAddressSerializer,
@@ -74,6 +83,27 @@ class BusinessDetailView(DetailView):
         self.request.session['bg_color'] = bg_color[0]
 
         return context
+
+
+class BusinessWizardCreateView(LoginRequiredMixin, SuccessMessageMixin, SessionWizardView):
+    form_list = [BusinessCreateForm1, BusinessCreateForm1,]
+    template_name = 'businesses/business_wizard_create.html'
+    success_message = "Salão criado com sucesso!"
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'business_storage'))
+
+    def done(self, form_list, **kwargs):
+        # get merged dictionary from all fields
+        form_dict = self.get_all_cleaned_data()
+        business = BusinessModel()
+        business.created_by = self.request.user
+        business.owners.add(self.request.user)
+        business.created = timezone.now()
+        for k, v in form_dict.items():
+            if k != 'tags':
+                setattr(business, k, v)
+        business.save()
+
+        return HttpResponseRedirect(reverse("business_detail", kwargs={'slug': business.slug}))
 
 
 @login_required

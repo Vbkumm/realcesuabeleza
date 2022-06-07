@@ -18,7 +18,7 @@ class MyAccountAdapter(DefaultAccountAdapter):
         if request.session.get("business_slug", None):
             slug = request.session.get("business_slug", None)
             path = "/{slug}/"
-            business = BusinessModel.objects.get_new_business_user(request.user, slug)
+            BusinessModel.objects.get_new_business_user(request.user, slug)
             return path.format(slug=slug)
         else:
             return settings.LOGIN_REDIRECT_URL

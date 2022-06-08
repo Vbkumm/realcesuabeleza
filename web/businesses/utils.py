@@ -8,9 +8,10 @@ from django.core.files.base import ContentFile
 
 def rgb_color_generator(string):
     vowels = "'[] "
-    for i in vowels:
-        string = string.replace(i, '')
-    return string
+    if string:
+        for i in vowels:
+            string = string.replace(i, '')
+        return string
 
 
 def qr_code_generator(slug, color=None):

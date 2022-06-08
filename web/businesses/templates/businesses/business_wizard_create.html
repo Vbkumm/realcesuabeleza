@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load i18n %}
+
+{% block head %}
+
+<script src="{% static 'js/valida_cpf_cnpj.js' %}"></script>
+{% endblock %}
+
+{% block head_title %}Novo Salão{% endblock %}
+
+{% block stylesheet %}
+{% endblock %}
+
+
+{% block breadcrumb %}
+{% endblock %}
+
+{% block content %}
+<div class="row mt-md-3 justify-content-center">
+    <div class="col-lg-8 col-md-8 col-sm-10">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-header rounded-top">
+                    <div class="row justify-content-center">
+                        <h4>Novo  salão</h4>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" {% if wizard.steps.step1 == 1 %}  style="width: 25%;" aria-valuenow="25" {% endif %} {% if wizard.steps.step1 == 2 %}  style="width: 50%;" aria-valuenow="50" {% endif %} aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="row mt-2 justify-content-center">
+                        <div class="col-4 text-success">
+                            <div class="row justify-content-center">
+                                <small class="">{% if business_name %} {{ business_name }} {% else %}Nome{% endif %}</small>
+                            </div>
+                            <div class="row justify-content-center">
+                                <i class="fa fa-id-card" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                        <div class="col-4 {% if wizard.steps.step1 > 1 %} text-success text-center {% else %} text-muted {% endif %}">
+                            <div class="row justify-content-center">
+                                <small class="">{% if business_federal_id %} {{ business_federal_id }}  {% if business_email %} <br>{{ business_email }} {% endif %} {% else %}e-mail - CNPJ/CPF{% endif %}</small>
+                            </div>
+                            {% if not business_federal_id %}
+                            <div class="row justify-content-center">
+                                <i class="fa fa-comment" aria-hidden="true"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-4 {% if wizard.steps.step1 > 2 %} text-success {% else %} text-muted {% endif %}">
+                            <div class="row justify-content-center">
+                                <small class="">descrição</small>
+                            </div>
+                            <div class="row justify-content-center">
+                                <i class="fa fa-comment" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form action="" method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        <div class="col-1 mb-2 float-right">
+                            {% if wizard.steps.prev %}
+                            <button name="wizard_goto_step" type="submit" class="btn btn-sm text-white btn-dark" value="{{ wizard.steps.prev }}"><i class="fa fa-1x fa-undo" aria-hidden="true"></i></button>
+                            {% else %}
+                            {% if service_list_session %}
+                            <a href="{% url 'service:service_active_list' %}" class="btn btn-sm text-white btn-dark" data-toggle="tooltip" data-placement="bottom" title="Voltar para lista de serviço">
+                                <i class="fa fa-1x fa-undo" aria-hidden="true"></i>
+                            </a>
+                            {% else %}
+                            <a href="/" class="btn btn-sm text-white btn-dark" data-toggle="tooltip" data-placement="bottom" title="Voltar pagina pricipal">
+                                <i class="fa fa-1x fa-undo" aria-hidden="true"></i>
+                            </a>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                        <table>
+                            {{ wizard.management_form }}
+                            {% if wizard.form.forms %}
+                            {{ wizard.form.management_form }}
+                            {% for form in wizard.form.forms %}
+                            {{ form|crispy }}
+                            {% endfor %}
+                            {% else %}
+                            {% include 'includes/form.html' %}
+                            {% endif %}
+                        </table>
+
+                        <div class="row justify-content-center">
+                            <input type="submit" class="btn btn-success mt-3 px-5" value="{% if wizard.steps.step1 == 1 %}{% trans 'salvar' %}{% else %}{% trans 'avançar' %}{% endif %}"/>
+                        </div>
+
+                    </form>
+                    <div class="row justify-content-end">
+                        <small class="text-muted text-right">{{ wizard.steps.step1 }} de {{ wizard.steps.count }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+
+{% block javascript %}
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="{% static 'js/jquery.maskedinput.min.js' %}"></script>
+
+<script type="text/javascript">
+
+$(function(){
+
+    // ## EXEMPLO 3
+    // Aciona a validação e formatação ao sair do input
+    $('#id_1-federal_id').blur(function(){
+
+        // O CPF ou CNPJ
+        var cpf_cnpj = $(this).val();
+
+        // Testa a validação e formata se estiver OK
+        if ( formata_cpf_cnpj( cpf_cnpj ) ) {
+        $(this).val( formata_cpf_cnpj( cpf_cnpj ) );
+        } else {
+        alert('CPF ou CNPJ inválido!');
+        }
+
+    });
+
+});
+
+
+</script>
+{{ wizard.form.media }}
+{% endblock %}

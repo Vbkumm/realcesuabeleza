@@ -1,4 +1,4 @@
-<nav class="navbar navbar-dark pb-xl-3 fixed-top navbar-expand-md" style="background-color: {{ bg_color.0 }};">
+<nav class="navbar navbar-dark pb-xl-3 fixed-top navbar-expand-md" {% if bg_color %} style="background-color: {{ bg_color.0 }};" {% else %} style="background-color: #000000;" {% endif %}>
     <div class="container-fluid">
         <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#conteudoNavbarSuportado" aria-controls="conteudoNavbarSuportado" aria-expanded="false" aria-label="Alterna navegação">
             <span class="navbar-toggler-icon"></span>
@@ -6,7 +6,7 @@
         {% if business.logo_img %}
         <img class="d-block ml-auto mr-auto ml-md-2 mr-md-2" style="width: 9rem" src="{{MEDIA_URL}}{{ business.logo_img }}" alt="{{ business.logo_img.name }}">
         {% else %}
-        <h6 class="border-0 p-0 m-0">{{ business.title }}</h6>
+        <h6 class="border-0 {% if not bg_color %} text-light {% endif %} p-0 m-0">{{ business.title }}</h6>
         {% endif %}
         <div class="collapse navbar-collapse" id="conteudoNavbarSuportado">
             <div class="row justify-content-between">
@@ -34,32 +34,32 @@
         {% if user.is_authenticated %}
             {% if user_in is True %}
                 <div class="text-white order-3">
-                    <form method="post" class="text-{{ bg_color.1 }}" action="{% url 'account_logout' %}?next={{request.path}}">
+                    <form method="post" class=" {% if bg_color %}text-{{ bg_color.1 }}{% endif %}" action="{% url 'account_logout' %}?next={{request.path}}">
                         {% csrf_token %}
                         {% if redirect_field_value %}
                         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
                         {% endif %}
-                        <button class="btn text-{{ bg_color.1 }}" type="submit" style="background-color: {{ bg_color.0 }};" title="Sair {{ business.title }}"><i class="fas fa-2x fa-sign-out-alt" aria-hidden="true"></i></button>
+                        <button class="btn {% if bg_color %} text-{{ bg_color.1 }} {% else %} text-light {% endif %}" type="submit" {% if bg_color  %} style="background-color: {{ bg_color.0 }};" {% else %} style="background-color: #000000;" {% endif %}  title="{{ user.email }} deseja sair do {{ business.title }}"><i class="fas fa-2x fa-sign-out-alt" aria-hidden="true"></i></button>
                     </form>
                 </div>
 
             {% else %}
                 <div class="text-white order-3">
 
-                    <form method="post" class="text-{{ bg_color.1 }}" action="{% url 'user_business_add' business.slug %}">
+                    <form method="post" class="{% if bg_color %} text-{{ bg_color.1 }} {% else %} text-light {% endif %}" action="{% url 'user_business_add' business.slug %}">
                         {% csrf_token %}
                         {% if redirect_field_value %}
                         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
                         {% endif %}
                         <input type='hidden' name='users' value={{user_id}}>
-                        <button class="btn text-{{ bg_color.1 }}" type="submit" style="background-color: {{ bg_color.0 }};" title="Entrar {{ business.title }}"><i class="fas fa-2x py-2 fa-sign-in-alt" aria-hidden="true"></i></button>
+                        <button class="btn {% if bg_color %} text-{{ bg_color.1 }} {% else %} text-light {% endif %}" type="submit" {% if bg_color  %} style="background-color: {{ bg_color.0 }};" {% else %} style="background-color: #000000;" {% endif %} title="Entrar {{ business.title }}"><i class="fas fa-2x py-2 fa-sign-in-alt" aria-hidden="true"></i></button>
                     </form>
                 </div>
 
             {% endif %}
         {% else %}
-            <div class="text-{{ bg_color.1 }}  order-3">
-                <a class="text-{{ bg_color.1 }}" href="{% url 'account_login' %}" title="Entrar {{ business.title }}">
+            <div class="{% if bg_color %} text-{{ bg_color.1 }} {% else %} text-light {% endif %} order-3">
+                <a class="{% if bg_color %} text-{{ bg_color.1 }} {% else %} text-light {% endif %}" href="{% url 'account_login' %}" title="Entrar {{ business.title }}" {% if bg_color  %} style="background-color: {{ bg_color.0 }};" {% else %} style="background-color: #000000;" {% endif %} >
                 <i class="fas fa-2x py-2 fa-sign-in-alt" aria-hidden="true"></i>
                 </a>
             </div>

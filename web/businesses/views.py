@@ -19,7 +19,8 @@ from .models import (BusinessModel,
                      get_phones_by_addresses_by_business)
 from .forms import (BusinessUserInnForm,
                     BusinessCreateForm1,
-                    BusinessCreateForm2,)
+                    BusinessCreateForm2,
+                    BusinessCreateForm3,)
 from .utils import rgb_color_generator
 from .serializers import (BusinessSerializer,
                           BusinessAddressSerializer,
@@ -68,39 +69,74 @@ class BusinessDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(BusinessDetailView, self).get_context_data(**kwargs)
-        string = self.object.logo_rgb_color
+
         if self.request.user:
             context['user_in'] = self.request.user in self.object.users.all()
             context['user_id'] = self.request.user.id
-        bg_color = rgb_color_generator(string).split(",")
-        context['bg_color'] = bg_color
+        if self.object.logo_rgb_color:
+            bg_color = rgb_color_generator(self.object.logo_rgb_color).split(",")
+            context['bg_color'] = bg_color
+            self.request.session['text_color'] = bg_color[1]
+            self.request.session['bg_color'] = bg_color[0]
         context['services_categories'] = get_categories_by_business(business=self.object)
         context['professional_list'] = get_professionals_by_business(business=self.object)
         context['phone_and_address_list'] = get_phones_by_addresses_by_business(business=self.object)
         self.request.session['business_slug'] = self.object.slug
         self.request.session['business_title'] = self.object.title
-        self.request.session['text_color'] = bg_color[1]
-        self.request.session['bg_color'] = bg_color[0]
 
         return context
 
 
 class BusinessWizardCreateView(LoginRequiredMixin, SuccessMessageMixin, SessionWizardView):
-    form_list = [BusinessCreateForm1, BusinessCreateForm1,]
+    form_list = [BusinessCreateForm1, BusinessCreateForm2, BusinessCreateForm3]
     template_name = 'businesses/business_wizard_create.html'
     success_message = "Salão criado com sucesso!"
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'business_storage'))
+
+    def get_context_data(self, **kwargs):
+        context = super(BusinessWizardCreateView, self).get_context_data(**kwargs)
+        if 'business_name' in self.request.session:
+            business_name = self.request.session['business_name']
+            del self.request.session['business_name']
+            context['business_name'] = business_name
+        if 'business_email' in self.request.session:
+            business_name = self.request.session['business_email']
+            del self.request.session['business_email']
+            context['business_email'] = business_name
+        if 'business_federal_id' in self.request.session:
+            business_federal_id = self.request.session['business_federal_id']
+            del self.request.session['business_federal_id']
+            context['business_federal_id'] = business_federal_id
+
+        return context
+
+    def get_form_kwargs(self, step=None):
+        kwargs = super(BusinessWizardCreateView, self).get_form_kwargs(step)
+
+        if step == '1':
+            business_name = self.get_cleaned_data_for_step('0')['title']
+            self.request.session['business_name'] = business_name
+
+        if step == '2':
+            business_email = self.get_cleaned_data_for_step('1')['email']
+            self.request.session['business_email'] = business_email
+            business_federal_id = self.get_cleaned_data_for_step('1')['federal_id']
+            self.request.session['business_federal_id'] = business_federal_id
+
+        return kwargs
 
     def done(self, form_list, **kwargs):
         # get merged dictionary from all fields
         form_dict = self.get_all_cleaned_data()
         business = BusinessModel()
         business.created_by = self.request.user
-        business.owners.add(self.request.user)
         business.created = timezone.now()
         for k, v in form_dict.items():
             if k != 'tags':
                 setattr(business, k, v)
+        business.save()
+        business.owners.add(self.request.user)
+        business.users.add(self.request.user)
         business.save()
 
         return HttpResponseRedirect(reverse("business_detail", kwargs={'slug': business.slug}))

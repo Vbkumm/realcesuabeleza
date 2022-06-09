@@ -1,6 +1,7 @@
 from django import forms
 from django.core.validators import RegexValidator
 from django.contrib.auth import get_user_model
+from lib.templatetags.validators import FEDERAL_ID_VALIDATE
 from .models import BusinessModel
 
 
@@ -36,11 +37,7 @@ class BusinessCreateForm1(forms.ModelForm):
 class BusinessCreateForm2(forms.ModelForm):
     federal_id = forms.CharField(label='Caso não possua CNPJ informe seu CPF', required=False,
                                  widget=forms.TextInput(attrs={'placeholder': 'Numero de CNPJ ou CPF'}),
-                                 validators=[
-                                     RegexValidator(
-                                         '([0-9]{2}[\.]?[0-9]{3}[\.]?[0-9]{3}[\/]?[0-9]{4}[-]?[0-9]{2})|([0-9]{3}[\.]?[0-9]{3}[\.]?[0-9]{3}[-]?[0-9]{2})',
-                                         message="CNPJ ou CPF inválido!"
-                                     )]
+                                 validators=[FEDERAL_ID_VALIDATE]
                                  )
 
     email = forms.EmailField(label='E-mail', max_length=254, required=False,

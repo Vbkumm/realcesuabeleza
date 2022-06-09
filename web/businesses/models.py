@@ -40,7 +40,7 @@ class BusinessModel(models.Model):
     email = models.EmailField(verbose_name='business email address', max_length=255, unique=True,)
     description = models.CharField('Descrição do salão*', max_length=1000, null=True, blank=True)
     birth_date = models.CharField('Data de criação do salão*',max_length=150, blank=True, null=True)
-    federal_id = models.CharField(blank=True, max_length=20, null=True, unique=True, verbose_name='cnpj')
+    federal_id = models.CharField(blank=True, max_length=20, null=True, verbose_name='cnpj')
     owners = models.ManyToManyField(User, related_name='business_owners', blank=True)#donos do salao
     users = models.ManyToManyField(User, related_name='business_users', blank=True)#usuarios da plataforma q frequentam o salao
     is_active = models.BooleanField(default=True, help_text='Designates whether this business should be treated as active. Unselect this instead of deleting business.', verbose_name='business active')
@@ -82,7 +82,6 @@ class BusinessModel(models.Model):
         else:
             qr_code_img = qr_code_generator(self.slug)
         qr_code_img.save(qrcode_io, format='JPEG', quality=100)
-        webp.save_image(qr_code_img, self.slug + ".webp", quality=99)
         self.qrcode_img.save(self.slug + ".webp", ContentFile(qrcode_io.getvalue()), save=False)
 
         super(BusinessModel, self).save(*args, **kwargs)
@@ -197,3 +196,4 @@ def get_phones_by_addresses_by_business(business=None):
             address_and_phone.append([address, phones])
 
     return address_and_phone
+

@@ -136,4 +136,13 @@
 
 {% block javascript %}
 
-{% endblock %}
+    <script src="{% static 'js/jquery-slim.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    <script>
+        $('.navbar-nav>li>a').on('click', function(){
+            $('.navbar-collapse').collapse('hide');
+        });
+    </script>
+
+    {% endblock %}

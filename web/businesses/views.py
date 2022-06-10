@@ -77,7 +77,11 @@ class BusinessDetailView(DetailView):
             bg_color = rgb_color_generator(self.object.logo_rgb_color).split(",")
             context['bg_color'] = bg_color
             self.request.session['text_color'] = bg_color[1]
-            self.request.session['bg_color'] = bg_color[0]
+            self.request.session['background_color'] = bg_color[0]
+            nav_color = 'light'
+            if bg_color[1] == 'light':
+                nav_color = 'dark'
+            self.request.session['nav_color'] = nav_color
         context['services_categories'] = get_categories_by_business(business=self.object)
         context['professional_list'] = get_professionals_by_business(business=self.object)
         context['phone_and_address_list'] = get_phones_by_addresses_by_business(business=self.object)

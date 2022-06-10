@@ -9,30 +9,31 @@
         <h6 class="text-light ml-auto mr-auto mt-2 ml-md-2 mr-md-2">realcesuabeleza.com.br</h6>
 
         <div class="collapse navbar-collapse" id="conteudoNavbarSuportado">
-            <div class="row justify-content-between">
 
+            <div class="row justify-content-between">
                 <div id="topbar" class="col-12">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="collapse" data-target=".navbar-collapse" id="aboutlink" href="#">Nosso app</a>
+                            <a class="nav-link" href="/#aboutlink">Nosso app</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="collapse" data-target=".navbar-collapse" id="funcionalidadeslink" href="#">Funcionalidades</a>
+                            <a class="nav-link" href="/#funcionalidadeslink">Funcionalidades</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="collapse" data-target=".navbar-collapse" id="planoslink" href="#">Planos</a>
+                            <a class="nav-link" href="/#planoslink">Planos</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="collapse" data-target=".navbar-collapse" id="cadastrolink" href="#">Faça parte</a>
+                            <a class="nav-link" href="{% url 'business_create' %}">Faça parte</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="collapse" data-target=".navbar-collapse" id="contatolink" href="#">Contato</a>
+                            <a class="nav-link" href="/#contatolink">Contato</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
+
         {% if user.is_authenticated %}
         <div class="text-white order-3">
             <form method="post" class="text-light" action="{% url 'account_logout' %}">
@@ -52,7 +53,6 @@
             </li>
         </div>
         {% endif %}
-
     </div>
 
 </nav>

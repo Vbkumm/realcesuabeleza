@@ -116,6 +116,7 @@ class BusinessAddressModel(models.Model):
     zip_code = models.CharField('CEP', max_length=9, null=True, blank=True)
     street = models.CharField('Rua', max_length=100, null=True, blank=True)
     street_number = models.CharField('Numero', max_length=100, null=True, blank=True)
+    complement = models.CharField('Complemento', max_length=200, null=True, blank=True)
     district = models.CharField('Bairro', max_length=100, null=True, blank=True)
     city = models.CharField('Cidade', max_length=100, null=True, blank=True)
     state = models.CharField('Estado', max_length=100, null=True, blank=True)

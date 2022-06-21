@@ -1,8 +1,9 @@
 from django import forms
 from django.core.validators import RegexValidator
 from django.contrib.auth import get_user_model
+from localflavor.br.forms import BRZipCodeField
 from lib.templatetags.validators import FEDERAL_ID_VALIDATE
-from .models import BusinessModel
+from .models import BusinessModel, BusinessAddressModel
 
 
 User = get_user_model()
@@ -79,3 +80,17 @@ class BusinessCreateForm4(forms.ModelForm):
     class Meta:
         model = BusinessModel
         fields = ['birth_date', ]
+
+
+class BusinessAddressForm(forms.ModelForm):
+    zip_code = BRZipCodeField(label='CEP', max_length=9, required=False)
+    street = forms.CharField(label='Rua', max_length=100, required=False)
+    district = forms.CharField(label='Bairro', max_length=100, required=False)
+    city = forms.CharField(label='Cidade', max_length=100, required=False)
+    state = forms.CharField(label='Estado', max_length=100, required=False)
+
+    class Meta:
+        model = BusinessAddressModel
+
+        fields = ['zip_code', 'street', 'street_number', 'complement', 'district', 'city', 'state', ]
+

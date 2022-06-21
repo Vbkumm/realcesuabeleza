@@ -11,7 +11,7 @@ from django.core.files.storage import FileSystemStorage
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from realcesuabeleza import settings
-from django.views.generic import ListView, DetailView, DeleteView, UpdateView
+from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
 
 from .models import (BusinessModel,
                      BusinessAddressModel,
@@ -20,7 +20,8 @@ from .models import (BusinessModel,
 from .forms import (BusinessUserInnForm,
                     BusinessCreateForm1,
                     BusinessCreateForm2,
-                    BusinessCreateForm3,)
+                    BusinessCreateForm3,
+                    BusinessAddressForm,)
 from .utils import rgb_color_generator
 from .serializers import (BusinessSerializer,
                           BusinessAddressSerializer,
@@ -197,6 +198,30 @@ class BusinessAddressDetailView(DetailView):
     template_name = 'businesses/business_address_detail.html'
     pk_url_kwarg = 'pk'
     #context_object_name = 'business_address'
+
+
+class BusinessAddressCreateView(SuccessMessageMixin, CreateView):
+    model = BusinessAddressModel
+    template_name = 'businesses/business_address_create.html'
+    form_class = BusinessAddressForm
+    pk_url_kwarg = 'pk'
+    success_message = "Endereço adicionado com sucesso!"
+
+    def get_context_data(self, **kwargs):
+        context = super(BusinessAddressCreateView, self).get_context_data(**kwargs)
+        business_slug = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        context['business_slug'] = business_slug
+        return context
+
+    def form_valid(self, model):
+        model.instance.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        model.instance.created_by = self.request.user
+        model.instance.created = timezone.now()
+        return super(BusinessAddressCreateView, self).form_valid(model)
+
+    def get_success_url(self):
+        business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        return reverse_lazy('business_detail', kwargs={'slug': business.slug})
 
 
 class BusinessPhoneViewSet(viewsets.ViewSet):

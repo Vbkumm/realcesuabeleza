@@ -24,3 +24,4 @@ django-widget-tweaks==1.4.12
 django-bootstrap4==22.1
 django_crispy_forms==1.14.0
 django-formtools==2.3
+django-localflavor==3.1

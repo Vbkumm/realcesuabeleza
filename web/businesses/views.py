@@ -11,8 +11,9 @@ from django.core.files.storage import FileSystemStorage
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from realcesuabeleza import settings
+from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
-
+from lib.templatetags.permissions import requires_business_owner_or_app_staff
 from .models import (BusinessModel,
                      BusinessAddressModel,
                      BusinessPhoneModel,
@@ -144,7 +145,7 @@ class BusinessWizardCreateView(LoginRequiredMixin, SuccessMessageMixin, SessionW
         business.users.add(self.request.user)
         business.save()
 
-        return HttpResponseRedirect(reverse("business_detail", kwargs={'slug': business.slug}))
+        return HttpResponseRedirect(reverse("business_address_create", kwargs={'slug': business.slug}))
 
 
 @login_required
@@ -200,7 +201,8 @@ class BusinessAddressDetailView(DetailView):
     #context_object_name = 'business_address'
 
 
-class BusinessAddressCreateView(SuccessMessageMixin, CreateView):
+@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
+class BusinessAddressCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = BusinessAddressModel
     template_name = 'businesses/business_address_create.html'
     form_class = BusinessAddressForm

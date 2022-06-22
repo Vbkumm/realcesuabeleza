@@ -89,8 +89,14 @@ class BusinessAddressForm(forms.ModelForm):
     city = forms.CharField(label='Cidade', max_length=100, required=False)
     state = forms.CharField(label='Estado', max_length=100, required=False)
 
+    def __init__(self, *args, **kwargs):
+        super(BusinessAddressForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'col-md-6'
+
     class Meta:
         model = BusinessAddressModel
 
         fields = ['zip_code', 'street', 'street_number', 'complement', 'district', 'city', 'state', ]
+
 

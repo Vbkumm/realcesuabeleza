@@ -4,7 +4,7 @@ from .views import (BusinessViewSet,
                     user_business_add,
                     BusinessAddressDetailView,
                     BusinessWizardCreateView,
-                    BusinessAddressCreateView,
+                    BusinessAddressWizardCreateView,
                     )
 from main.views import TermsView, CookiesView
 
@@ -22,7 +22,7 @@ urlpatterns = [
     path('business_create/', BusinessWizardCreateView.as_view(), name='business_create'),
     path('<str:slug>/', BusinessDetailView.as_view(), name='business_detail'),
     path('<str:slug>/user_business_add/', user_business_add, name='user_business_add'),
-    path('<str:slug>/business_address_create/', BusinessAddressCreateView.as_view(), name='business_address_create'),
+    path('<str:slug>/business_address_create/', BusinessAddressWizardCreateView.as_view(), name='business_address_create'),
     path('<str:slug>/address/<int:pk>', BusinessAddressDetailView.as_view(), name='business_address_detail'),
     path('<str:slug>/terms/', TermsView.as_view(), name="terms"),
     path('<str:slug>/cookies/', CookiesView.as_view(), name="cookies"),

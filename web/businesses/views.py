@@ -22,7 +22,9 @@ from .forms import (BusinessUserInnForm,
                     BusinessCreateForm1,
                     BusinessCreateForm2,
                     BusinessCreateForm3,
-                    BusinessAddressForm,)
+                    BusinessAddressForm1,
+                    BusinessAddressForm2,
+                    BusinessAddressForm3,)
 from .utils import rgb_color_generator
 from .serializers import (BusinessSerializer,
                           BusinessAddressSerializer,
@@ -201,31 +203,48 @@ class BusinessAddressDetailView(DetailView):
     #context_object_name = 'business_address'
 
 
-@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
-class BusinessAddressCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
-    model = BusinessAddressModel
-    template_name = 'businesses/business_address_create.html'
-    form_class = BusinessAddressForm
-    pk_url_kwarg = 'pk'
-    success_message = "Endereço adicionado com sucesso!"
+#acrecentar mixiowner
+class BusinessAddressWizardCreateView(LoginRequiredMixin, SuccessMessageMixin, SessionWizardView):
+    form_list = [BusinessAddressForm1, BusinessAddressForm2, BusinessAddressForm3]
+    template_name = 'businesses/business_address_wizard_create.html'
+    success_message = "Salão criado com sucesso!"
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'business_address_storage'))
 
     def get_context_data(self, **kwargs):
-        context = super(BusinessAddressCreateView, self).get_context_data(**kwargs)
+        context = super(BusinessAddressWizardCreateView, self).get_context_data(**kwargs)
         business_slug = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
         context['business_slug'] = business_slug
         return context
 
-    def form_valid(self, model):
-        model.instance.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
-        model.instance.created_by = self.request.user
-        model.instance.created = timezone.now()
-        return super(BusinessAddressCreateView, self).form_valid(model)
+    def get_form_kwargs(self, step=None):
+        kwargs = super(BusinessAddressWizardCreateView, self).get_form_kwargs(step)
 
-    def get_success_url(self):
-        business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
-        return reverse_lazy('business_detail', kwargs={'slug': business.slug})
+        if step == '1':
+            street = self.get_cleaned_data_for_step('0')['street']
+            self.request.session['street'] = street
+
+        if step == '2':
+            street_number = self.get_cleaned_data_for_step('1')['street_number']
+            self.request.session['street_number'] = street_number
+
+        return kwargs
+
+    def done(self, form_list, **kwargs):
+        # get merged dictionary from all fields
+        form_dict = self.get_all_cleaned_data()
+        business_address = BusinessAddressModel()
+        business_address.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        business_address.created_by = self.request.user
+        business_address.created = timezone.now()
+        for k, v in form_dict.items():
+            if k != 'tags':
+                setattr(business_address, k, v)
+        business_address.save()
+
+        return HttpResponseRedirect(reverse("business_detail", kwargs={'slug': business_address.business.slug}))
 
 
+@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
 class BusinessPhoneViewSet(viewsets.ViewSet):
 
     def list(self, request, *args, **kwargs):
@@ -256,5 +275,3 @@ class BusinessPhoneViewSet(viewsets.ViewSet):
         business_phone = BusinessPhoneModel.objects.get(id=kwargs['pk'])
         business_phone.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-

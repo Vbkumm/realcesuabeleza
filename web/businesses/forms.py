@@ -82,21 +82,45 @@ class BusinessCreateForm4(forms.ModelForm):
         fields = ['birth_date', ]
 
 
-class BusinessAddressForm(forms.ModelForm):
+class BusinessAddressForm1(forms.ModelForm):
     zip_code = BRZipCodeField(label='CEP', max_length=9, required=False)
     street = forms.CharField(label='Rua', max_length=100, required=False)
-    district = forms.CharField(label='Bairro', max_length=100, required=False)
-    city = forms.CharField(label='Cidade', max_length=100, required=False)
-    state = forms.CharField(label='Estado', max_length=100, required=False)
 
     def __init__(self, *args, **kwargs):
-        super(BusinessAddressForm, self).__init__(*args, **kwargs)
+        super(BusinessAddressForm1, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'col-md-6'
 
     class Meta:
         model = BusinessAddressModel
 
-        fields = ['zip_code', 'street', 'street_number', 'complement', 'district', 'city', 'state', ]
+        fields = ['zip_code', 'street', ]
 
 
+class BusinessAddressForm2(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(BusinessAddressForm2, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'col-md-6'
+
+    class Meta:
+        model = BusinessAddressModel
+
+        fields = ['street_number', 'complement',]
+
+
+class BusinessAddressForm3(forms.ModelForm):
+    district = forms.CharField(label='Bairro', max_length=100, required=False)
+    city = forms.CharField(label='Cidade', max_length=100, required=False)
+    state = forms.CharField(label='Estado', max_length=100, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(BusinessAddressForm3, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'col-md-6'
+
+    class Meta:
+        model = BusinessAddressModel
+
+        fields = ['district', 'city', 'state', ]

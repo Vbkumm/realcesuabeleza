@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from realcesuabeleza import settings
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
-from lib.templatetags.permissions import requires_business_owner_or_app_staff
+from lib.templatetags.permissions import requires_business_owner_or_app_staff, IsBusinesssOwnerOrStaff
 from .models import (BusinessModel,
                      BusinessAddressModel,
                      BusinessPhoneModel,
@@ -204,7 +204,7 @@ class BusinessAddressDetailView(DetailView):
 
 
 #acrecentar mixiowner
-class BusinessAddressWizardCreateView(LoginRequiredMixin, SuccessMessageMixin, SessionWizardView):
+class BusinessAddressWizardCreateView(IsBusinesssOwnerOrStaff, LoginRequiredMixin, SuccessMessageMixin, SessionWizardView):
     form_list = [BusinessAddressForm1, BusinessAddressForm2, BusinessAddressForm3]
     template_name = 'businesses/business_address_wizard_create.html'
     success_message = "Salão criado com sucesso!"
@@ -214,6 +214,7 @@ class BusinessAddressWizardCreateView(LoginRequiredMixin, SuccessMessageMixin, S
         context = super(BusinessAddressWizardCreateView, self).get_context_data(**kwargs)
         business_slug = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
         context['business_slug'] = business_slug
+        print(business_slug)
         return context
 
     def get_form_kwargs(self, step=None):

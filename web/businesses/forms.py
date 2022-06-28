@@ -100,6 +100,7 @@ class BusinessAddressForm1(forms.ModelForm):
 class BusinessAddressForm2(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
+        self.zip_code = kwargs.pop('zip_code', None)
         super(BusinessAddressForm2, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'col-md-6'
@@ -111,16 +112,21 @@ class BusinessAddressForm2(forms.ModelForm):
 
 
 class BusinessAddressForm3(forms.ModelForm):
+    zip_code = BRZipCodeField(label='', max_length=9, required=False)
     district = forms.CharField(label='Bairro', max_length=100, required=False)
     city = forms.CharField(label='Cidade', max_length=100, required=False)
     state = forms.CharField(label='Estado', max_length=100, required=False)
 
     def __init__(self, *args, **kwargs):
+        self.zip_code = kwargs.pop('zip_code', None)
+        print(f'for3 zip {self.zip_code}')
         super(BusinessAddressForm3, self).__init__(*args, **kwargs)
+        self.fields['zip_code'].widget = forms.HiddenInput()
+        self.fields['zip_code'].initial = self.zip_code
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'col-md-6'
 
     class Meta:
         model = BusinessAddressModel
 
-        fields = ['district', 'city', 'state', ]
+        fields = ['zip_code', 'district', 'city', 'state', ]

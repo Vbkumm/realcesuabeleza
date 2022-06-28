@@ -214,19 +214,23 @@ class BusinessAddressWizardCreateView(IsBusinesssOwnerOrStaff, LoginRequiredMixi
         context = super(BusinessAddressWizardCreateView, self).get_context_data(**kwargs)
         business_slug = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
         context['business_slug'] = business_slug
-        print(business_slug)
+
         return context
 
     def get_form_kwargs(self, step=None):
         kwargs = super(BusinessAddressWizardCreateView, self).get_form_kwargs(step)
 
         if step == '1':
+            zip_code = self.get_cleaned_data_for_step('0')['zip_code']
             street = self.get_cleaned_data_for_step('0')['street']
             self.request.session['street'] = street
+            self.request.session['zip_code'] = zip_code
 
         if step == '2':
+            zip_code = self.get_cleaned_data_for_step('0')['zip_code']
             street_number = self.get_cleaned_data_for_step('1')['street_number']
             self.request.session['street_number'] = street_number
+            kwargs.update({'zip_code': zip_code,})
 
         return kwargs
 

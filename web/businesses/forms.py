@@ -85,9 +85,15 @@ class BusinessCreateForm4(forms.ModelForm):
 class BusinessAddressForm1(forms.ModelForm):
     zip_code = BRZipCodeField(label='CEP', max_length=9, required=False)
     street = forms.CharField(label='Rua', max_length=100, required=False)
+    district = forms.CharField(label='', max_length=100, required=False)
+    city = forms.CharField(label='', max_length=100, required=False)
+    state = forms.CharField(label='', max_length=100, required=False)
 
     def __init__(self, *args, **kwargs):
         super(BusinessAddressForm1, self).__init__(*args, **kwargs)
+        self.fields['district'].widget = forms.HiddenInput()
+        self.fields['city'].widget = forms.HiddenInput()
+        self.fields['state'].widget = forms.HiddenInput()
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'col-md-6'
 
@@ -112,21 +118,22 @@ class BusinessAddressForm2(forms.ModelForm):
 
 
 class BusinessAddressForm3(forms.ModelForm):
-    zip_code = BRZipCodeField(label='', max_length=9, required=False)
     district = forms.CharField(label='Bairro', max_length=100, required=False)
     city = forms.CharField(label='Cidade', max_length=100, required=False)
     state = forms.CharField(label='Estado', max_length=100, required=False)
 
     def __init__(self, *args, **kwargs):
-        self.zip_code = kwargs.pop('zip_code', None)
-        print(f'for3 zip {self.zip_code}')
+        self.district = kwargs.pop('district', None)
+        self.city = kwargs.pop('city', None)
+        self.state = kwargs.pop('state', None)
         super(BusinessAddressForm3, self).__init__(*args, **kwargs)
-        self.fields['zip_code'].widget = forms.HiddenInput()
-        self.fields['zip_code'].initial = self.zip_code
+        self.fields['district'].initial = self.district
+        self.fields['city'].initial = self.city
+        self.fields['state'].initial = self.state
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'col-md-6'
 
     class Meta:
         model = BusinessAddressModel
 
-        fields = ['zip_code', 'district', 'city', 'state', ]
+        fields = ['district', 'city', 'state', ]

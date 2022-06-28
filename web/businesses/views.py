@@ -227,10 +227,15 @@ class BusinessAddressWizardCreateView(IsBusinesssOwnerOrStaff, LoginRequiredMixi
             self.request.session['zip_code'] = zip_code
 
         if step == '2':
-            zip_code = self.get_cleaned_data_for_step('0')['zip_code']
             street_number = self.get_cleaned_data_for_step('1')['street_number']
             self.request.session['street_number'] = street_number
-            kwargs.update({'zip_code': zip_code,})
+            district = self.get_cleaned_data_for_step('0')['district']
+            city = self.get_cleaned_data_for_step('0')['city']
+            state = self.get_cleaned_data_for_step('0')['state']
+            kwargs.update({'district': district,
+                           'city': city,
+                           'state': state,
+                           })
 
         return kwargs
 

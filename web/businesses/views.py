@@ -73,7 +73,18 @@ class BusinessDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(BusinessDetailView, self).get_context_data(**kwargs)
-
+        if 'zip_code' in self.request.session:
+            del self.request.session['zip_code']
+        if 'street' in self.request.session:
+            del self.request.session['street']
+        if 'street_number' in self.request.session:
+            del self.request.session['street_number']
+        if 'district' in self.request.session:
+            del self.request.session['district']
+        if 'city' in self.request.session:
+            del self.request.session['city']
+        if 'state' in self.request.session:
+            del self.request.session['state']
         if self.request.user:
             context['user_in'] = self.request.user in self.object.users.all()
             context['user_id'] = self.request.user.id
@@ -212,6 +223,19 @@ class BusinessAddressWizardCreateView(IsBusinesssOwnerOrStaff, LoginRequiredMixi
 
     def get_context_data(self, **kwargs):
         context = super(BusinessAddressWizardCreateView, self).get_context_data(**kwargs)
+        if 'zip_code' in self.request.session:
+            del self.request.session['zip_code']
+        if 'street' in self.request.session:
+            del self.request.session['street']
+        if 'street_number' in self.request.session:
+            del self.request.session['street_number']
+        if 'district' in self.request.session:
+            del self.request.session['district']
+        if 'city' in self.request.session:
+            del self.request.session['city']
+        if 'state' in self.request.session:
+            del self.request.session['state']
+
         business_slug = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
         context['business_slug'] = business_slug
 

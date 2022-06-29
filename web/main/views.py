@@ -12,6 +12,18 @@ def home_view(request, *args, **kwargs):
         del request.session['text_color']
     if 'bg_color' in request.session:
         del request.session['bg_color']
+    if 'zip_code' in request.session:
+        del request.session['zip_code']
+    if 'street' in request.session:
+        del request.session['street']
+    if 'street_number' in request.session:
+        del request.session['street_number']
+    if 'district' in request.session:
+        del request.session['district']
+    if 'city' in request.session:
+        del request.session['city']
+    if 'state' in request.session:
+        del request.session['state']
 
     return render(request, "home.html")
 

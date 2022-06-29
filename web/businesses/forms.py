@@ -3,7 +3,7 @@ from django.core.validators import RegexValidator
 from django.contrib.auth import get_user_model
 from localflavor.br.forms import BRZipCodeField
 from lib.templatetags.validators import FEDERAL_ID_VALIDATE
-from .models import BusinessModel, BusinessAddressModel
+from .models import BusinessModel, BusinessAddressModel, BusinessPhoneModel
 
 
 User = get_user_model()
@@ -137,3 +137,11 @@ class BusinessAddressForm3(forms.ModelForm):
         model = BusinessAddressModel
 
         fields = ['district', 'city', 'state', ]
+
+
+class BusinessPhoneForm(forms.ModelForm):
+    phone = forms.CharField(label='Numero do telefone', max_length=150, required=False,)
+
+    class Meta:
+        model = BusinessPhoneModel
+        fields = ['phone', 'is_whatsapp',]

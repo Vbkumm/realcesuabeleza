@@ -24,7 +24,8 @@ from .forms import (BusinessUserInnForm,
                     BusinessCreateForm3,
                     BusinessAddressForm1,
                     BusinessAddressForm2,
-                    BusinessAddressForm3,)
+                    BusinessAddressForm3,
+                    BusinessPhoneForm,)
 from .utils import rgb_color_generator
 from .serializers import (BusinessSerializer,
                           BusinessAddressSerializer,
@@ -73,6 +74,12 @@ class BusinessDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(BusinessDetailView, self).get_context_data(**kwargs)
+        if 'business_name' in self.request.session:
+            del self.request.session['business_name']
+        if 'business_email' in self.request.session:
+            del self.request.session['business_email']
+        if 'business_federal_id' in self.request.session:
+            del self.request.session['business_federal_id']
         if 'zip_code' in self.request.session:
             del self.request.session['zip_code']
         if 'street' in self.request.session:
@@ -275,7 +282,7 @@ class BusinessAddressWizardCreateView(IsBusinesssOwnerOrStaff, LoginRequiredMixi
                 setattr(business_address, k, v)
         business_address.save()
 
-        return HttpResponseRedirect(reverse("business_detail", kwargs={'slug': business_address.business.slug}))
+        return HttpResponseRedirect(reverse("business_phone_create", kwargs={'slug': business_address.business.slug, 'pk': business_address.pk}))
 
 
 @method_decorator(requires_business_owner_or_app_staff, name='dispatch')
@@ -309,3 +316,30 @@ class BusinessPhoneViewSet(viewsets.ViewSet):
         business_phone = BusinessPhoneModel.objects.get(id=kwargs['pk'])
         business_phone.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
+class BusinessPhoneCreateView(SuccessMessageMixin, CreateView):
+    model = BusinessPhoneModel
+    template_name = 'businesses/business_phone_create.html'
+    form_class = BusinessPhoneForm
+    pk_url_kwarg = 'pk'
+    success_message = "Telefone adicionado com sucesso!"
+
+    def get_context_data(self, **kwargs):
+        context = super(BusinessPhoneCreateView, self).get_context_data(**kwargs)
+        business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        context['business_slug'] = business
+        return context
+
+    def form_valid(self, model):
+
+        model.instance.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        model.instance.address = get_object_or_404(BusinessAddressModel, pk=self.kwargs.get('pk'))
+        model.instance.created_by = self.request.user
+        model.instance.created = timezone.now()
+        return super(BusinessPhoneCreateView, self).form_valid(model)
+
+    def get_success_url(self):
+        business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        return reverse_lazy('business_detail', kwargs={'slug': business.slug})

@@ -145,7 +145,9 @@ def get_addresses_by_business(business=None):
 
 
 class BusinessPhoneModel(models.Model):
+    business = models.ForeignKey(BusinessModel, related_name='business_phone', on_delete=models.CASCADE, null=True, blank=True)
     address = models.ForeignKey(BusinessAddressModel, related_name='business_address_phone', on_delete=models.CASCADE, null=True, blank=True)
+    is_whatsapp = models.BooleanField(default=True, help_text='Designates whether this phone should be treated as whatsapp. Unselect this if not whatsapp.', verbose_name='phone whatsapp')
     is_active = models.BooleanField(default=True, help_text='Designates whether this phone should be treated as active. Unselect this instead of deleting phone.', verbose_name='phone active')
     phone = models.CharField('Telefone', max_length=150, null=True, blank=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)

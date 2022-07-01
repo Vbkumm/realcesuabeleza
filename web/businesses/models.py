@@ -1,6 +1,8 @@
+import os
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.core.files.images import get_image_dimensions
 from django.utils import timezone
 from lib.templatetags.validators import validate_file_extension
 from django.dispatch import receiver
@@ -31,11 +33,6 @@ class BusinessManager(models.Manager):
 
 class BusinessModel(models.Model):
     title = models.CharField(max_length=150)
-    logo_url = models.URLField(null=True)
-    logo_img = models.FileField(upload_to='img/businesses_logo/', blank=True, null=True, validators=[validate_file_extension])
-    logo_rgb_color = models.CharField(max_length=150, null=True)
-    favicon = models.FileField(upload_to='img/businesses_favicon/', blank=True, null=True, validators=[validate_file_extension])
-    qrcode_img = models.FileField(upload_to='img/businesses_qr_code/', blank=True, null=True, validators=[validate_file_extension])
     slug = models.CharField(unique=True, max_length=150)
     email = models.EmailField(verbose_name='business email address', max_length=255, unique=True,)
     description = models.CharField('Descrição do salão*', max_length=1000, null=True, blank=True)
@@ -62,27 +59,6 @@ class BusinessModel(models.Model):
     def save(self, *args, **kwargs):
 
         self.slug = slugify(self.slug).lower()
-        icon_io = BytesIO()
-        thumb_io = BytesIO()
-        qrcode_io = BytesIO()
-        if self.logo_img:
-            logo_img = get_logo_img(self.logo_img)
-            logo_img.save(thumb_io, format='JPEG', quality=100)
-            rgb = get_logo_rgb(logo_img)
-            self.logo_rgb_color = rgb
-            qr_code_img = qr_code_generator(self.slug, rgb)
-            logo_img = get_logo_img(self.logo_img)
-            logo_pos = ((qr_code_img.size[0] - logo_img.size[0]) // 2, (qr_code_img.size[1] - logo_img.size[1]) // 2)
-            qr_code_img.paste(logo_img, logo_pos)
-            webp.save_image(logo_img, self.slug + ".webp", quality=99)
-            self.logo_img.save(self.slug + ".webp", ContentFile(thumb_io.getvalue()), save=False)
-            favicon = get_favicon(self.logo_img)
-            favicon.save(icon_io, format='JPEG', quality=80)
-            self.favicon.save(self.slug + ".ico", ContentFile(icon_io.getvalue()), save=False)
-        else:
-            qr_code_img = qr_code_generator(self.slug)
-        qr_code_img.save(qrcode_io, format='JPEG', quality=100)
-        self.qrcode_img.save(self.slug + ".webp", ContentFile(qrcode_io.getvalue()), save=False)
 
         super(BusinessModel, self).save(*args, **kwargs)
 
@@ -102,12 +78,77 @@ class BusinessModel(models.Model):
 
         return self.title
 
-    def get_qr_code(self):
-        return qr_code_generator(self.slug)
+    # def get_qr_code(self):
+    #     return qr_code_generator(self.slug)
 
     def get_business_by_owner(self, user):
 
         return self.objects.get_queryset(owners__in=user)
+
+
+class BusinessLogoQrcodeModel(models.Model):
+    business = models.ForeignKey(BusinessModel, related_name='business_logo', on_delete=models.CASCADE, null=True, blank=True)
+    logo_img = models.FileField(upload_to='img/businesses_logo/', blank=True, null=True, validators=[validate_file_extension])
+    logo_rgb_color = models.CharField(max_length=150, null=True)
+    favicon = models.FileField(upload_to='img/businesses_favicon/', blank=True, null=True, validators=[validate_file_extension])
+    qrcode_img = models.FileField(upload_to='img/businesses_qr_code/', blank=True, null=True, validators=[validate_file_extension])
+    is_active = models.BooleanField(default=True, help_text='Designates whether this business should be treated as active. Unselect this instead of deleting business.', verbose_name='business active')
+    updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
+    updated_at = models.DateTimeField(null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "business_logo_qrcode_list"
+        verbose_name = "business_logo_qrcode"
+        db_table = 'business_logo_qrcode_db'
+
+    def __str__(self):
+        return self.logo_img.name.replace("img/businesses_logo/", "")
+
+    @receiver(post_save, sender=BusinessModel)
+    def get_object_created(sender, instance, created, **kwargs):
+        if created:
+            business_logo_qrcode = BusinessLogoQrcodeModel.objects.create(business=instance)
+            business_logo_qrcode.created_by = instance.created_by
+            business_logo_qrcode.created = instance.created
+            business_logo_qrcode.save()
+
+    def filename(self):
+        return os.path.basename(self.logo_img.name)
+
+    def get_dimensions(self):
+        obj = self
+        if obj.logo_img:
+            width, height = get_image_dimensions(obj.logo_img)
+            return [width, height]
+
+    def save(self, *args, **kwargs):
+
+        slug = self.business.slug
+        icon_io = BytesIO()
+        thumb_io = BytesIO()
+        qrcode_io = BytesIO()
+        if self.logo_img:
+            logo_img = get_logo_img(self.logo_img)
+            logo_img.save(thumb_io, format='JPEG', quality=100)
+            rgb = get_logo_rgb(logo_img)
+            self.logo_rgb_color = rgb
+            qr_code_img = qr_code_generator(slug, rgb)
+            logo_img = get_logo_img(self.logo_img)
+            logo_pos = ((qr_code_img.size[0] - logo_img.size[0]) // 2, (qr_code_img.size[1] - logo_img.size[1]) // 2)
+            qr_code_img.paste(logo_img, logo_pos)
+            webp.save_image(logo_img, slug + ".webp", quality=99)
+            self.logo_img.save(slug + ".webp", ContentFile(thumb_io.getvalue()), save=False)
+            favicon = get_favicon(self.logo_img)
+            favicon.save(icon_io, format='JPEG', quality=80)
+            self.favicon.save(slug + ".ico", ContentFile(icon_io.getvalue()), save=False)
+        else:
+            qr_code_img = qr_code_generator(slug)
+        qr_code_img.save(qrcode_io, format='JPEG', quality=100)
+        self.qrcode_img.save(slug + ".webp", ContentFile(qrcode_io.getvalue()), save=False)
+
+        super(BusinessLogoQrcodeModel, self).save(*args, **kwargs)
 
 
 class BusinessAddressModel(models.Model):

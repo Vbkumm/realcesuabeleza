@@ -2,10 +2,10 @@
 {% load static %}
 {% block head_title %}{{ business.title|slice:":35" }}{% endblock %}
 {% block head %}
-
-<link rel="shortcut icon" href="{{MEDIA_URL}}{{ business.favicon }}" type="image/x-icon">
-<link rel=icon href="{{MEDIA_URL}}{{ business.favicon }}" type="image/x-icon">
-
+{% if favicon %}
+<link rel="shortcut icon" href="{{MEDIA_URL}}{{ favicon }}" type="image/x-icon">
+<link rel=icon href="{{MEDIA_URL}}{{ favicon }}" type="image/x-icon">
+{% endif %}
 {% endblock %}
 
 {% block stylesheet %}
@@ -101,9 +101,11 @@
                 <h6>Contato</h6>
             </div>
             <div class="row justify-items-center">
+                {% if qr_code %}
                 <div class="col-12 col-md-6">
-                    <img src="{{MEDIA_URL}}{{ business.qrcode_img }}" alt="qr_code{{ business.qrcode_img.name }}">
+                    <img src="{{MEDIA_URL}}{{ qr_code }}" alt="qr_code{{ qr_code.name }}">
                 </div>
+                {% endif %}
                 <div class="col-12 col-md-6">
                     {% for address, phones in phone_and_address_list %}
                     <div class="row justify-items-center">

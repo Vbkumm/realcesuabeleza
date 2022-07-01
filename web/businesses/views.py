@@ -17,6 +17,7 @@ from lib.templatetags.permissions import requires_business_owner_or_app_staff, I
 from .models import (BusinessModel,
                      BusinessAddressModel,
                      BusinessPhoneModel,
+                     BusinessLogoQrcodeModel,
                      get_phones_by_addresses_by_business)
 from .forms import (BusinessUserInnForm,
                     BusinessCreateForm1,
@@ -95,15 +96,23 @@ class BusinessDetailView(DetailView):
         if self.request.user:
             context['user_in'] = self.request.user in self.object.users.all()
             context['user_id'] = self.request.user.id
-        if self.object.logo_rgb_color:
-            bg_color = rgb_color_generator(self.object.logo_rgb_color).split(",")
-            context['bg_color'] = bg_color
-            self.request.session['text_color'] = bg_color[1]
-            self.request.session['background_color'] = bg_color[0]
-            nav_color = 'light'
-            if bg_color[1] == 'light':
-                nav_color = 'dark'
-            self.request.session['nav_color'] = nav_color
+        logo_qrcode = BusinessLogoQrcodeModel.objects.filter(business=self.object).first()
+        if logo_qrcode:
+            context['qr_code'] = logo_qrcode.qrcode_img
+            print(logo_qrcode)
+            if logo_qrcode.logo_rgb_color:
+                bg_color = rgb_color_generator(logo_qrcode.logo_rgb_color).split(",")
+                context['bg_color'] = bg_color
+                self.request.session['text_color'] = bg_color[1]
+                self.request.session['background_color'] = bg_color[0]
+                nav_color = 'light'
+                if bg_color[1] == 'light':
+                    nav_color = 'dark'
+                self.request.session['nav_color'] = nav_color
+            if logo_qrcode.logo_img:
+                context['logo'] = logo_qrcode.logo_img
+            if logo_qrcode.favicon:
+                context['favicon'] = logo_qrcode.favicon
         context['services_categories'] = get_categories_by_business(business=self.object)
         context['professional_list'] = get_professionals_by_business(business=self.object)
         context['phone_and_address_list'] = get_phones_by_addresses_by_business(business=self.object)

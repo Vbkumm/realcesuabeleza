@@ -3,7 +3,7 @@ from django.core.validators import RegexValidator
 from django.contrib.auth import get_user_model
 from localflavor.br.forms import BRZipCodeField
 from lib.templatetags.validators import FEDERAL_ID_VALIDATE
-from .models import BusinessModel, BusinessAddressModel, BusinessPhoneModel
+from .models import BusinessModel, BusinessAddressModel, BusinessPhoneModel, BusinessLogoQrcodeModel
 
 
 User = get_user_model()
@@ -80,6 +80,13 @@ class BusinessCreateForm4(forms.ModelForm):
     class Meta:
         model = BusinessModel
         fields = ['birth_date', ]
+
+
+class BusinessLogoQrcodeForm(forms.ModelForm):
+
+    class Meta:
+        model = BusinessLogoQrcodeModel
+        fields = ['logo_img',]
 
 
 class BusinessAddressForm1(forms.ModelForm):

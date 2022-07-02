@@ -87,7 +87,7 @@ class BusinessModel(models.Model):
 
 
 class BusinessLogoQrcodeModel(models.Model):
-    business = models.ForeignKey(BusinessModel, related_name='business_logo', on_delete=models.CASCADE, null=True, blank=True)
+    business = models.OneToOneField(BusinessModel, related_name='business_logo', on_delete=models.CASCADE, null=True, blank=True)
     logo_img = models.FileField(upload_to='img/businesses_logo/', blank=True, null=True, validators=[validate_file_extension])
     logo_rgb_color = models.CharField(max_length=150, null=True)
     favicon = models.FileField(upload_to='img/businesses_favicon/', blank=True, null=True, validators=[validate_file_extension])
@@ -114,7 +114,7 @@ class BusinessLogoQrcodeModel(models.Model):
             business_logo_qrcode.created = instance.created
             business_logo_qrcode.save()
 
-    def filename(self):
+    def logo(self):
         return os.path.basename(self.logo_img.name)
 
     def get_dimensions(self):

@@ -11,7 +11,7 @@
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
-{{ wizard.form.media }}
+
 {% endblock %}
 
 {% block breadcrumb %}
@@ -29,26 +29,26 @@
                     </div>
 
                     <div class="row w-75 mx-auto mt-2 rounded-top bg-white justify-content-center">
-                         <div class="progress mt-3 text-center w-75" style="height: 10px;">
-                              <div class="progress-bar bg-success" role="progressbar" {% if wizard.steps.step1 == 1 %}  style="width: 50%;" aria-valuenow="50" {% endif %} {% if wizard.steps.step1 == 2 %}  style="width: 60%;" aria-valuenow="60" {% endif %} {% if wizard.steps.step1 == 3 %}  style="width: 70%;" aria-valuenow="70" {% endif %} aria-valuemin="0" aria-valuemax="100"></div>
-                         </div>
+                        <div class="progress mt-3 text-center w-75" style="height: 10px;">
+                            <div class="progress-bar bg-success" role="progressbar" {% if wizard.steps.step1 == 1 %}  style="width: 50%;" aria-valuenow="50" {% endif %} {% if wizard.steps.step1 == 2 %}  style="width: 60%;" aria-valuenow="60" {% endif %} {% if wizard.steps.step1 == 3 %}  style="width: 70%;" aria-valuenow="70" {% endif %} aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
                     </div>
                     <div class="row w-75 mx-auto mb-3 pb-2 pt-2 rounded-bottom bg-white justify-content-center">
-                         <div class="col-3 text-success">
-                              <div class="row justify-content-center">
-                                   <small class="">Salão</small>
-                              </div>
-                         </div>
-                         <div class="col-3 {% if wizard.steps.step1 > 1 %} text-success text-center {% else %} text-muted {% endif %}">
-                              <div class="row justify-content-center">
-                                  <small class="">Endereço</small>
-                              </div>
-                         </div>
-                         <div class="col-3 {% if wizard.steps.step1 > 2 %} text-success text-center {% else %} text-muted {% endif %}">
-                              <div class="row justify-content-center">
-                                   <small class="">Telefone</small>
-                              </div>
-                         </div>
+                        <div class="col-3 text-success">
+                            <div class="row justify-content-center">
+                                <small class="">Salão</small>
+                            </div>
+                        </div>
+                        <div class="col-3 {% if wizard.steps.step1 > 1 %} text-success text-center {% else %} text-muted {% endif %}">
+                            <div class="row justify-content-center">
+                                <small class="">Endereço</small>
+                            </div>
+                        </div>
+                        <div class="col-3 {% if wizard.steps.step1 > 2 %} text-success text-center {% else %} text-muted {% endif %}">
+                            <div class="row justify-content-center">
+                                <small class="">Telefone</small>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="progress" style="height: 10px;">
@@ -60,7 +60,7 @@
                                 <small class="">{% if request.session.street %} {{ request.session.street }} {% else %}Rua{% endif %}</small>
                             </div>
                             <div class="row justify-content-center">
-                                 <i class="fa fa-road" aria-hidden="true"></i>
+                                <i class="fa fa-road" aria-hidden="true"></i>
 
                             </div>
                         </div>
@@ -70,7 +70,7 @@
                             </div>
 
                             <div class="row justify-content-center">
-                            <i class="fas fa-street-view"></i>
+                                <i class="fas fa-street-view"></i>
 
 
                             </div>
@@ -138,13 +138,10 @@
 
 <script type="text/javascript">
 
-$(document).ready(() => {
+    $(getAddress("#id_0-zip_code", "#id_0-street", "#id_0-district", "#id_0-city", "#id_0-state"))
 
-    getAddress("#id_0-zip_code", "#id_0-street", "#id_0-district", "#id_0-city", "#id_0-state")
-
-
-  });
 
 </script>
+{{ wizard.form.media }}
 
 {% endblock %}

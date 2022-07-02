@@ -109,6 +109,7 @@
                 <div class="col-12 col-md-6">
                     {% for address, phones in phone_and_address_list %}
                     <div class="row justify-items-center">
+                        {% if address.zip_code != '' %}
                         <div class="col-12 col-md-6">
                             <a class="border-0 text-dark" href="{% url 'business_address_detail' business.slug address.pk  %}">
                                 {{ address.zip_code }}<br>
@@ -116,6 +117,7 @@
                                 {{ address.city }} - {{ address.state }}<br>
                             </a>
                         </div>
+                        {% endif %}
                         <div class="col-12 col-md-6">
                             {% for phone in phones %}
                             <p class="card-text">

@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/img_upload.css' %}">
+{% endblock %}
+
+{% block head_title %}Logo para {{ title }}{% endblock %}
+
+{% block stylesheet %}
+
+{% endblock %}
+
+
+{% block breadcrumb %}
+{% endblock %}
+
+{% block content %}
+<br>
+
+<div class="col-12 mt-md-4 mt-sm-5">
+    <div class="card-head bg-dark text-white">
+        <div class="row justify-content-between">
+            <div class="col-8">
+                <a href="{% url 'business_detail' slug %}" class="text-white">
+                    <h3 class="bg-dark p-2 text-decoration text-white">Logo para {{ title }}</h3>
+                </a>
+            </div>
+            <div class="col-2 mr-2 align-self-center">
+                <a href="{% url 'business_detail' slug %}" class="text-white" data-toggle="tooltip" data-placement="bottom" title="Voltar para {{ business }}">
+                    <i class="fa fa-2x fa-undo" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+
+
+    </div>
+
+    {# 1. BUTTON TO TRIGGER THE ACTION #}
+
+    {% if user.is_authenticated %}
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+    <div class="file-upload">
+        <!--========================== botão add imagem
+        <div class="image-upload-btn">
+            <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Adicone logo</button>
+        </div>
+        <input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" />
+
+        =======-->
+
+
+        <div class="image-upload-wrap">
+            {% include 'includes/form.html' %}
+
+            <div class="drag-text">
+                <h3>Selecione a logo e arraste ou click aqui!</h3>
+            </div>
+        </div>
+        <div class="file-upload-content">
+
+            <img class="file-upload-image" src="{{ url }}" alt="{{ business_logo_qrcode.name }}" />
+
+            <div class="image-title-wrap">
+                <button type="button" onclick="removeUpload()" class="btn px-4 my-3 py-2 btn-danger">Remove
+                    </span></button>
+
+                <button type="submit" class="btn px-5 my-3 py-2 ml-2 btn-success">Salvar {{ url }}</button>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    </form>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+
+<script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+<script src="{% static 'js/basic-upload.js' %}"></script>
+<script>
+
+
+
+
+$("#id_logo_img").addClass("file-upload-input");
+$(readURL('#id_logo_img'));
+
+$('.image-upload-wrap').bind('dragover', function () {
+    $('.image-upload-wrap').addClass('image-dropping');
+});
+$('.image-upload-wrap').bind('dragleave', function () {
+    $('.image-upload-wrap').removeClass('image-dropping');
+});
+
+</script>
+
+{% endblock %}

@@ -6,7 +6,7 @@ from .views import (BusinessViewSet,
                     BusinessWizardCreateView,
                     BusinessAddressWizardCreateView,
                     BusinessPhoneCreateView,
-                    BusinessLogoQrcodeCreateView,
+                    BusinessLogoQrcodeUpdateView,
                     )
 from main.views import TermsView, CookiesView
 
@@ -27,7 +27,7 @@ urlpatterns = [
     path('<str:slug>/business_address_create/', BusinessAddressWizardCreateView.as_view(), name='business_address_create'),
     path('<str:slug>/address/<int:pk>', BusinessAddressDetailView.as_view(), name='business_address_detail'),
     path('<str:slug>/address/<int:pk>/business_phone_create/', BusinessPhoneCreateView.as_view(), name='business_phone_create'),
-    path('<str:slug>/business_logo_qrcode_create/', BusinessLogoQrcodeCreateView.as_view(), name='business_logo_qrcode_create'),
+    path('<str:slug>/business_logo_qrcode_update/<int:pk>/', BusinessLogoQrcodeUpdateView.as_view(), name='business_logo_qrcode_update'),
     path('<str:slug>/terms/', TermsView.as_view(), name="terms"),
     path('<str:slug>/cookies/', CookiesView.as_view(), name="cookies"),
 

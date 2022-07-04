@@ -2,6 +2,7 @@ from functools import wraps
 from django.urls import reverse_lazy
 from django.conf import settings
 from django.shortcuts import redirect
+from django.shortcuts import HttpResponseRedirect, get_object_or_404
 from rest_framework import permissions
 from django.contrib.messages.views import messages
 from businesses.models import BusinessModel
@@ -29,8 +30,10 @@ def requires_business_owner_or_app_staff(view):
 
     @wraps(view)
     def _view(request, *args, **kwargs):
-        if not (BusinessModel.objects.filter(slug=request.resolver_match.kwargs.get('slug'), is_active=True).exists() or request.user.is_staff):
+        business = get_object_or_404(BusinessModel, slug=request.resolver_match.kwargs.get('slug'), is_active=True)
+        if not (BusinessModel.objects.filter(pk=business.pk, is_active=True).exists() or request.user.is_staff):
             messages.info(request, 'Você não tem permissão para realizar esta operação, precisa ser um proprietário')
-            return redirect("%s?next=%s" % (settings.LOGIN_URL, reverse_lazy("business_detail",  kwargs={'slug': request.kwargs.get('slug')})))
+            return HttpResponseRedirect(redirect("%s?next=%s" % (settings.LOGIN_URL, reverse_lazy("business_detail",  kwargs={'slug': business.slug}))))
+        kwargs['id'] = business.id
         return view(request, *args, **kwargs)
     return _view

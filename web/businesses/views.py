@@ -101,7 +101,7 @@ class BusinessDetailView(DetailView):
         logo_qrcode = BusinessLogoQrcodeModel.objects.filter(business=self.object).first()
         if logo_qrcode:
             context['qr_code'] = logo_qrcode.qrcode_img
-            print(logo_qrcode)
+
             if logo_qrcode.logo_rgb_color:
                 bg_color = rgb_color_generator(logo_qrcode.logo_rgb_color).split(",")
                 context['bg_color'] = bg_color
@@ -119,6 +119,7 @@ class BusinessDetailView(DetailView):
         context['professional_list'] = get_professionals_by_business(business=self.object)
         context['phone_and_address_list'] = get_phones_by_addresses_by_business(business=self.object)
         self.request.session['business_slug'] = self.object.slug
+        self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
         self.request.session['business_title'] = self.object.title
 
         return context
@@ -180,14 +181,15 @@ class BusinessWizardCreateView(LoginRequiredMixin, SuccessMessageMixin, SessionW
 
 
 @method_decorator(requires_business_owner_or_app_staff, name='dispatch')
-class BusinessLogoQrcodeCreateView(SuccessMessageMixin, CreateView):
+class BusinessLogoQrcodeUpdateView(SuccessMessageMixin, UpdateView):
     model = BusinessLogoQrcodeModel
-    template_name = 'businesses/business_logo_qrcode_create.html'
+    template_name = 'businesses/business_logo_qrcode_update.html'
     form_class = BusinessLogoQrcodeForm
-    slug_url_kwarg = 'slug'
+    pk_url_kwarg = 'pk'
+    lookup_url_kwarg = 'slug'
 
     def get_context_data(self, **kwargs):
-        context = super(BusinessLogoQrcodeCreateView, self).get_context_data(**kwargs)
+        context = super(BusinessLogoQrcodeUpdateView, self).get_context_data(**kwargs)
         business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
         logo_qrcode = BusinessLogoQrcodeModel.objects.filter(business=business).first()
         context['slug'] = business.slug
@@ -197,17 +199,18 @@ class BusinessLogoQrcodeCreateView(SuccessMessageMixin, CreateView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(business__owners__in=self.request.user)
+        business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        return queryset.filter(business=business)
 
     def form_valid(self, form):
-        business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
-        form = BusinessLogoQrcodeForm(data=self.request.POST, instance=self.object)
-        logo_img = form.save(commit=False)
-        logo_img.business = business
+        print('akuuuuuuuuuui')
+        logo_img = self.get_form()
+        print('assui')
+        logo_img.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
         logo_img.updated_by = self.request.user
         logo_img.updated_at = timezone.now()
         logo_img.save()
-        print(business)
+        form = BusinessLogoQrcodeForm(data=self.request.POST, instance=self.object)
         if form.is_valid():
             return super().form_valid(form)
         else:

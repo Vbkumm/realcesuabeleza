@@ -181,45 +181,43 @@ class BusinessWizardCreateView(LoginRequiredMixin, SuccessMessageMixin, SessionW
 
 @method_decorator(requires_business_owner_or_app_staff, name='dispatch')
 class BusinessLogoQrcodeCreateView(SuccessMessageMixin, CreateView):
+    model = BusinessLogoQrcodeModel
+    template_name = 'businesses/business_logo_qrcode_create.html'
+    form_class = BusinessLogoQrcodeForm
+    slug_url_kwarg = 'slug'
 
-    def get(self, request, *args, **kwargs):
+    def get_context_data(self, **kwargs):
+        context = super(BusinessLogoQrcodeCreateView, self).get_context_data(**kwargs)
         business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
-        is_owner = False
-        if self.request.user in business.owners.all():
-            is_owner = True
         logo_qrcode = BusinessLogoQrcodeModel.objects.filter(business=business).first()
-
-        return render(self.request, 'businesses/business_logo_qrcode_create.html', {'slug': business.slug,
-                                                                                    'business_logo_qrcode': logo_qrcode,
-                                                                                    'is_owner': is_owner,
-                                                                                    'title': business.title,})
+        context['slug'] = business.slug
+        context['business_logo_qrcode'] = logo_qrcode
+        context['title'] = business.title
+        return context
 
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset.filter(business__owners__in=self.request.user)
 
-    def post(self, request, *args, **kwargs):
-        business = get_object_or_404(BusinessModel, sulg=self.kwargs.get('slug'))
-        if request.method == 'POST':
-            form = BusinessLogoQrcodeForm(self.request.POST, self.request.FILES)
+    def form_valid(self, form):
+        business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        form = BusinessLogoQrcodeForm(data=self.request.POST, instance=self.object)
+        logo_img = form.save(commit=False)
+        logo_img.business = business
+        logo_img.updated_by = self.request.user
+        logo_img.updated_at = timezone.now()
+        logo_img.save()
+        print(business)
+        if form.is_valid():
+            return super().form_valid(form)
+        else:
+            print(form)
+            return self.form_invalid(form)
 
-            if form.is_valid():
-
-                logo_img = form.save(commit=False)
-                logo_img.business = business
-                logo_img.updated_by = self.request.user
-                logo_img.updated_at = timezone.now()
-                logo_img.save()
-                data = {'is_valid': True,
-                        'name': logo_img.logo_img.name.replace("img/businesses_logo/", ""),
-                        'url': logo_img.logo_img.url,
-                        }
-                print('veio aqui')
-
-            else:
-                data = {'is_valid': False}
-
-            return JsonResponse(data)
+    def get_success_url(self, *args, **kwargs):
+        business = BusinessModel.objects.get(slug=self.kwargs.get('slug'))
+        print(business.slug)
+        return reverse("business_detail", kwargs={'slug': business.slug})
 
 
 @login_required

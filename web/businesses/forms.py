@@ -83,6 +83,11 @@ class BusinessCreateForm4(forms.ModelForm):
 
 
 class BusinessLogoQrcodeForm(forms.ModelForm):
+    logo_img = forms.ImageField(label='',)
+
+    def __init__(self, *args, **kwargs):
+        super(BusinessLogoQrcodeForm, self).__init__(*args, **kwargs)
+        self.fields['logo_img'].widget.attrs.update({'onchange': "readURL(this);",})
 
     class Meta:
         model = BusinessLogoQrcodeModel

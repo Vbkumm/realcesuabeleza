@@ -115,6 +115,7 @@ class BusinessDetailView(DetailView):
                 context['logo'] = logo_qrcode.logo_img
             if logo_qrcode.favicon:
                 context['favicon'] = logo_qrcode.favicon
+
         context['services_categories'] = get_categories_by_business(business=self.object)
         context['professional_list'] = get_professionals_by_business(business=self.object)
         context['phone_and_address_list'] = get_phones_by_addresses_by_business(business=self.object)
@@ -192,6 +193,9 @@ class BusinessLogoQrcodeUpdateView(SuccessMessageMixin, UpdateView):
         context = super(BusinessLogoQrcodeUpdateView, self).get_context_data(**kwargs)
         business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
         logo_qrcode = BusinessLogoQrcodeModel.objects.filter(business=business).first()
+
+        context['logo_img_ctx'] = logo_qrcode.logo_img
+
         context['slug'] = business.slug
         context['business_logo_qrcode'] = logo_qrcode
         context['title'] = business.title
@@ -203,9 +207,9 @@ class BusinessLogoQrcodeUpdateView(SuccessMessageMixin, UpdateView):
         return queryset.filter(business=business)
 
     def form_valid(self, form):
-        print('akuuuuuuuuuui')
+
         logo_img = self.get_form()
-        print('assui')
+
         logo_img.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
         logo_img.updated_by = self.request.user
         logo_img.updated_at = timezone.now()
@@ -214,7 +218,7 @@ class BusinessLogoQrcodeUpdateView(SuccessMessageMixin, UpdateView):
         if form.is_valid():
             return super().form_valid(form)
         else:
-            print(form)
+
             return self.form_invalid(form)
 
     def get_success_url(self, *args, **kwargs):

@@ -3,7 +3,7 @@
         <button class="navbar-toggler " type="button" data-toggle="collapse" data-target="#BusinessNavbarSup" aria-controls="BusinessNavbarSup" aria-expanded="false" aria-label="Alterna navegação">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a href="{% url 'business_logo_qrcode_update' request.session.business_slug request.session.logo_qrcode_session_pk %}" class="">
+        <a href="{% url 'business_logo_qrcode_update' request.session.business_slug request.session.logo_qrcode_session_pk %}" class="btn border-0 m-0 p-0" {% if logo %} title="Alterar logo" {% else %} title="Adicionar logo"  {% endif %}>
         {% if logo %}
         <img class="d-block ml-auto mr-auto ml-md-2 mr-md-2" style="width: 9rem" src="{{MEDIA_URL}}{{ logo }}" alt="{{ logo.name }}">
         {% else %}

@@ -40,17 +40,15 @@
     {# 1. BUTTON TO TRIGGER THE ACTION #}
 
     {% if user.is_authenticated %}
+    {% if logo_img_ctx %}
+    <div class="row justify-content-center">
+        <img class="img ml-auto mr-auto my-3" src="{{ MEDIA }}{{ logo_img_ctx.url }}" alt="{{ logo_img_ctx.name }}" />
+    </div>
+    {% endif %}
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
     <div class="file-upload">
-        <!--========================== botão add imagem
-        <div class="image-upload-btn">
-            <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Adicone logo</button>
-        </div>
-        <input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" />
-
-        =======-->
 
 
         <div class="image-upload-wrap">

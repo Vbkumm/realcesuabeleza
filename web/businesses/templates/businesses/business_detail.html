@@ -96,7 +96,7 @@
 
 <div class="container mt-5">
     <div id='contato' class="card">
-        <div class="card-header">
+        <div class="card-header ">
             <div class="row rounded-top p-3 text-{{bg_color.1}} align-items-center"  style="background-color: {{ bg_color.0 }};">
                 <h6>Contato</h6>
             </div>
@@ -106,7 +106,7 @@
                     <img src="{{MEDIA_URL}}{{ qr_code }}" alt="qr_code{{ qr_code.name }}">
                 </div>
                 {% endif %}
-                <div class="col-12 col-md-6">
+                <div class="col-12 mt-md-4 col-md-6">
                     {% for address, phones in phone_and_address_list %}
                     <div class="row justify-items-center">
                         {% if address.zip_code != '' %}

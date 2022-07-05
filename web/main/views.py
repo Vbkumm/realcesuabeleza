@@ -4,12 +4,19 @@ from django.views.generic import TemplateView
 
 
 def home_view(request, *args, **kwargs):
+
     if 'business_slug' in request.session:
         del request.session['business_slug']
+    if 'logo_qrcode_session_pk' in request.session:
+        del request.session['logo_qrcode_session_pk']
+    if 'nav_color' in request.session:
+        del request.session['nav_color']
     if 'business_title' in request.session:
         del request.session['business_title']
     if 'text_color' in request.session:
         del request.session['text_color']
+    if 'background_color' in request.session:
+        del request.session['background_color']
     if 'business_name' in request.session:
         del request.session['business_name']
     if 'business_email' in request.session:

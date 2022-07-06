@@ -218,3 +218,17 @@ LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 LOGIN_URL = '/accounts/login/'
 LOGOUT_REDIRECT_URL = "/"
+
+CHOICES_MIN_TIME = [(i, i) for i in range(1, 900)]
+CHOICES_WEEKDAY = [(i, i) for i in range(0, 7)]
+
+WEEKDAYS_CHOICES = (
+    ("0", "Domingo"),
+    ("1", "Segunda-Feira"),
+    ("2", "Terça-Feira"),
+    ("3", "Quarta-Feira"),
+    ("4", "Quinta-Feira"),
+    ("5", "Sexta-Feira"),
+    ("6", "Sabado"),
+)
+

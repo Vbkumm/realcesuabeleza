@@ -3,14 +3,12 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core.files.images import get_image_dimensions
-from django.utils import timezone
 from lib.templatetags.validators import validate_file_extension
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-from PIL import Image
-from io import BytesIO, StringIO
+from realcesuabeleza.settings import CHOICES_WEEKDAY
+from io import BytesIO
 from django.core.files.base import ContentFile
-import webp
 from django.utils.text import slugify
 from .utils import (qr_code_generator,
                     get_logo_img,
@@ -244,13 +242,46 @@ def get_phones_by_address(address=None):
     return BusinessPhoneModel.objects.filter(address=address, is_active=True)
 
 
+class BusinessAddressHoursManager(models.Manager):
+
+    def business_address_days(self):
+        return self.address
+
+
+class BusinessAddressHoursModel(models.Model):
+    business = models.ForeignKey(BusinessModel, related_name='business_hours', on_delete=models.CASCADE, null=True, blank=True)
+    address = models.ForeignKey(BusinessAddressModel, related_name='business_address_hours', on_delete=models.CASCADE, null=True, blank=True)
+    week_days = models.IntegerField('Qual dia da semana?', choices=CHOICES_WEEKDAY, default=1)
+    start_hour = models.TimeField('Hora da abertura?', auto_now=False, auto_now_add=False, )
+    end_hour = models.TimeField('Horário de encerramento?', auto_now=False, auto_now_add=False, )
+    is_active = models.BooleanField(default=True, help_text='Designates whether this hour day should be treated as active. Unselect this instead of deleting hours day.', verbose_name='hour active')
+    updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
+    updated_at = models.DateTimeField(null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    objects = BusinessAddressHoursManager()
+
+    class Meta:
+        verbose_name_plural = "business_hours_list"
+        verbose_name = "business_hours"
+        db_table = 'business_hours_db'
+
+    def __str__(self):
+        return '%s %s %s' % (self.week_days, self.start_hour, self.end_hour)
+
+
+def get_business_address_hours_day(address):
+    return BusinessAddressHoursModel.objects.filter(address=address, is_active=True)
+
+
 def get_phones_by_addresses_by_business(business=None):
     addresses = get_addresses_by_business(business)
     address_and_phone = []
     if addresses:
         for address in addresses:
             phones = get_phones_by_address(address)
-            address_and_phone.append([address, phones])
+            days_hours = get_business_address_hours_day(address)
+            address_and_phone.append([address, phones, days_hours])
 
     return address_and_phone
-

@@ -42,7 +42,7 @@ class BusinessAddressAdmin(admin.ModelAdmin):
         (None,               {'fields': ['created_by']}),
 
     ]
-    list_display = ('business', 'zip_code', 'street', 'is_active')
+    list_display = ('id', 'business', 'zip_code', 'street', 'is_active')
     list_filter = ['business']
     search_fields = ['business', 'zip_code']
 

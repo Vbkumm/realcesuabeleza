@@ -1,9 +1,14 @@
 from django import forms
 from django.core.validators import RegexValidator
+from realcesuabeleza.settings import WEEKDAYS_CHOICES
 from django.contrib.auth import get_user_model
 from localflavor.br.forms import BRZipCodeField
 from lib.templatetags.validators import FEDERAL_ID_VALIDATE
-from .models import BusinessModel, BusinessAddressModel, BusinessPhoneModel, BusinessLogoQrcodeModel
+from .models import (BusinessModel,
+                     BusinessAddressModel,
+                     BusinessPhoneModel,
+                     BusinessLogoQrcodeModel,
+                     BusinessAddressHoursModel)
 
 
 User = get_user_model()
@@ -157,3 +162,21 @@ class BusinessPhoneForm(forms.ModelForm):
     class Meta:
         model = BusinessPhoneModel
         fields = ['phone', 'is_whatsapp',]
+
+
+class BusinessAddressHoursForm(forms.ModelForm):
+
+    week_days = forms.ChoiceField(label='Dia da semana', choices=WEEKDAYS_CHOICES)
+    start_hour = forms.TimeField(label='Qual primeiro horário para agendamento?', widget=forms.TimeInput(format='%H:%M'), initial='09:00')
+    end_hour = forms.TimeField(label='Qual ultimo horário para agendamento?', widget=forms.TimeInput(format='%H:%M'), initial='19:00')
+    is_active = forms.BooleanField(label='Dia esta ativo?', initial=True)
+
+    def __init__(self, *args, **kwargs):
+        self.week_days = kwargs.pop('week_days', None)
+        super(BusinessAddressHoursForm, self).__init__(*args, **kwargs)
+        self.fields['week_days'].choices = sorted(list({(k, v) for k, v in WEEKDAYS_CHOICES if int(k) not in self.week_days}))
+
+    class Meta:
+        model = BusinessAddressHoursModel
+        fields = ['week_days', 'start_hour', 'end_hour', 'is_active', ]
+

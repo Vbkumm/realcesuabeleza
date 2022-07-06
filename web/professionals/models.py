@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Q, F
+from realcesuabeleza.settings import CHOICES_MIN_TIME, CHOICES_WEEKDAY
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from datetime import time, timezone
@@ -282,8 +283,7 @@ class ProfessionalScheduleModel(models.Model):
     """
     Cadastro dos dias em que o profissional do salão trabalha no salão
     """
-    CHOICES_WEEKDAY = [(i, i) for i in range(0, 7)]
-    CHOICES_MIN_TIME = [(i, i) for i in range(1, 300)]
+
     address = models.ForeignKey(BusinessAddressModel, related_name='professional_address_work', on_delete=models.CASCADE, null=True, blank=True)
     professional = models.ForeignKey(ProfessionalModel, related_name='professional_schedule', on_delete=models.CASCADE)
     week_days = models.IntegerField('Qual dia da semana?', choices=CHOICES_WEEKDAY, default=1)
@@ -360,7 +360,6 @@ class OpenScheduleModel(models.Model):
     Abrir agenda do salão por periodo e profissional
     Seleciona data inicial e data final e horarios que quer abrir nesse periodo.
     """
-    CHOICES_MIN_TIME = [(i, i) for i in range(1, 300)]
 
     business = models.ForeignKey(BusinessModel, related_name='open_business', on_delete=models.CASCADE,)
     address = models.ForeignKey(BusinessAddressModel, related_name='open_address_schedule', on_delete=models.CASCADE, null=True, blank=True)
@@ -434,7 +433,6 @@ class CloseScheduleModel(models.Model):
     end_hour = models.TimeField('Qual horário final para fechar a agenda?', auto_now=False, auto_now_add=False, default=time(00, 00))
     professionals = models.ManyToManyField(ProfessionalModel, related_name='close_professionals', blank=True)
     description = models.CharField('Observações:', max_length=1000, null=True, blank=True)
-
     updated_at = models.DateTimeField(null=True, blank=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)

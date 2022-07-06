@@ -14,12 +14,14 @@ from rest_framework.response import Response
 from realcesuabeleza import settings
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
-from lib.templatetags.permissions import requires_business_owner_or_app_staff, IsBusinesssOwnerOrStaff
+from lib.templatetags.permissions import requires_business_owner_or_app_staff, IsBusinesssOwnerOrStaff, flush_session
 from .models import (BusinessModel,
                      BusinessAddressModel,
                      BusinessPhoneModel,
                      BusinessLogoQrcodeModel,
-                     get_phones_by_addresses_by_business)
+                     get_phones_by_addresses_by_business,
+                     BusinessAddressHoursModel,
+                     get_business_address_hours_day,)
 from .forms import (BusinessUserInnForm,
                     BusinessCreateForm1,
                     BusinessCreateForm2,
@@ -28,7 +30,8 @@ from .forms import (BusinessUserInnForm,
                     BusinessAddressForm2,
                     BusinessAddressForm3,
                     BusinessPhoneForm,
-                    BusinessLogoQrcodeForm,)
+                    BusinessLogoQrcodeForm,
+                    BusinessAddressHoursForm,)
 from .utils import rgb_color_generator
 from .serializers import (BusinessSerializer,
                           BusinessAddressSerializer,
@@ -77,36 +80,7 @@ class BusinessDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(BusinessDetailView, self).get_context_data(**kwargs)
-        if 'business_slug' in self.request.session:
-            del self.request.session['business_slug']
-        if 'business_name' in self.request.session:
-            del self.request.session['business_name']
-        if 'logo_qrcode_session_pk' in self.request.session:
-            del self.request.session['logo_qrcode_session_pk']
-        if 'nav_color' in self.request.session:
-            del self.request.session['nav_color']
-        if 'business_title' in self.request.session:
-            del self.request.session['business_title']
-        if 'text_color' in self.request.session:
-            del self.request.session['text_color']
-        if 'background_color' in self.request.session:
-            del self.request.session['background_color']
-        if 'business_email' in self.request.session:
-            del self.request.session['business_email']
-        if 'business_federal_id' in self.request.session:
-            del self.request.session['business_federal_id']
-        if 'zip_code' in self.request.session:
-            del self.request.session['zip_code']
-        if 'street' in self.request.session:
-            del self.request.session['street']
-        if 'street_number' in self.request.session:
-            del self.request.session['street_number']
-        if 'district' in self.request.session:
-            del self.request.session['district']
-        if 'city' in self.request.session:
-            del self.request.session['city']
-        if 'state' in self.request.session:
-            del self.request.session['state']
+        flush_session(self.request)
         if self.request.user:
             context['user_in'] = self.request.user in self.object.users.all()
             context['user_id'] = self.request.user.id
@@ -127,7 +101,6 @@ class BusinessDetailView(DetailView):
                 context['logo'] = logo_qrcode.logo_img
             if logo_qrcode.favicon:
                 context['favicon'] = logo_qrcode.favicon
-
         context['services_categories'] = get_categories_by_business(business=self.object)
         context['professional_list'] = get_professionals_by_business(business=self.object)
         context['phone_and_address_list'] = get_phones_by_addresses_by_business(business=self.object)
@@ -191,6 +164,52 @@ class BusinessWizardCreateView(LoginRequiredMixin, SuccessMessageMixin, SessionW
         business.save()
 
         return HttpResponseRedirect(reverse("business_address_create", kwargs={'slug': business.slug}))
+
+
+@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
+class BusinessAddressHoursCreateView(SuccessMessageMixin, CreateView):
+    model = BusinessAddressHoursModel
+    template_name = 'businesses/business_address_hours_create.html'
+    form_class = BusinessAddressHoursForm
+    success_message = "Dia da semana adicionado com sucesso!"
+    pk_url_kwarg = 'address_pk'
+    lookup_url_kwarg = 'slug'
+
+    def get_context_data(self, **kwargs):
+
+        context = super(BusinessAddressHoursCreateView, self).get_context_data(**kwargs)
+        business = BusinessModel.objects.filter(slug=self.kwargs.get('slug')).first()
+        context['business'] = business
+        context['business_address'] = BusinessAddressModel.objects.filter(business=business, pk=self.kwargs.get('address_pk')).first()
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(BusinessAddressHoursCreateView, self).get_form_kwargs()
+        business = BusinessModel.objects.filter(slug=self.kwargs.get('slug')).first()
+        business_address = BusinessAddressModel.objects.filter(business=business, pk=self.kwargs.get('address_pk')).first()
+        business_address_day_list = BusinessAddressHoursModel.objects.filter(address=business_address)
+        kwargs['week_days'] = business_address_day_list
+
+        return kwargs
+
+    def form_valid(self, form):
+        business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        business_address = get_object_or_404(BusinessAddressModel, pk=self.kwargs.get('address_pk'))
+        form.instance.business = business
+        form.instance.address = business_address
+        form.instance.created_by = self.request.user
+        form.instance.created = timezone.now()
+
+        if form.is_valid():
+            print('deu ccococ')
+            return super(BusinessAddressHoursCreateView, self).form_valid(form)
+        else:
+            print('deumeredsdfas')
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        slug = self.kwargs['slug']
+        return reverse_lazy('business_detail',  kwargs={'slug': slug})
 
 
 @method_decorator(requires_business_owner_or_app_staff, name='dispatch')
@@ -292,7 +311,6 @@ class BusinessAddressDetailView(DetailView):
     #context_object_name = 'business_address'
 
 
-#acrecentar mixiowner
 class BusinessAddressWizardCreateView(IsBusinesssOwnerOrStaff, LoginRequiredMixin, SuccessMessageMixin, SessionWizardView):
     form_list = [BusinessAddressForm1, BusinessAddressForm2, BusinessAddressForm3]
     template_name = 'businesses/business_address_wizard_create.html'

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_title %}Cadastrar dia e hora de funcionamento {% if business %}{{ business }}{% endif %} no endereço {% if business_address %}{{ business_address }}{% endif %}{% endblock %}
+
+{% block stylesheet %}
+{% endblock %}
+
+{% block javascript %}
+{% endblock %}
+
+{% block breadcrumb %}
+{% endblock %}
+
+{% block content %}
+<div class="row mt-md-3 justify-content-center">
+    <div class="col-lg-8 col-md-8 col-sm-10">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-header rounded-top">
+                    <div class="row justify-content-center">
+                        <h6>Cadastrar dia e hora de funcionamento {% if business %}{{ business }}{% endif %}:</h6>
+                    </div>
+                    <div class="row justify-content-center">
+                        <h4>Endereço: {% if business_address %}{{ business_address }}{% endif %}</h4>
+                    </div>
+                </div>
+                <div class="card-body text-dark">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        {% include 'includes/form.html' %}
+                        <div class="row mr-1 justify-content-center">
+                            <a href="{% url 'business_detail' business.slug %}" class="btn btn-sm mr-1 mt-1 px-4 btn-secondary" >Cancelar</a>
+                            <button type="submit" class="btn btn-sm mt-1 px-5 btn-success">salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+{% endblock %}

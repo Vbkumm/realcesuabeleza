@@ -107,7 +107,7 @@
                 </div>
                 {% endif %}
                 <div class="col-12 mt-md-4 col-md-6">
-                    {% for address, phones in phone_and_address_list %}
+                    {% for address, phones, hours_days in phone_and_address_list %}
                     <div class="row justify-items-center">
                         {% if address.zip_code != '' %}
                         <div class="col-12 col-md-6">
@@ -128,7 +128,13 @@
                         </div>
                     </div>
                     <div class="row justify-items-center">
+                        <a class="border-0 text-dark" href="{% url 'business_address_hours_create' business.slug address.pk  %}">
+
                         <p class="card-text"><small class="text-muted"><i class="far fa-clock" aria-hidden="true"></i> Segunda a Sábado: 9h às 19h - Domingo: Fechado</small></p>
+                        </a>
+                        {% for day in hours_days %}
+                        {{ day }}
+                        {% endfor %}
                     </div>
                     {% endfor %}
                 </div>

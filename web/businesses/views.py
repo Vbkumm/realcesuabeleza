@@ -77,8 +77,20 @@ class BusinessDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(BusinessDetailView, self).get_context_data(**kwargs)
+        if 'business_slug' in self.request.session:
+            del self.request.session['business_slug']
         if 'business_name' in self.request.session:
             del self.request.session['business_name']
+        if 'logo_qrcode_session_pk' in self.request.session:
+            del self.request.session['logo_qrcode_session_pk']
+        if 'nav_color' in self.request.session:
+            del self.request.session['nav_color']
+        if 'business_title' in self.request.session:
+            del self.request.session['business_title']
+        if 'text_color' in self.request.session:
+            del self.request.session['text_color']
+        if 'background_color' in self.request.session:
+            del self.request.session['background_color']
         if 'business_email' in self.request.session:
             del self.request.session['business_email']
         if 'business_federal_id' in self.request.session:

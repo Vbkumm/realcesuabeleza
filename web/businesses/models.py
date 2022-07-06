@@ -56,10 +56,13 @@ class BusinessModel(models.Model):
     def get_absolute_url(self):
         return reverse("business_detail", kwargs={"slug": self.slug})
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__original_slug = self.slug
+
     def save(self, *args, **kwargs):
-
-        self.slug = slugify(self.slug).lower()
-
+        if self.slug != self.__original_slug:
+            self.slug = slugify(self.slug).lower()
         super(BusinessModel, self).save(*args, **kwargs)
 
     @receiver(post_save, sender=User)
@@ -106,12 +109,22 @@ class BusinessLogoQrcodeModel(models.Model):
     def __str__(self):
         return self.logo_img.name.replace("img/businesses_logo/", "")
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__original_logo_img = self.logo_img
+
     @receiver(post_save, sender=BusinessModel)
     def get_object_created(sender, instance, created, **kwargs):
+        print(instance)
         if created:
             business_logo_qrcode = BusinessLogoQrcodeModel.objects.create(business=instance)
             business_logo_qrcode.created_by = instance.created_by
             business_logo_qrcode.created = instance.created
+            business_logo_qrcode.save()
+        if instance.slug != instance._BusinessModel__original_slug:
+            business_logo_qrcode = BusinessLogoQrcodeModel.objects.get(business=instance)
+            business_logo_qrcode.updated_by = instance.updated_by
+            business_logo_qrcode.updated_at = instance.updated_at
             business_logo_qrcode.save()
 
     def logo(self):
@@ -129,7 +142,7 @@ class BusinessLogoQrcodeModel(models.Model):
         icon_io = BytesIO()
         thumb_io = BytesIO()
         qrcode_io = BytesIO()
-        if self.logo_img:
+        if self.logo_img and self.logo_img != self.__original_logo_img:
             logo_img = get_logo_img(self.logo_img)
             logo_img.save(thumb_io, format='JPEG', quality=100)
             rgb = get_logo_rgb(logo_img)
@@ -138,7 +151,7 @@ class BusinessLogoQrcodeModel(models.Model):
             logo_img = get_logo_img(self.logo_img)
             logo_pos = ((qr_code_img.size[0] - logo_img.size[0]) // 2, (qr_code_img.size[1] - logo_img.size[1]) // 2)
             qr_code_img.paste(logo_img, logo_pos)
-            webp.save_image(logo_img, slug + ".webp", quality=99)
+            #webp.save_image(logo_img, slug + ".webp", quality=99)
             self.logo_img.save(slug + ".webp", ContentFile(thumb_io.getvalue()), save=False)
             favicon = get_favicon(self.logo_img)
             favicon.save(icon_io, format='JPEG', quality=80)

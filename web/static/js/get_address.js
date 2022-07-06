@@ -26,7 +26,7 @@ function getAddress(zip, street, district, city, state) {
                   $(state).val("...");
 
                   //Consulta o webservice viacep.com.br/
-                  $.getJSON('https://viacep.com.br/ws/${zipCode}/json/?callback=?', data => {
+                  $.getJSON('https://viacep.com.br/ws/${zipCode}/json/', data => {
 
                       if (!("erro" in data)) {
                           //Atualiza os campos com os valores da consulta.
@@ -34,6 +34,7 @@ function getAddress(zip, street, district, city, state) {
                           $(district).val(data.bairro);
                           $(city).val(data.localidade);
                           $(state).val(data.uf);
+
 
 
                       } //end if.

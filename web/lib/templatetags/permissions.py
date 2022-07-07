@@ -6,6 +6,7 @@ from django.shortcuts import HttpResponseRedirect, get_object_or_404
 from rest_framework import permissions
 from django.contrib.messages.views import messages
 from businesses.models import BusinessModel
+from django.contrib.auth.decorators import login_required
 
 
 class IsBusinesssOwnerOrStaff(permissions.BasePermission):
@@ -27,15 +28,18 @@ def requires_business_owner_or_app_staff(view):
     '''
     Check if user is owner or app staff
     '''
-
     @wraps(view)
     def _view(request, *args, **kwargs):
         business = get_object_or_404(BusinessModel, slug=request.resolver_match.kwargs.get('slug'), is_active=True)
-        if not (BusinessModel.objects.filter(pk=business.pk, is_active=True).exists() or request.user.is_staff):
+        if not request.user.is_authenticated:
             messages.info(request, 'Você não tem permissão para realizar esta operação, precisa ser um proprietário')
-            return HttpResponseRedirect(redirect("%s?next=%s" % (settings.LOGIN_URL, reverse_lazy("business_detail",  kwargs={'slug': business.slug}))))
-        kwargs['id'] = business.id
-        return view(request, *args, **kwargs)
+            return redirect("%s?next=%s" % (settings.LOGIN_URL, reverse_lazy("business_detail",  kwargs={'slug': business.slug})))
+        else:
+            if not (BusinessModel.objects.filter(pk=business.pk, is_active=True, users=request.user).exists() or request.user.is_staff):
+                messages.info(request, 'Você não tem permissão para realizar esta operação, precisa ser um proprietário')
+                return redirect("%s?next=%s" % (settings.LOGIN_URL, reverse_lazy("business_detail",  kwargs={'slug': business.slug})))
+            kwargs['id'] = business.id
+            return view(request, *args, **kwargs)
     return _view
 
 

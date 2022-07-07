@@ -6,7 +6,7 @@ from django.core.files.images import get_image_dimensions
 from lib.templatetags.validators import validate_file_extension
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-from realcesuabeleza.settings import CHOICES_WEEKDAY
+from realcesuabeleza.settings import CHOICES_WEEKDAY, WEEKDAYS_CHOICES
 from io import BytesIO
 from django.core.files.base import ContentFile
 from django.utils.text import slugify
@@ -272,7 +272,15 @@ class BusinessAddressHoursModel(models.Model):
 
 
 def get_business_address_hours_day(address):
-    return BusinessAddressHoursModel.objects.filter(address=address, is_active=True)
+    week_days = WEEKDAYS_CHOICES
+    business_address_hours_days = BusinessAddressHoursModel.objects.filter(address=address, is_active=True)
+    if business_address_hours_days:
+        for hours_days in business_address_hours_days:
+            for day in week_days:
+                if str(hours_days.week_days) == day[0]:
+                    hours_days.week_days = day[1]
+
+    return business_address_hours_days
 
 
 def get_phones_by_addresses_by_business(business=None):

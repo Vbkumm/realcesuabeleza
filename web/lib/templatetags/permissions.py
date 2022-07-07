@@ -35,7 +35,7 @@ def requires_business_owner_or_app_staff(view):
             messages.info(request, 'Você não tem permissão para realizar esta operação, precisa ser um proprietário')
             return redirect("%s?next=%s" % (settings.LOGIN_URL, reverse_lazy("business_detail",  kwargs={'slug': business.slug})))
         else:
-            if not (BusinessModel.objects.filter(pk=business.pk, is_active=True, users=request.user).exists() or request.user.is_staff):
+            if not (BusinessModel.objects.filter(pk=business.pk, is_active=True, owners=request.user).exists() or request.user.is_staff):
                 messages.info(request, 'Você não tem permissão para realizar esta operação, precisa ser um proprietário')
                 return redirect("%s?next=%s" % (settings.LOGIN_URL, reverse_lazy("business_detail",  kwargs={'slug': business.slug})))
             kwargs['id'] = business.id

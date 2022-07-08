@@ -101,6 +101,8 @@ class BusinessDetailView(DetailView):
                 context['logo'] = logo_qrcode.logo_img
             if logo_qrcode.favicon:
                 context['favicon'] = logo_qrcode.favicon
+        if self.request.user.is_authenticated:
+            context['is_owner'] = BusinessModel.objects.filter(slug=self.object.slug, owners=self.request.user).exists()
         context['services_categories'] = get_categories_by_business(business=self.object)
         context['professional_list'] = get_professionals_by_business(business=self.object)
         context['phone_and_address_list'] = get_phones_by_addresses_by_business(business=self.object)

@@ -48,7 +48,7 @@
     <div class="card">
         <div class="card-header">
             <div class="row rounded-top p-3 text-{{ bg_color.1 }} align-items-center"  style="background-color: {{ bg_color.0 }};">
-                <h6>Serviços por Categoria</h6>
+                <h6>Serviços por Categoria </h6>
             </div>
             {% for category in services_categories %}
 
@@ -128,13 +128,19 @@
                         </div>
                     </div>
                     <div class="row justify-items-center">
+                        {% if is_owner %}
+                        <a class="btn btn-dark border-0 text-light" href="{% url 'business_address_hours_create' business.slug address.pk  %}">
 
-                        <a class="border-0 text-dark" href="{% url 'business_address_hours_create' business.slug address.pk  %}">
-                        <p class="card-text"><small class="text-muted"><i class="far fa-clock" aria-hidden="true"></i> Segunda a Sábado: 9h às 19h - Domingo: Fechado</small></p>
+                        <p class="card-text px-3"><small>adicionar dia da semana e horario de funcionamento</small></p>
                         </a>
+                        {% endif %}
+                        <p class="card-text"><small class="text-muted">
                         {% for day in hours_days %}
-                        {{ day }}<br>
+                            <i class="far fa-clock" aria-hidden="true"></i> {{ day }}<br>
                         {% endfor %}
+                        </small>
+                        </p>
+
                     </div>
                     {% endfor %}
                 </div>

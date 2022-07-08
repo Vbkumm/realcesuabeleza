@@ -8,6 +8,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from realcesuabeleza.settings import CHOICES_WEEKDAY, WEEKDAYS_CHOICES
 from io import BytesIO
+from datetime import datetime
 from django.core.files.base import ContentFile
 from django.utils.text import slugify
 from .utils import (qr_code_generator,
@@ -83,8 +84,7 @@ class BusinessModel(models.Model):
     #     return qr_code_generator(self.slug)
 
     def get_business_by_owner(self, user):
-
-        return self.objects.get_queryset(owners__in=user)
+        return self.get_queryset(owners=user)
 
 
 class BusinessLogoQrcodeModel(models.Model):
@@ -272,13 +272,15 @@ class BusinessAddressHoursModel(models.Model):
 
 
 def get_business_address_hours_day(address):
-    week_days = WEEKDAYS_CHOICES
     business_address_hours_days = BusinessAddressHoursModel.objects.filter(address=address, is_active=True)
     if business_address_hours_days:
         for hours_days in business_address_hours_days:
-            for day in week_days:
+            for day in WEEKDAYS_CHOICES:
                 if str(hours_days.week_days) == day[0]:
                     hours_days.week_days = day[1]
+
+                    hours_days.start_hour = hours_days.start_hour.strftime("%H:%M")
+                    hours_days.end_hour = hours_days.end_hour.strftime("%H:%M")
 
     return business_address_hours_days
 

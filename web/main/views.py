@@ -17,3 +17,4 @@ class TermsView(TemplateView):
 class CookiesView(TemplateView):
     template_name = "main/cookies.html"
 
+

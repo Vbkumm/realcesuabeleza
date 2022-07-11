@@ -23,8 +23,6 @@ class BusinessTestCase(TestCase):
         self.assertTrue(isinstance(self.business, BusinessModel))
         self.assertEqual(self.business.slug, "tester",)
         self.assertFalse(BusinessModel.objects.filter(pk=1).exists())
-
-
-
-
-
+        self.assertEqual(BusinessModel.objects.count(), 1)
+        business = BusinessModel.objects.get(pk=1)
+        return business

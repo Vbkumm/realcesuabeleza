@@ -115,9 +115,13 @@ DATABASES = {
         'USER': os.environ.get('POSTGRES_USER'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
         'HOST': '127.0.0.1',
-        'PORT': os.environ.get('POSTGRES_PORT')
+        'PORT': os.environ.get('POSTGRES_PORT'),
+        'TEST': {
+            'NAME': os.environ.get('POSTGRES_TEST_NAME'),
+        },
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

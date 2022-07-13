@@ -203,10 +203,8 @@ class BusinessAddressHoursCreateView(SuccessMessageMixin, CreateView):
         form.instance.created = timezone.now()
 
         if form.is_valid():
-            print('deu ccococ')
             return super(BusinessAddressHoursCreateView, self).form_valid(form)
         else:
-            print('deumeredsdfas')
             return self.form_invalid(form)
 
     def get_success_url(self):

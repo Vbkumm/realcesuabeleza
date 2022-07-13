@@ -35,3 +35,9 @@ Este projeto está em fase de desenvolvimento não estando com todas as suas atr
   <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/redux/redux-original.svg" alt="redux" width="40" height="40"/> 
  </a>
  </p>
+
+
+<h3 align="left">License</h3>
+<p>
+The realce sua beleza library is released under the <a href="https://opensource.org/licenses/MIT" target="_blank"> MIT license</a>.
+</p>

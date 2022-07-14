@@ -87,7 +87,6 @@ class BusinessDetailView(DetailView):
         logo_qrcode = BusinessLogoQrcodeModel.objects.filter(business=self.object).first()
         if logo_qrcode:
             context['qr_code'] = logo_qrcode.qrcode_img
-
             if logo_qrcode.logo_rgb_color:
                 bg_color = rgb_color_generator(logo_qrcode.logo_rgb_color).split(",")
                 context['bg_color'] = bg_color

@@ -266,23 +266,28 @@ class BusinessAddressHoursModel(models.Model):
         verbose_name_plural = "business_hours_list"
         verbose_name = "business_hours"
         db_table = 'business_hours_db'
+        ordering = ['business', 'address', 'week_days', 'start_hour']
 
     def __str__(self):
         return '%s %s %s' % (self.week_days, self.start_hour, self.end_hour)
 
 
 def get_business_address_hours_day(address):
-    business_address_hours_days = BusinessAddressHoursModel.objects.filter(address=address, is_active=True)
+    business_address_hours_days = BusinessAddressHoursModel.objects.filter(address=address, is_active=True).all()
     if business_address_hours_days:
+        address_hours_days = []
         for hours_days in business_address_hours_days:
-            for day in WEEKDAYS_CHOICES:
-                if str(hours_days.week_days) == day[0]:
-                    hours_days.week_days = day[1]
+            if hours_days.is_active:
+                for day in WEEKDAYS_CHOICES:
+                    if str(hours_days.week_days) == day[0]:
+                        address_hours_days.append({'week_days': day[1], 'start_hour': hours_days.start_hour.strftime("%H:%M"), 'end_hour': hours_days.end_hour.strftime("%H:%M"),})
+    from collections import defaultdict
+    tmp = defaultdict(list)
 
-                    hours_days.start_hour = hours_days.start_hour.strftime("%H:%M")
-                    hours_days.end_hour = hours_days.end_hour.strftime("%H:%M")
-
-    return business_address_hours_days
+    for item in address_hours_days:
+        tmp[item['week_days']].append([item['start_hour'], item['end_hour']])
+    parsed_list = [{'week_days': k, 'hours': v} for k, v in tmp.items()]
+    return parsed_list
 
 
 def get_phones_by_addresses_by_business(business=None):

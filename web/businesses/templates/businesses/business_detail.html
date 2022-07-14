@@ -130,13 +130,21 @@
                     <div class="row justify-items-center">
                         {% if is_owner %}
                         <a class="btn btn-dark border-0 text-light" href="{% url 'business_address_hours_create' business.slug address.pk  %}">
-
                         <p class="card-text px-3"><small>adicionar dia da semana e horario de funcionamento</small></p>
                         </a>
                         {% endif %}
+                    </div>
+                    <div class="row justify-items-center">
                         <p class="card-text"><small class="text-muted">
+
                         {% for day in hours_days %}
-                            <i class="far fa-clock" aria-hidden="true"></i> {{ day }}<br>
+                            <i class="far fa-clock" aria-hidden="true"></i>
+                            {{day.week_days}}:
+                            {% for hours in day.hours %}
+                            {{ hours.0 }} até {{ hours.1 }}<br/>
+                            {% endfor %}
+                            <br>
+
                         {% endfor %}
                         </small>
                         </p>

@@ -190,7 +190,7 @@ class BusinessAddressHoursForm(forms.ModelForm):
                     raise forms.ValidationError(f'A hora inicial {start_hour} esta entre horários inicio {business_address_hour.start_hour} e final  {business_address_hour.end_hour}. Talvez esse horário esteja desativado.')
                 if business_address_hour.start_hour >= end_hour <= business_address_hour.end_hour:
                     raise forms.ValidationError(f'A hora final {end_hour}  não pode estar entre {business_address_hour.start_hour} e {business_address_hour.end_hour} pois já existe nesta data. Talvez esse horário esteja desativado')
-                
+
     class Meta:
         model = BusinessAddressHoursModel
         fields = ['week_days', 'start_hour', 'end_hour', 'is_active', ]

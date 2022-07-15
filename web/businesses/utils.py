@@ -2,6 +2,8 @@ import os
 import qrcode
 import webp
 from PIL import Image
+from collections import defaultdict
+from realcesuabeleza.settings import WEEKDAYS_CHOICES
 from io import BytesIO
 from django.core.files.base import ContentFile
 
@@ -72,3 +74,35 @@ def get_favicon(obj):
     picture = picture.resize(size, Image.ANTIALIAS)
 
     return picture
+
+
+def make_work_hour_schedule(business_address_days_hour_list):
+    new_day_hours_list = []
+    if business_address_days_hour_list:
+        address_hours_days = []
+        for hours_days in business_address_days_hour_list:
+            if hours_days.is_active:
+                for day in WEEKDAYS_CHOICES:
+                    if str(hours_days.week_days) == day[0]:
+                        address_hours_days.append({'week_days': day[1], 'start_hour': hours_days.start_hour, 'end_hour': hours_days.end_hour,})
+                        #transforma queryset em lista com dados necessarios
+        tmp = defaultdict(list)
+        for item in address_hours_days:
+            tmp[item['week_days']].append([item['start_hour'], item['end_hour']])
+        parsed_list = [{'week_days': k, 'hours': v} for k, v in tmp.items()]#une dias iguais e forma lista de horas no dia
+        for days in parsed_list:#tira horarios repetidos
+            new_hour_list = []
+            for hours in days['hours']:
+                if new_hour_list:
+                    for new_hour in new_hour_list:
+                        if new_hour[0] >= hours[0] and new_hour[1] < hours[1]:
+                            new_hour_list.remove(new_hour)
+                            new_hour_list.append([hours[0], hours[1]])
+                        if hours[1] > new_hour[1] >= hours[0]:
+                            new_hour[1] = hours[1]
+                        if hours[0] > new_hour[1] < hours[1]:
+                            new_hour_list.append([hours[0], hours[1]])
+                else:
+                    new_hour_list.append([hours[0], hours[1]])
+            new_day_hours_list.append({'week_days': days['week_days'], 'hours': new_hour_list})
+    return new_day_hours_list

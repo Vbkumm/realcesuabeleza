@@ -110,7 +110,7 @@
                     {% for address, phones, hours_days in phone_and_address_list %}
                     <div class="row justify-items-center">
                         {% if address.zip_code != '' %}
-                        <div class="col-12 col-md-6">
+                        <div class="col-12">
                             <a class="border-0 text-dark" href="{% url 'business_address_detail' business.slug address.pk  %}">
                                 {{ address.zip_code }}<br>
                                 {{ address.street }}, {{ address.street_number }} - {{ address.district }}<br>
@@ -118,7 +118,7 @@
                             </a>
                         </div>
                         {% endif %}
-                        <div class="col-12 col-md-6">
+                        <div class="col-12">
                             {% for phone in phones %}
                             <p class="card-text">
                                 <a href="https://api.whatsapp.com/send?phone=+55{{ phone.get_phone_to_call }}&text= Olá, gostaria de fazer um agendamento!'" target=_blank class="rounded-circle text-success" title="Agende por whatsapp">
@@ -126,30 +126,29 @@
                                 <a class="text-dark" href="tel:0{{ phone.get_phone_to_call }}"><i class="fa fa-phone" aria-hidden="true"></i> {{ phone.get_phone_format }} </a></p>
                             {% endfor %}
                         </div>
-                    </div>
-                    <div class="row justify-items-center">
-                        {% if is_owner %}
-                        <a class="btn btn-dark border-0 text-light" href="{% url 'business_address_hours_create' business.slug address.pk  %}">
-                        <p class="card-text px-3"><small>adicionar dia da semana e horario de funcionamento</small></p>
-                        </a>
-                        {% endif %}
-                    </div>
-                    <div class="row justify-items-center">
-                        <p class="card-text"><small class="text-muted">
+                        <div class="col-12">
+                            {% if is_owner %}
+                            <a class="btn btn-dark border-0 text-light" href="{% url 'business_address_hours_create' business.slug address.pk  %}">
+                            <p class="card-text px-3"><small>adicionar dia da semana e horario de funcionamento</small></p>
+                            </a>
+                            {% endif %}
+                        </div>
+                        <div class="col-12">
+                            <p class="card-text"><small class="text-muted">
 
-                        {% for day in hours_days %}
-                            <i class="far fa-clock" aria-hidden="true"></i>
-                            {{day.week_days}}:
-                            {% for hours in day.hours %}
-                            {{ hours.0 }} até {{ hours.1 }}<br/>
+                            {% for day in hours_days %}
+                                <i class="far fa-clock" aria-hidden="true"></i>
+                                {{day.week_days}}:
+                                {% for hours in day.hours %}
+                                {{ hours.0 }} até {{ hours.1 }} {% if not forloop.last %} e {% endif %}
+                                {% endfor %}
+                                <br>
+
                             {% endfor %}
-                            <br>
+                            </small>
+                            </p>
 
-                        {% endfor %}
-                        </small>
-                        </p>
-
-                    </div>
+                        </div>
                     {% endfor %}
                 </div>
         </div>

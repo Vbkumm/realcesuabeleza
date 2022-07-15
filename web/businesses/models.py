@@ -14,7 +14,8 @@ from django.utils.text import slugify
 from .utils import (qr_code_generator,
                     get_logo_img,
                     get_favicon,
-                    get_logo_rgb)
+                    get_logo_rgb,
+                    make_work_hour_schedule,)
 
 
 User = get_user_model()
@@ -274,20 +275,7 @@ class BusinessAddressHoursModel(models.Model):
 
 def get_business_address_hours_day(address):
     business_address_hours_days = BusinessAddressHoursModel.objects.filter(address=address, is_active=True).all()
-    if business_address_hours_days:
-        address_hours_days = []
-        for hours_days in business_address_hours_days:
-            if hours_days.is_active:
-                for day in WEEKDAYS_CHOICES:
-                    if str(hours_days.week_days) == day[0]:
-                        address_hours_days.append({'week_days': day[1], 'start_hour': hours_days.start_hour.strftime("%H:%M"), 'end_hour': hours_days.end_hour.strftime("%H:%M"),})
-    from collections import defaultdict
-    tmp = defaultdict(list)
-
-    for item in address_hours_days:
-        tmp[item['week_days']].append([item['start_hour'], item['end_hour']])
-    parsed_list = [{'week_days': k, 'hours': v} for k, v in tmp.items()]
-    return parsed_list
+    return make_work_hour_schedule(business_address_hours_days)
 
 
 def get_phones_by_addresses_by_business(business=None):

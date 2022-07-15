@@ -227,12 +227,12 @@ CHOICES_MIN_TIME = [(i, i) for i in range(1, 900)]
 CHOICES_WEEKDAY = [(i, i) for i in range(0, 7)]
 
 WEEKDAYS_CHOICES = (
-    ("0", "Domingo"),
-    ("1", "Segunda-Feira"),
-    ("2", "Terça-Feira"),
-    ("3", "Quarta-Feira"),
-    ("4", "Quinta-Feira"),
-    ("5", "Sexta-Feira"),
-    ("6", "Sabado"),
+    ("0", "Segunda-Feira"),
+    ("1", "Terça-Feira"),
+    ("2", "Quarta-Feira"),
+    ("3", "Quinta-Feira"),
+    ("4", "Sexta-Feira"),
+    ("5", "Sabado"),
+    ("6", "Domingo"),
 )
 

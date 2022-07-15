@@ -133,21 +133,35 @@
                             </a>
                             {% endif %}
                         </div>
+
                         <div class="col-12">
-                            <p class="card-text"><small class="text-muted">
-
                             {% for day in hours_days %}
-                                <i class="far fa-clock" aria-hidden="true"></i>
-                                {{day.week_days}}:
                                 {% for hours in day.hours %}
-                                {{ hours.0 }} até {{ hours.1 }} {% if not forloop.last %} e {% endif %}
+                                    {% if hours.2 %}
+                                    <p>
+                                        <small class="text-muted">
+                                            <i class="far fa-clock" aria-hidden="true"></i>
+                                            <strong class="text-success">  Aberto </strong> - Fecha às
+                                            <strong class="text-dark"> {{ hours.1 }} </strong> {% if not forloop.last %} e {% endif %}
+                                        </small>
+                                        <a class="btn btn-sm text-light" style=" background-color: {{ bg_color.0 }}" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                            <i class="far fa-angle-down"></i>
+                                        </a>
+                                    </p>
+                                    {% endif %}
+                                    <div class="collapse" id="collapseExample">
+                                        <div class="card card-body">
+                                            {% if not hours.2 %}
+                                            <small class="text-muted">
+                                                {% if forloop.first %}
+                                                <i class="far fa-clock" aria-hidden="true"></i>
+                                                {{day.week_days}}:{% endif %} {{ hours.0 }} até {{ hours.1 }} {% if not forloop.last %} e {% endif %}
+                                            </small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
                                 {% endfor %}
-                                <br>
-
                             {% endfor %}
-                            </small>
-                            </p>
-
                         </div>
                     {% endfor %}
                 </div>

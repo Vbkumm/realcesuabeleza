@@ -136,28 +136,39 @@
 
                         <div class="col-12">
                             {% for day in hours_days %}
+                                {% if is_now %}
+                                <strong class="text-success">  Aberto </strong>
+                                {% else %}
+                                {% if forloop.first %}
+                                <p>
+                                    <small class="text-muted">
+                                        <strong class="text-danger">  Fechado </strong>
+                                    </small>
+                                    <a class="btn btn-sm text-light" style=" background-color: {{ bg_color.0 }}" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                        <i class="far fa-angle-down"></i>
+                                    </a>
+                                </p>
+                                {% endif %}
+                                {% endif %}
                                 {% for hours in day.hours %}
-                                    {% if hours.2 %}
+                                    {% if is_now %}
                                     <p>
                                         <small class="text-muted">
-                                            <i class="far fa-clock" aria-hidden="true"></i>
-                                            <strong class="text-success">  Aberto </strong> - Fecha às
-                                            <strong class="text-dark"> {{ hours.1 }} </strong> {% if not forloop.last %} e {% endif %}
+                                             - Fecha às
+                                            <i class="far fa-clock" aria-hidden="true"></i> <strong class="text-dark"> {{ hours.1 }} </strong> {% if not forloop.last %} e {% endif %}
                                         </small>
                                         <a class="btn btn-sm text-light" style=" background-color: {{ bg_color.0 }}" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
                                             <i class="far fa-angle-down"></i>
                                         </a>
                                     </p>
+
                                     {% endif %}
                                     <div class="collapse" id="collapseExample">
                                         <div class="card card-body">
-                                            {% if not hours.2 %}
-                                            <small class="text-muted">
-                                                {% if forloop.first %}
-                                                <i class="far fa-clock" aria-hidden="true"></i>
-                                                {{day.week_days}}:{% endif %} {{ hours.0 }} até {{ hours.1 }} {% if not forloop.last %} e {% endif %}
+                                            <small class="text-muted mr-auto">
+                                                <div class="col text-right" id="populate_days"> </div>
                                             </small>
-                                            {% endif %}
+
                                         </div>
                                     </div>
                                 {% endfor %}
@@ -166,6 +177,7 @@
                     {% endfor %}
                 </div>
         </div>
+
     </div>
 </div>
 {% endblock %}
@@ -175,11 +187,14 @@
 
     <script src="{% static 'js/jquery-slim.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
-
+    <script src="{% static 'js/make_business_address_hours-day.js' %}"></script>
     <script>
         $('.navbar-nav>li>a').on('click', function(){
             $('.navbar-collapse').collapse('hide');
         });
+        var hours_day = {{ days_hours|safe }};
+        getDayHours(hours_day);
+
     </script>
 
     {% endblock %}

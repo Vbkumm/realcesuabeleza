@@ -13,6 +13,15 @@ class BusinessPhoneSerializer(serializers.Serializer):
         fields = ['address', 'id', 'is_active', 'phone', 'updated_by', 'updated_at', 'created_by', 'created',]
 
 
+class BusinessAddressHoursSerializer(serializers.Serializer):
+    business = serializers.CharField(max_length=150)
+    address = serializers.CharField(max_length=150)
+    week_days = serializers.CharField(max_length=150)
+    start_hour = serializers.CharField(max_length=150)
+    end_hour = serializers.CharField(max_length=150)
+    is_active = serializers.CharField(max_length=150)
+
+
 class BusinessAddressSerializer(serializers.Serializer):
     zip_code = serializers.CharField(max_length=150)
     street = serializers.CharField(max_length=150)

@@ -1,6 +1,7 @@
 import os
 from django.http import JsonResponse
 from django.shortcuts import render
+import json
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import HttpResponseRedirect, Http404, get_object_or_404
@@ -35,7 +36,8 @@ from .forms import (BusinessUserInnForm,
 from .utils import rgb_color_generator
 from .serializers import (BusinessSerializer,
                           BusinessAddressSerializer,
-                          BusinessPhoneSerializer)
+                          BusinessPhoneSerializer,
+                          BusinessAddressHoursSerializer,)
 from services.models import get_categories_by_business
 from professionals.models import get_professionals_by_business
 
@@ -104,7 +106,10 @@ class BusinessDetailView(DetailView):
             context['is_owner'] = BusinessModel.objects.filter(slug=self.object.slug, owners=self.request.user).exists()
         context['services_categories'] = get_categories_by_business(business=self.object)
         context['professional_list'] = get_professionals_by_business(business=self.object)
-        context['phone_and_address_list'] = get_phones_by_addresses_by_business(business=self.object)
+        phone_and_address_list = get_phones_by_addresses_by_business(business=self.object)
+        context['phone_and_address_list'] = phone_and_address_list
+        days_hours = [i[2] for i in phone_and_address_list]
+        context['days_hours'] = json.dumps(days_hours)
         self.request.session['business_slug'] = self.object.slug
         self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
         self.request.session['business_title'] = self.object.title
@@ -209,6 +214,14 @@ class BusinessAddressHoursCreateView(SuccessMessageMixin, CreateView):
     def get_success_url(self):
         slug = self.kwargs['slug']
         return reverse_lazy('business_detail',  kwargs={'slug': slug})
+
+
+class BusinessAddressHoursViewSet(viewsets.ViewSet):
+
+    def list(self, request, *args, **kwargs):
+        business_address_hours = BusinessAddressHoursModel.objects.All()
+        serializer = BusinessAddressHoursSerializer(business_address_hours, many=True)
+        return Response(serializer.data)
 
 
 @method_decorator(requires_business_owner_or_app_staff, name='dispatch')

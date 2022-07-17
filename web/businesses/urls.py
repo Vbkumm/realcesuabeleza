@@ -8,6 +8,7 @@ from .views import (BusinessViewSet,
                     BusinessPhoneCreateView,
                     BusinessLogoQrcodeUpdateView,
                     BusinessAddressHoursCreateView,
+                    BusinessAddressHoursViewSet,
                     )
 from main.views import TermsView, CookiesView
 
@@ -21,6 +22,9 @@ urlpatterns = [
         'get': 'retrieve',
         'put': 'update',
         'delete': 'destroy'
+    })),
+    path('api/<str:slug>/address_hours/', BusinessAddressHoursViewSet.as_view({
+        'get': 'list',
     })),
     path('business_create/', BusinessWizardCreateView.as_view(), name='business_create'),
     path('<str:slug>/', BusinessDetailView.as_view(), name='business_detail'),

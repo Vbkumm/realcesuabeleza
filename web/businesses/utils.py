@@ -1,5 +1,6 @@
 import os
 import qrcode
+from datetime import datetime, time
 import webp
 from PIL import Image
 from collections import defaultdict
@@ -79,30 +80,29 @@ def get_favicon(obj):
 def make_work_hour_schedule(business_address_days_hour_list):
     new_day_hours_list = []
     if business_address_days_hour_list:
-        address_hours_days = []
-        for hours_days in business_address_days_hour_list:
-            if hours_days.is_active:
-                for day in WEEKDAYS_CHOICES:
-                    if str(hours_days.week_days) == day[0]:
-                        address_hours_days.append({'week_days': day[1], 'start_hour': hours_days.start_hour, 'end_hour': hours_days.end_hour,})
-                        #transforma queryset em lista com dados necessarios
         tmp = defaultdict(list)
-        for item in address_hours_days:
+        for item in list(business_address_days_hour_list.values('week_days', 'start_hour', 'end_hour')):
             tmp[item['week_days']].append([item['start_hour'], item['end_hour']])
         parsed_list = [{'week_days': k, 'hours': v} for k, v in tmp.items()]#une dias iguais e forma lista de horas no dia
         for days in parsed_list:#tira horarios repetidos
             new_hour_list = []
-            for hours in days['hours']:
+            for hours in days['hours']:#tirar horas repetidas ou sobrepostas
                 if new_hour_list:
                     for new_hour in new_hour_list:
-                        if new_hour[0] >= hours[0] and new_hour[1] < hours[1]:
+                        if datetime.strptime(new_hour[0], "%H:%M").time() >= hours[0] and datetime.strptime(new_hour[1], "%H:%M").time() < hours[1]:
                             new_hour_list.remove(new_hour)
-                            new_hour_list.append([hours[0], hours[1]])
-                        if hours[1] > new_hour[1] >= hours[0]:
-                            new_hour[1] = hours[1]
-                        if hours[0] > new_hour[1] < hours[1]:
-                            new_hour_list.append([hours[0], hours[1]])
+                            new_hour_list.append([hours[0].strftime("%H:%M"), hours[1].strftime("%H:%M")])
+                        if hours[1] > datetime.strptime(new_hour[1], "%H:%M").time() >= hours[0]:
+                            new_hour[1] = hours[1].strftime("%H:%M")
+                        if hours[0] > datetime.strptime(new_hour[1], "%H:%M").time() < hours[1]:
+                            new_hour_list.append([hours[0].strftime("%H:%M"), hours[1].strftime("%H:%M")])
                 else:
-                    new_hour_list.append([hours[0], hours[1]])
-            new_day_hours_list.append({'week_days': days['week_days'], 'hours': new_hour_list})
+                    new_hour_list.append([hours[0].strftime("%H:%M"), hours[1].strftime("%H:%M")])
+            for week_day in WEEKDAYS_CHOICES:#muda dia em numero para o dia da semana
+                if str(days['week_days']) == week_day[0]:
+                    now = datetime.now()
+                    is_now = False
+                    if now.weekday() == days['week_days']:
+                        is_now = days['start_hour'] <= now.time() <= days['end_hour']
+                    new_day_hours_list.append({'week_days': week_day[1], 'is_now': is_now, 'hours': new_hour_list,})
     return new_day_hours_list

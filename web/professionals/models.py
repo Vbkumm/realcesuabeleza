@@ -31,6 +31,7 @@ class ProfessionalCategoryModel(models.Model):
 
     class Meta:
         verbose_name_plural = "professionals_category_list"
+        ordering = ['business',]
 
     def __str__(self):
 
@@ -60,6 +61,7 @@ class ProfessionalServiceCategoryModel(models.Model):
         verbose_name_plural = "service_category_professional_category_list"
         verbose_name = "service_category_professional_category"
         db_table = 'service_category_professional_category_db'
+        ordering = ['service_category']
 
 
 class ProfessionalQuerySet(models.QuerySet):
@@ -112,6 +114,7 @@ class ProfessionalModel(models.Model):
         verbose_name_plural = "professionals_list"
         verbose_name = "professionals"
         db_table = 'professionals_db'
+        ordering = ['business']
 
     def __str__(self):
         return '%s %s %s' % (self.pk, self.name, self.business)
@@ -188,6 +191,8 @@ class ProfessionalExtraSkillModel(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['professional']
 
 class ProfessionalNoSkillModel(models.Model):
     """
@@ -197,6 +202,9 @@ class ProfessionalNoSkillModel(models.Model):
     professional = models.ForeignKey(ProfessionalModel, related_name='professional_no_skill_set', on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['professional']
 
 
 class ProfessionalUserModel(models.Model):
@@ -210,6 +218,9 @@ class ProfessionalUserModel(models.Model):
     updated_by = models.ForeignKey(User, null=True, related_name='+',on_delete=models.SET_NULL, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['user']
 
 
 class ProfessionalAddressModel(models.Model):
@@ -234,6 +245,7 @@ class ProfessionalAddressModel(models.Model):
         verbose_name_plural = "professional_address_list"
         verbose_name = "professional_address"
         db_table = 'professional_address_db'
+        ordering = ['professional']
 
     def __str__(self):
         return '%s %s' % (self.professional, self.street)
@@ -256,6 +268,7 @@ class ProfessionalPhoneModel(models.Model):
         verbose_name_plural = "professional_phone_list"
         verbose_name = "professional_phone"
         db_table = 'professional_phone_db'
+        ordering = ['professional']
 
     def __str__(self):
         return '%s %s' % (self.phone, self.professional)
@@ -307,6 +320,7 @@ class ProfessionalScheduleModel(models.Model):
         verbose_name_plural = "professional_schedule_list"
         verbose_name = "professional_schedule"
         db_table = 'professional_schedule_db'
+        ordering = ['address', 'professional']
         constraints = [
             models.CheckConstraint(
                 check=Q(start_hour__lte=F('end_hour')),
@@ -388,7 +402,7 @@ class OpenScheduleModel(models.Model):
         verbose_name_plural = "open_schedule_list"
         verbose_name = "open_schedule"
         db_table = 'open_schedule_db'
-        ordering = ["business"]
+        ordering = ["business", "address"]
         constraints = [
             models.CheckConstraint(
                 check=Q(start_date__lte=F('end_date'), start_hour__lte=F('end_hour')),
@@ -450,7 +464,7 @@ class CloseScheduleModel(models.Model):
         verbose_name_plural = "close_schedule_list"
         verbose_name = "close_schedule"
         db_table = 'close_schedule_db'
-        ordering = ["business"]
+        ordering = ["business", "address"]
         constraints = [
             models.CheckConstraint(
                 check=Q(start_date__lte=F('end_date'), start_hour__lte=F('end_hour')),

@@ -89,6 +89,7 @@ class ScheduleModel(models.Model):
         verbose_name_plural = "schedule_list"
         verbose_name = "schedules"
         db_table = 'schedules_db'
+        ordering = ["address", "date", "professional", "hour"]
         #constraints = [models.UniqueConstraint(fields=['schedule_date', 'schedule_hour', 'schedule_professional', ], name='unique_schedule')]
 
     def __str__(self):
@@ -151,3 +152,5 @@ class ScheduleExtraTimeModel(models.Model):
         verbose_name_plural = "schedule_extra_time_list"
         verbose_name = "schedule_extra_time"
         db_table = 'schedule_extra_time_db'
+        ordering = ["schedule"]
+

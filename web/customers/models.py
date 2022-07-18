@@ -33,6 +33,7 @@ class CustomerModel(models.Model):
         verbose_name_plural = "customer_list"
         verbose_name = "customer"
         db_table = 'customer_db'
+        ordering = ['business', 'name', ]
 
     def __str__(self):
         return '%s %s %s' % (self.pk, self.name, self.business)
@@ -80,6 +81,7 @@ class CustomerAddressModel(models.Model):
         verbose_name_plural = "customer_address_list"
         verbose_name = "customer_address"
         db_table = 'customer_address_db'
+        ordering = ['customer',]
 
     def __str__(self):
         return '%s %s' % (self.customer, self.street)
@@ -102,6 +104,7 @@ class CustomerPhoneModel(models.Model):
         verbose_name_plural = "customer_phone_list"
         verbose_name = "customer_phone"
         db_table = 'customer_phone_db'
+        ordering = ['customer']
 
     def __str__(self):
         return '%s %s' % (self.customer, self.phone)

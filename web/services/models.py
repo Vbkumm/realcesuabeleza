@@ -35,6 +35,7 @@ class EquipmentModel(models.Model):
         verbose_name_plural = "equipment_list"
         verbose_name = "equipments"
         db_table = 'equipments_db'
+        ordering = ["business"]
 
     def __str__(self):
 
@@ -71,6 +72,7 @@ class EquipmentAddressModel(models.Model):
         verbose_name_plural = "equipment_address_list"
         verbose_name = "equipment_address"
         db_table = 'equipment_address_db'
+        ordering = ["address"]
 
     def __str__(self):
 
@@ -104,6 +106,7 @@ class ServiceCategoryModel(models.Model):
 
     class Meta:
         verbose_name_plural = "service_category_list"
+        ordering = ["business"]
 
     def __str__(self):
         return '%s %s %s' % (self.pk, self.title, self.business)
@@ -164,6 +167,7 @@ class ServiceModel(models.Model):
         verbose_name_plural = "service_list"
         verbose_name = "services"
         db_table = 'service_db'
+        ordering = ["business", "slug"]
 
     def __str__(self):
         return '%s %s %s' % (self.pk, self.title, self.business)
@@ -221,6 +225,7 @@ class ServiceEquipmentModel(models.Model):
         verbose_name_plural = "service_equipment_list"
         verbose_name = "service_equipments"
         db_table = 'service_equipments_db'
+        ordering = ["service"]
 
     def __str__(self):
         return '%s %s %s %s %s' % (self.service, self.equipment, self.equipment_time, self.equipment_complement, self.equipment_replaced)

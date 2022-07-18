@@ -182,6 +182,8 @@ class BusinessAddressModel(models.Model):
         verbose_name_plural = "business_address_list"
         verbose_name = "business_address"
         db_table = 'business_address_db'
+        ordering = ['business']
+
 
     def __str__(self):
         return '%s %s' % (self.business, self.street)
@@ -212,6 +214,8 @@ class BusinessPhoneModel(models.Model):
         verbose_name_plural = "business_phone_list"
         verbose_name = "business_phone"
         db_table = 'business_phone_db'
+        ordering = ['business', 'address',]
+
 
     def __str__(self):
         return '%s %s' % (self.address, self.phone)

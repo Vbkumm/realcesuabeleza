@@ -165,9 +165,9 @@
                                     {% endif %}
                                     <div class="collapse" id="collapseExample">
                                         <div class="card card-body">
-                                            <small class="text-muted mr-auto">
-                                                <div class="col text-right" id="populate-{{address.pk}}"> </div>
-                                            </small>
+                                            <p class="text-muted mr-auto">
+                                                <small class="col text-right" id="populate-{{address.pk}}"> </small>
+                                            </p>
 
                                         </div>
                                     </div>
@@ -190,17 +190,23 @@
     <script src="{% static 'js/jquery-slim.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/make_business_address_hours-day.js' %}"></script>
-    <script>
+<script>
         $('.navbar-nav>li>a').on('click', function(){
             $('.navbar-collapse').collapse('hide');
         });
 
-        {% for address, phones, hours_days in phone_and_address_list %}
-           let address_js = {{ hours_days.2|safe }};
-           let hours_day = {{ hours_days.0|safe }};
-           getDayHours(hours_day, address_js);
-        {% endfor %}
 
-    </script>
+</script>
+<script>
+ {% for address, phones, hours_days in phone_and_address_list %}
+        let address_js = {{ hours_days.2|safe }};
+        let hours_day = {{ hours_days.0|safe }};
+        let hour_address = [hours_day, address_js];
+        getDayHours(hour_address);
+
+ {% endfor %}
+
+
+</script>
 
     {% endblock %}

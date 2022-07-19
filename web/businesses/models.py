@@ -279,7 +279,7 @@ class BusinessAddressHoursModel(models.Model):
 
 def get_business_address_hours_day(address):
     business_address_hours_days = BusinessAddressHoursModel.objects.filter(address=address, is_active=True).all()
-    return make_work_hour_schedule(business_address_hours_days)
+    return make_work_hour_schedule(business_address_hours_days, address.pk)
 
 
 def get_phones_by_addresses_by_business(business=None):

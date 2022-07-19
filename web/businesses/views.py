@@ -1,7 +1,6 @@
 import os
 from django.http import JsonResponse
 from django.shortcuts import render
-import json
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import HttpResponseRedirect, Http404, get_object_or_404
@@ -107,9 +106,8 @@ class BusinessDetailView(DetailView):
         context['services_categories'] = get_categories_by_business(business=self.object)
         context['professional_list'] = get_professionals_by_business(business=self.object)
         phone_and_address_list = get_phones_by_addresses_by_business(business=self.object)
+
         context['phone_and_address_list'] = phone_and_address_list
-        days_hours = [i[2] for i in phone_and_address_list]
-        context['days_hours'] = json.dumps(days_hours)
         self.request.session['business_slug'] = self.object.slug
         self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
         self.request.session['business_title'] = self.object.title

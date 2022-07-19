@@ -135,8 +135,8 @@
                         </div>
 
                         <div class="col-12">
-                            {% for day in hours_days %}
-                                {% if is_now %}
+
+                            {% if hours_days.1 %}
                                 <strong class="text-success">  Aberto </strong>
                                 {% else %}
                                 {% if forloop.first %}
@@ -150,8 +150,9 @@
                                 </p>
                                 {% endif %}
                                 {% endif %}
-                                {% for hours in day.hours %}
-                                    {% if is_now %}
+
+
+                                    {% if hours_days.1 %}
                                     <p>
                                         <small class="text-muted">
                                              - Fecha às
@@ -161,23 +162,24 @@
                                             <i class="far fa-angle-down"></i>
                                         </a>
                                     </p>
-
                                     {% endif %}
                                     <div class="collapse" id="collapseExample">
                                         <div class="card card-body">
                                             <small class="text-muted mr-auto">
-                                                <div class="col text-right" id="populate_days"> </div>
+                                                <div class="col text-right" id="populate-{{address.pk}}"> </div>
                                             </small>
 
                                         </div>
                                     </div>
-                                {% endfor %}
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                </div>
-        </div>
 
+
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -192,8 +194,12 @@
         $('.navbar-nav>li>a').on('click', function(){
             $('.navbar-collapse').collapse('hide');
         });
-        var hours_day = {{ days_hours|safe }};
-        getDayHours(hours_day);
+
+        {% for address, phones, hours_days in phone_and_address_list %}
+           let address_js = {{ hours_days.2|safe }};
+           let hours_day = {{ hours_days.0|safe }};
+           getDayHours(hours_day, address_js);
+        {% endfor %}
 
     </script>
 

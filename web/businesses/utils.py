@@ -1,4 +1,5 @@
 import os
+import json
 import qrcode
 from datetime import datetime, time
 import webp
@@ -77,32 +78,48 @@ def get_favicon(obj):
     return picture
 
 
-def make_work_hour_schedule(business_address_days_hour_list):
+def is_time_now(start_hour, end_hour):
+    if start_hour <= datetime.now().time() <= end_hour:
+        return True
+    return False
+
+
+def make_hours_day(hour_list):
+    new_hour_list = []
+    is_now = False
+    for hours in hour_list:
+        if is_time_now(hours[0], hours[1]):
+            is_now = True
+        if new_hour_list:
+            for new_hour in new_hour_list:
+                if datetime.strptime(new_hour[0], "%H:%M").time() >= hours[0] and datetime.strptime(new_hour[1], "%H:%M").time() < hours[1]:
+                    new_hour_list.remove(new_hour)
+                    new_hour_list.append([hours[0].strftime("%H:%M"), hours[1].strftime("%H:%M")])
+                if hours[1] > datetime.strptime(new_hour[1], "%H:%M").time() >= hours[0]:
+                    new_hour[1] = hours[1].strftime("%H:%M")
+                if hours[0] > datetime.strptime(new_hour[1], "%H:%M").time() < hours[1]:
+                    new_hour_list.append([hours[0].strftime("%H:%M"), hours[1].strftime("%H:%M")])
+        else:
+            new_hour_list.append([hours[0].strftime("%H:%M"), hours[1].strftime("%H:%M")])
+    return [new_hour_list, is_now]
+
+
+def make_work_hour_schedule(business_address_days_hour_list, address_pk):
     new_day_hours_list = []
+    is_now = False
     if business_address_days_hour_list:
         tmp = defaultdict(list)
+
         for item in list(business_address_days_hour_list.values('week_days', 'start_hour', 'end_hour')):
             tmp[item['week_days']].append([item['start_hour'], item['end_hour']])
         parsed_list = [{'week_days': k, 'hours': v} for k, v in tmp.items()]#une dias iguais e forma lista de horas no dia
         for days in parsed_list:#tira horarios repetidos
-            new_hour_list = []
-            for hours in days['hours']:#tirar horas repetidas ou sobrepostas
-                if new_hour_list:
-                    for new_hour in new_hour_list:
-                        if datetime.strptime(new_hour[0], "%H:%M").time() >= hours[0] and datetime.strptime(new_hour[1], "%H:%M").time() < hours[1]:
-                            new_hour_list.remove(new_hour)
-                            new_hour_list.append([hours[0].strftime("%H:%M"), hours[1].strftime("%H:%M")])
-                        if hours[1] > datetime.strptime(new_hour[1], "%H:%M").time() >= hours[0]:
-                            new_hour[1] = hours[1].strftime("%H:%M")
-                        if hours[0] > datetime.strptime(new_hour[1], "%H:%M").time() < hours[1]:
-                            new_hour_list.append([hours[0].strftime("%H:%M"), hours[1].strftime("%H:%M")])
-                else:
-                    new_hour_list.append([hours[0].strftime("%H:%M"), hours[1].strftime("%H:%M")])
+
+            #tirar horas repetidas ou sobrepostas
+            new_hour_list = make_hours_day(days['hours'])
+            is_now = new_hour_list[1]
             for week_day in WEEKDAYS_CHOICES:#muda dia em numero para o dia da semana
                 if str(days['week_days']) == week_day[0]:
-                    now = datetime.now()
-                    is_now = False
-                    if now.weekday() == days['week_days']:
-                        is_now = days['start_hour'] <= now.time() <= days['end_hour']
-                    new_day_hours_list.append({'week_days': week_day[1], 'is_now': is_now, 'hours': new_hour_list,})
-    return new_day_hours_list
+
+                    new_day_hours_list.append({'week_days': week_day[1], 'is_now': is_now, 'hours': new_hour_list[0],})
+    return [json.dumps(new_day_hours_list), is_now, json.dumps(address_pk)]

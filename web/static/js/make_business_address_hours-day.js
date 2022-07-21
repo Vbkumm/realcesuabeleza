@@ -1,15 +1,13 @@
 let htmlElements = "";
+let htmlElementsOpen = "";
 var getDays = function(arr) {
     if (typeof(arr) == 'object') {
-        for (let i = 0; i < arr.length; i++) {
-
-            if (arr[i].is_now != 'false') {
-                htmlElements += '<div>' + '<i class="far fa-clock" aria-hidden="true"></i>' + ' ' + arr[i].week_days + ':  ' ;
-                    if (arr[i].hours) {
-                        for (let f = 0; f < arr[i].hours.length; f++) {
-                            htmlElements +=  '  ' + arr[i].hours[f][0] + ' às ' + arr[i].hours[f][1]+ "</div>";
-                        }
-                    }
+        htmlElements += '<div>' + '<i class="far fa-clock" aria-hidden="true"></i>' + ' ' + arr['week_days'] + ':  ';
+        for (let i = 0; i < arr['hours'].length; i++) {
+            if (arr['is_now'] != 'false') {
+                htmlElements += '  ' + arr['hours'][i][0] + ' às ' + arr['hours'][i][1] + "</div>";
+            } else {
+                htmlElementsOpen += '  ' + arr['hours'][i][0] + ' às ' + arr['hours'][i][1] + "</div>";
             }
         }
     }
@@ -22,5 +20,6 @@ var getDayHours = function(hour_address) {
             getDays(arr[i]);
         }
     }
+    document.getElementById('open-' + address).innerHTML = htmlElementsOpen;
     document.getElementById('populate-' + address).innerHTML = htmlElements;
 }

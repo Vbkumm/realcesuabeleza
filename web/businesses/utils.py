@@ -78,18 +78,19 @@ def get_favicon(obj):
     return picture
 
 
-def is_time_now(start_hour, end_hour):
-    if start_hour <= datetime.now().time() <= end_hour:
+def is_time_now(start_hour, end_hour, weekday):
+    if start_hour <= datetime.now().time() <= end_hour and weekday == datetime.now().weekday():
         return True
     return False
 
 
-def make_hours_day(hour_list):
+def make_hours_day(hour_list, weekday):
     new_hour_list = []
-    is_now = False
+    is_now = {'is_now': False, 'week_day': None}
+    is_today = False
     for hours in hour_list:
-        if is_time_now(hours[0], hours[1]):
-            is_now = True
+        if is_time_now(hours[0], hours[1], weekday):
+            is_now = {'is_now': True, 'week_day': weekday}
         if new_hour_list:
             for new_hour in new_hour_list:
                 if datetime.strptime(new_hour[0], "%H:%M").time() >= hours[0] and datetime.strptime(new_hour[1], "%H:%M").time() < hours[1]:
@@ -101,7 +102,9 @@ def make_hours_day(hour_list):
                     new_hour_list.append([hours[0].strftime("%H:%M"), hours[1].strftime("%H:%M")])
         else:
             new_hour_list.append([hours[0].strftime("%H:%M"), hours[1].strftime("%H:%M")])
-    return [new_hour_list, is_now]
+        if is_now:
+            is_today = is_now
+    return [new_hour_list, is_today]
 
 
 def make_work_hour_schedule(business_address_days_hour_list, address_pk):
@@ -116,10 +119,13 @@ def make_work_hour_schedule(business_address_days_hour_list, address_pk):
         for days in parsed_list:#tira horarios repetidos
 
             #tirar horas repetidas ou sobrepostas
-            new_hour_list = make_hours_day(days['hours'])
-            is_now = new_hour_list[1]
+            new_hour_list = make_hours_day(days['hours'], days['week_days'])
+
             for week_day in WEEKDAYS_CHOICES:#muda dia em numero para o dia da semana
                 if str(days['week_days']) == week_day[0]:
-
+                    print(f"week_days {days['week_days']} --{new_hour_list[1]} ---")
+                    if new_hour_list[1]['week_day'] is not None:
+                        if days['week_days'] == new_hour_list[1]['week_day'] and new_hour_list[1] and days['week_days'] == datetime.now().weekday():
+                            is_now = True
                     new_day_hours_list.append({'week_days': week_day[1], 'is_now': is_now, 'hours': new_hour_list[0],})
     return [json.dumps(new_day_hours_list), is_now, json.dumps(address_pk)]

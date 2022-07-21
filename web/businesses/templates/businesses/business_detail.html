@@ -139,7 +139,7 @@
                             {% if hours_days.1 %}
                                 <strong class="text-success">  Aberto </strong>
                                 {% else %}
-                                {% if forloop.first %}
+
                                 <p>
                                     <small class="text-muted">
                                         <strong class="text-danger">  Fechado </strong>
@@ -148,7 +148,7 @@
                                         <i class="far fa-angle-down"></i>
                                     </a>
                                 </p>
-                                {% endif %}
+
                                 {% endif %}
 
 
@@ -156,7 +156,7 @@
                                     <p>
                                         <small class="text-muted">
                                              - Fecha às
-                                            <i class="far fa-clock" aria-hidden="true"></i> <strong class="text-dark"> {{ hours.1 }} </strong> {% if not forloop.last %} e {% endif %}
+                                            <i class="far fa-clock" aria-hidden="true"></i> <strong id="open-{{address.pk}}" class="text-dark"> {{ hours.1 }} </strong>
                                         </small>
                                         <a class="btn btn-sm text-light" style=" background-color: {{ bg_color.0 }}" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
                                             <i class="far fa-angle-down"></i>

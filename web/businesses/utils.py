@@ -112,18 +112,14 @@ def make_work_hour_schedule(business_address_days_hour_list, address_pk):
     is_now = False
     if business_address_days_hour_list:
         tmp = defaultdict(list)
-
         for item in list(business_address_days_hour_list.values('week_days', 'start_hour', 'end_hour')):
             tmp[item['week_days']].append([item['start_hour'], item['end_hour']])
         parsed_list = [{'week_days': k, 'hours': v} for k, v in tmp.items()]#une dias iguais e forma lista de horas no dia
         for days in parsed_list:#tira horarios repetidos
-
             #tirar horas repetidas ou sobrepostas
             new_hour_list = make_hours_day(days['hours'], days['week_days'])
-
             for week_day in WEEKDAYS_CHOICES:#muda dia em numero para o dia da semana
                 if str(days['week_days']) == week_day[0]:
-                    print(f"week_days {days['week_days']} --{new_hour_list[1]} ---")
                     if new_hour_list[1]['week_day'] is not None:
                         if days['week_days'] == new_hour_list[1]['week_day'] and new_hour_list[1] and days['week_days'] == datetime.now().weekday():
                             is_now = True

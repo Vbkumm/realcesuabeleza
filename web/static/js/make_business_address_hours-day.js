@@ -1,13 +1,17 @@
 let htmlElements = "";
-let htmlElementsOpen = "";
+let htmlElementsUp = "";
 var getDays = function(arr) {
     if (typeof(arr) == 'object') {
-        htmlElements += '<div>' + '<i class="far fa-clock" aria-hidden="true"></i>' + ' ' + arr['week_days'] + ':  ';
+        htmlElements += '<div>' + ' ' + arr['week_days'] + ':  ';
+        if (!arr['is_now']) {
+          htmlElementsUp = '<div>' + 'FECHADO';
+        } else {
+            htmlElementsUp += '<p> ABERTO </p>' + '<div>';
+        }
         for (let i = 0; i < arr['hours'].length; i++) {
-            if (arr['is_now'] != 'false') {
-                htmlElements += '  ' + arr['hours'][i][0] + ' às ' + arr['hours'][i][1] + "</div>";
-            } else {
-                htmlElementsOpen += '  ' + arr['hours'][i][0] + ' às ' + arr['hours'][i][1] + "</div>";
+            htmlElements += '<i class="far fa-clock" aria-hidden="true"></i> ' + arr['hours'][i][0] + ' às ' + arr['hours'][i][1] + "</div>";
+            if (arr['is_now']) {
+                htmlElementsUp += ' '  + ' até ' + arr['hours'][i][1] + "</div>";
             }
         }
     }
@@ -20,6 +24,6 @@ var getDayHours = function(hour_address) {
             getDays(arr[i]);
         }
     }
-    document.getElementById('open-' + address).innerHTML = htmlElementsOpen;
+    document.getElementById('up-' + address).innerHTML = htmlElementsUp;
     document.getElementById('populate-' + address).innerHTML = htmlElements;
 }

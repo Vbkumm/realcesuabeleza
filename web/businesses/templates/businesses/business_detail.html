@@ -61,7 +61,6 @@
     </div>
 </div>
 
-
 <!--==========================
     Business professionals
   ============================-->
@@ -135,43 +134,28 @@
                         </div>
 
                         <div class="col-12">
-
-                            {% if hours_days.1 %}
-                                <strong class="text-success">  Aberto </strong>
-                                {% else %}
-
-                                <p>
-                                    <small class="text-muted">
-                                        <strong class="text-danger">  Fechado </strong>
+                            <div class="row mt-2 ">
+                                <div class="col-5">
+                                    <small class="{% if hours_days.1 %}text-success{% else %}text-danger{% endif %} ">
+                                        <strong id="up-{{address.pk}}"></strong>
                                     </small>
+                                </div>
+                                <div class="col-2 mr-auto">
                                     <a class="btn btn-sm text-light" style=" background-color: {{ bg_color.0 }}" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
                                         <i class="far fa-angle-down"></i>
                                     </a>
-                                </p>
-
-                                {% endif %}
-
-
-                                    {% if hours_days.1 %}
-                                    <p>
-                                        <small class="text-muted">
-                                             - Fecha às
-                                            <i class="far fa-clock" aria-hidden="true"></i> <strong id="open-{{address.pk}}" class="text-dark"> {{ hours.1 }} </strong>
-                                        </small>
-                                        <a class="btn btn-sm text-light" style=" background-color: {{ bg_color.0 }}" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                                            <i class="far fa-angle-down"></i>
-                                        </a>
-                                    </p>
-                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
                                     <div class="collapse" id="collapseExample">
                                         <div class="card card-body">
-                                            <p class="text-muted mr-auto">
-                                                <small class="col text-right" id="populate-{{address.pk}}"> </small>
+                                            <p class="text-muted mr-auto text-right">
+                                                <small class="col" id="populate-{{address.pk}}"> </small>
                                             </p>
 
                                         </div>
                                     </div>
-
+                            </div>
 
                         </div>
                     </div>
@@ -184,9 +168,7 @@
 </div>
 {% endblock %}
 
-
 {% block javascript %}
-
     <script src="{% static 'js/jquery-slim.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/make_business_address_hours-day.js' %}"></script>
@@ -194,7 +176,6 @@
         $('.navbar-nav>li>a').on('click', function(){
             $('.navbar-collapse').collapse('hide');
         });
-
 
 </script>
 <script>

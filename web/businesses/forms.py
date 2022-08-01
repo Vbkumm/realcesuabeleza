@@ -172,24 +172,25 @@ class BusinessAddressHoursForm(forms.ModelForm):
     is_active = forms.BooleanField(label='Dia esta ativo?', initial=True)
 
     def __init__(self, *args, **kwargs):
-        self.week_days = kwargs.pop('week_days', None)
+        self.business_address_day_list = kwargs.pop('business_address_day_list', None)
         super(BusinessAddressHoursForm, self).__init__(*args, **kwargs)
-        self.fields['week_days'].choices = sorted(list({(k, v) for k, v in WEEKDAYS_CHOICES if int(k) not in self.week_days}))
+        self.fields['week_days'].choices = sorted(list({(k, v) for k, v in WEEKDAYS_CHOICES}))
 
     def clean(self):
         super(BusinessAddressHoursForm, self).clean()
+        business_address_day_list = self.business_address_day_list
         week_days = self.cleaned_data['week_days']
         start_hour = self.cleaned_data['start_hour']
         end_hour = self.cleaned_data['end_hour']
         if end_hour <= start_hour:
             raise forms.ValidationError(f'A hora final {end_hour} tem que ser superior {start_hour} hora inicial!')
-        if BusinessAddressHoursModel.objects.filter(week_days=week_days).exists():
-            business_address_hour_list = BusinessAddressHoursModel.objects.filter(week_days=week_days)
-            for business_address_hour in business_address_hour_list:
-                if business_address_hour.start_hour >= start_hour <= business_address_hour.end_hour:
-                    raise forms.ValidationError(f'A hora inicial {start_hour} esta entre horários inicio {business_address_hour.start_hour} e final  {business_address_hour.end_hour}. Talvez esse horário esteja desativado.')
-                if business_address_hour.start_hour >= end_hour <= business_address_hour.end_hour:
-                    raise forms.ValidationError(f'A hora final {end_hour}  não pode estar entre {business_address_hour.start_hour} e {business_address_hour.end_hour} pois já existe nesta data. Talvez esse horário esteja desativado')
+        if business_address_day_list:
+            for business_address_hour in business_address_day_list:
+                if business_address_hour.week_days == int(week_days):
+                    if business_address_hour.start_hour >= start_hour <= business_address_hour.end_hour:
+                        raise forms.ValidationError(f'A hora inicial {start_hour} esta entre horários inicio {business_address_hour.start_hour} e final  {business_address_hour.end_hour}. Talvez esse horário esteja desativado.')
+                    if business_address_hour.start_hour >= end_hour <= business_address_hour.end_hour:
+                        raise forms.ValidationError(f'A hora final {end_hour}  não pode estar entre {business_address_hour.start_hour} e {business_address_hour.end_hour} pois já existe nesta data. Talvez esse horário esteja desativado')
 
     class Meta:
         model = BusinessAddressHoursModel

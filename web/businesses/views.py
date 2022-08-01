@@ -192,7 +192,7 @@ class BusinessAddressHoursCreateView(SuccessMessageMixin, CreateView):
         business = BusinessModel.objects.filter(slug=self.kwargs.get('slug')).first()
         business_address = BusinessAddressModel.objects.filter(business=business, pk=self.kwargs.get('address_pk')).first()
         business_address_day_list = BusinessAddressHoursModel.objects.filter(address=business_address)
-        kwargs['week_days'] = business_address_day_list
+        kwargs['business_address_day_list'] = business_address_day_list
 
         return kwargs
 

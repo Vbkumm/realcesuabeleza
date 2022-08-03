@@ -216,7 +216,6 @@ class BusinessPhoneModel(models.Model):
         db_table = 'business_phone_db'
         ordering = ['business', 'address',]
 
-
     def __str__(self):
         return '%s %s' % (self.address, self.phone)
 

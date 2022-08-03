@@ -76,3 +76,7 @@ def flush_session(request):
         del request.session['city']
     if 'state' in request.session:
         del request.session['state']
+    if 'service_category_slug' in request.session:
+        del request.session['service_category_slug']
+    if 'service_category_title' in request.session:
+        del request.session['service_category_title']

@@ -2,6 +2,7 @@ from django.urls import path
 from .views import (ServiceViewSet,
                     ServiceDetailView,
                     ServiceCategoryViewSet,
+                    ServiceCategoryCreateView,
                     ServiceCategoryDetailView,
                     EquipmentViewSet,
                     EquipmentDetailView,
@@ -33,6 +34,7 @@ urlpatterns = [
         'put': 'update',
         'delete': 'destroy'
     })),
+    path('<str:slug>/service_category/', ServiceCategoryCreateView.as_view(), name='service_category_create'),
     path('<str:slug>/service_category/<str:service_category_slug>/', ServiceCategoryDetailView.as_view(), name='service_category_detail'),
 
 

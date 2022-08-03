@@ -1,7 +1,14 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from django.shortcuts import HttpResponseRedirect, Http404, get_object_or_404
+from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.urls import reverse_lazy
+from django.contrib.messages.views import SuccessMessageMixin
+from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
+from lib.templatetags.permissions import requires_business_owner_or_app_staff
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView
-
+from businesses.models import BusinessModel
 from .models import (ServiceCategoryModel,
                      ServiceModel,
                      EquipmentModel,
@@ -13,6 +20,8 @@ from .serializers import (ServiceCategorySerializer,
                           EquipmentSerializer,
                           ServiceEquipmentSerializer,
                           EquipmentAddressSerializer,)
+from .forms import (ServiceCategoryForm,
+                    )
 
 
 class ServiceCategoryViewSet(viewsets.ViewSet):
@@ -46,6 +55,31 @@ class ServiceCategoryViewSet(viewsets.ViewSet):
         service_category = ServiceCategoryModel.objects.get(slug=kwargs['service_category_slug'])
         service_category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
+class ServiceCategoryCreateView(SuccessMessageMixin, CreateView):
+    model = ServiceCategoryModel
+    template_name = 'services/service_category_create.html'
+    form_class = ServiceCategoryForm
+    success_message = "Categoria de serviço criada com sucesso!"
+
+    def get_context_data(self, **kwargs):
+        context = super(ServiceCategoryCreateView, self).get_context_data(**kwargs)
+        context['business_slug'] = self.kwargs.get('slug')
+
+        return context
+
+    def form_valid(self, model):
+        model.instance.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        model.instance.created_by = self.request.user
+        model.instance.created = timezone.now()
+        return super(ServiceCategoryCreateView, self).form_valid(model)
+
+    def get_success_url(self):
+        slug = self.kwargs['slug']
+        service_category_slug = self.object.slug
+        return reverse_lazy("service_category_detail", kwargs={'slug': slug, 'service_category_slug': service_category_slug})
 
 
 class ServiceCategoryDetailView(DetailView):

@@ -92,7 +92,7 @@ class ServiceCategoryModel(models.Model):
     """
     Categoria de serviços fica relacionada a categoria de profissional que a executa e ao salão
     """
-    id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    #id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     business = models.ForeignKey(BusinessModel, related_name='business_service_category', on_delete=models.CASCADE,)
     title = models.CharField('Qual nova categoria de serviços?', max_length=100,)
     slug = models.CharField(unique=True, max_length=150)
@@ -145,7 +145,7 @@ class ServiceModel(models.Model):
     """
     Cadastros dos servicos realizados no salao separados por categoria de servico
     """
-    id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    #id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     business = models.ForeignKey(BusinessModel, related_name='category_professional_business', on_delete=models.CASCADE,)
     title = models.CharField('Título*', max_length=150)
     slug = models.CharField('realcesuabeleza/seu_salao*',unique=True, max_length=150)

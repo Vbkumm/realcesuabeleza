@@ -8,7 +8,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
 from lib.templatetags.permissions import requires_business_owner_or_app_staff
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView
-from businesses.models import BusinessModel
+from businesses.models import BusinessModel, BusinessAddressModel
 from .models import (ServiceCategoryModel,
                      ServiceModel,
                      EquipmentModel,
@@ -21,6 +21,8 @@ from .serializers import (ServiceCategorySerializer,
                           ServiceEquipmentSerializer,
                           EquipmentAddressSerializer,)
 from .forms import (ServiceCategoryForm,
+                    EquipmentForm,
+                    EquipmentAddressForm
                     )
 
 
@@ -178,6 +180,39 @@ class EquipmentViewSet(viewsets.ViewSet):
         equipment = EquipmentModel.objects.get(slug=kwargs['equipment_slug'])
         equipment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
+class EquipmentCreateView(SuccessMessageMixin, CreateView):
+    model = EquipmentModel
+    template_name = 'services/equipment_create.html'
+    form_class = EquipmentForm
+    success_message = "Equipamento criado com sucesso!"
+
+    def get_context_data(self, **kwargs):
+        context = super(EquipmentCreateView, self).get_context_data(**kwargs)
+        context['business_slug'] = self.kwargs.get('slug')
+
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(EquipmentCreateView, self).get_form_kwargs()
+        business = BusinessModel.objects.filter(slug=self.kwargs.get('slug')).first()
+        business_address_list = BusinessAddressModel.objects.filter(business=business, pk=self.kwargs.get('address_pk'))
+        kwargs['business_address_list'] = business_address_list
+
+        return kwargs
+
+    def form_valid(self, model):
+        model.instance.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        model.instance.created_by = self.request.user
+        model.instance.created = timezone.now()
+        return super(EquipmentCreateView, self).form_valid(model)
+
+    def get_success_url(self):
+        slug = self.kwargs['slug']
+        equipment_slug = self.object.slug
+        return reverse_lazy("equipment_detail", kwargs={'slug': slug, 'equipment_slug': equipment_slug})
 
 
 class EquipmentDetailView(DetailView):

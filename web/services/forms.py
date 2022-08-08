@@ -47,26 +47,27 @@ class ServiceCategoryForm(forms.ModelForm):
 
 class EquipmentForm(forms.ModelForm):
     is_active = forms.BooleanField(label='Categoria ativa?', initial=True)
-    addresses = BusinessAddressChoiceField(label='Selecione o endereço deste equipamento',
+
+    class Meta:
+        model = EquipmentModel
+        fields = ['title', 'description', 'is_active']
+
+
+class EquipmentAddressForm(forms.ModelForm):
+    is_active = forms.BooleanField(label='Categoria ativa?', initial=True)
+    address = BusinessAddressChoiceField(label='Selecione o endereço deste equipamento',
                                            queryset=BusinessAddressModel.objects.all(),
                                            empty_label="(Add uma nova se nåo encontrar)",
                                            required=False,
                                            initial=0,)
 
     class Meta:
-        model = EquipmentModel
-        fields = ['title', 'description', 'is_active']
-
-    def __init__(self, *args, **kwargs):
-        self.addresses = kwargs.pop('addresses', None)
-        super(EquipmentForm, self).__init__(*args, **kwargs)
-        self.fields['addresses'].choices = self.addresses
-
-
-class EquipmentAddressForm(forms.ModelForm):
-    is_active = forms.BooleanField(label='Categoria ativa?', initial=True)
-
-    class Meta:
         model = EquipmentAddressModel
         fields = ['address', 'qty', 'is_active']
+
+    def __init__(self, *args, **kwargs):
+        self.address = kwargs.pop('address', None)
+        super(EquipmentAddressForm, self).__init__(*args, **kwargs)
+        self.fields['address'].choices = self.address
+
 

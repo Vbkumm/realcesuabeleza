@@ -10,7 +10,8 @@ from .views import (ServiceViewSet,
                     ServiceEquipmentViewSet,
                     ServiceEquipmentDetailView,
                     EquipmentAddressViewSet,
-                    EquipmentAddressDetailView)
+                    EquipmentAddressDetailView,
+                    EquipmentAddressCreateView,)
 
 
 urlpatterns = [
@@ -62,18 +63,19 @@ urlpatterns = [
         'put': 'update',
         'delete': 'destroy'
     })),
-    path('<str:slug>/service_equipment/<int:pk>/', ServiceEquipmentDetailView.as_view(), name='service_equipment_detail'),
+    path('<str:slug>/equipment/<str:equipment_slug>/service_equipment/<int:pk>/', ServiceEquipmentDetailView.as_view(), name='service_equipment_detail'),
 
+    path('<str:slug>/equipment/<str:equipment_slug>/equipment_address_create/', EquipmentAddressCreateView.as_view(), name='equipment_address_create'),
 
-    path('<str:slug>/equipment_address/api/', EquipmentAddressViewSet.as_view({
+    path('<str:slug>/equipment/<str:equipment_slug>/equipment_address/api/', EquipmentAddressViewSet.as_view({
         'get': 'list',
         'post': 'create'
     })),
-    path('<str:slug>/equipment_address/api/<int:pk>/', EquipmentAddressViewSet.as_view({
+    path('<str:slug>/equipment/<str:equipment_slug>/equipment_address/api/<int:pk>/', EquipmentAddressViewSet.as_view({
         'get': 'retrieve',
         'put': 'update',
         'delete': 'destroy'
     })),
-    path('<str:slug>/equipment_address/<int:pk>/', EquipmentAddressDetailView.as_view(), name='equipment_address_detail'),
+    path('<str:slug>/equipment/<str:equipment_slug>/equipment_address/<int:pk>/', EquipmentAddressDetailView.as_view(), name='equipment_address_detail'),
 
 ]

@@ -195,14 +195,6 @@ class EquipmentCreateView(SuccessMessageMixin, CreateView):
 
         return context
 
-    def get_form_kwargs(self):
-        kwargs = super(EquipmentCreateView, self).get_form_kwargs()
-        business = BusinessModel.objects.filter(slug=self.kwargs.get('slug')).first()
-        business_address_list = BusinessAddressModel.objects.filter(business=business)
-        kwargs['addresses'] = [[x.id, x] for x in business_address_list]
-
-        return kwargs
-
     def form_valid(self, model):
         model.instance.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
         model.instance.created_by = self.request.user
@@ -212,7 +204,7 @@ class EquipmentCreateView(SuccessMessageMixin, CreateView):
     def get_success_url(self):
         slug = self.kwargs['slug']
         equipment_slug = self.object.slug
-        return reverse_lazy("equipment_detail", kwargs={'slug': slug, 'equipment_slug': equipment_slug})
+        return reverse_lazy("equipment_address_create", kwargs={'slug': slug, 'equipment_slug': equipment_slug})
 
 
 class EquipmentDetailView(DetailView):
@@ -272,7 +264,7 @@ class ServiceEquipmentDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ServiceEquipmentDetailView, self).get_context_data(**kwargs)
 
-        self.request.session['service_equipment_time'] = self.object.equipment_time
+        context['service_equipment_time'] = self.object.equipment_time
 
         return context
 
@@ -308,6 +300,42 @@ class EquipmentAddressViewSet(viewsets.ViewSet):
         equipment_address = EquipmentAddressModel.objects.get(pk=kwargs['pk'])
         equipment_address.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
+class EquipmentAddressCreateView(SuccessMessageMixin, CreateView):
+    model = EquipmentAddressModel
+    template_name = 'services/equipment_address_create.html'
+    form_class = EquipmentAddressForm
+    success_message = "Equipamento  adicionado com sucesso!"
+
+    def get_context_data(self, **kwargs):
+        context = super(EquipmentAddressCreateView, self).get_context_data(**kwargs)
+        context['business_slug'] = self.kwargs.get('slug')
+        context['equipment'] = get_object_or_404(EquipmentModel, slug=self.kwargs.get('equipment_slug'))
+
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(EquipmentAddressCreateView, self).get_form_kwargs()
+        business = BusinessModel.objects.filter(slug=self.kwargs.get('slug')).first()
+        business_address_list = BusinessAddressModel.objects.filter(business=business)
+        kwargs['address'] = [[x.id, x] for x in business_address_list]
+
+        return kwargs
+
+    def form_valid(self, form):
+        equipment = get_object_or_404(EquipmentModel, slug=self.kwargs.get('equipment_slug'))
+        instance = form.save(commit=False)
+        instance.equipment = equipment
+        instance.created_by = self.request.user
+        instance.created = timezone.now()
+        return super(EquipmentAddressCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        slug = self.kwargs['slug']
+        equipment_slug = self.kwargs['equipment_slug']
+        return reverse_lazy("equipment_detail", kwargs={'slug': slug, 'equipment_slug': equipment_slug})
 
 
 class EquipmentAddressDetailView(DetailView):

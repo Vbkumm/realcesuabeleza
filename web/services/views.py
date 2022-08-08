@@ -198,8 +198,8 @@ class EquipmentCreateView(SuccessMessageMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super(EquipmentCreateView, self).get_form_kwargs()
         business = BusinessModel.objects.filter(slug=self.kwargs.get('slug')).first()
-        business_address_list = BusinessAddressModel.objects.filter(business=business, pk=self.kwargs.get('address_pk'))
-        kwargs['business_address_list'] = business_address_list
+        business_address_list = BusinessAddressModel.objects.filter(business=business)
+        kwargs['addresses'] = [[x.id, x] for x in business_address_list]
 
         return kwargs
 
@@ -322,3 +322,4 @@ class EquipmentAddressDetailView(DetailView):
         self.request.session['equipment_address'] = self.object.address
 
         return context
+

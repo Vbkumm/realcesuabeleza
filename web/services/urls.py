@@ -5,6 +5,7 @@ from .views import (ServiceViewSet,
                     ServiceCategoryCreateView,
                     ServiceCategoryDetailView,
                     EquipmentViewSet,
+                    EquipmentCreateView,
                     EquipmentDetailView,
                     ServiceEquipmentViewSet,
                     ServiceEquipmentDetailView,
@@ -42,6 +43,8 @@ urlpatterns = [
         'get': 'list',
         'post': 'create'
     })),
+    path('<str:slug>/equipment_create/', EquipmentCreateView.as_view(), name='equipment_create'),
+
     path('<str:slug>/equipment/api/<str:equipment_slug>/', EquipmentViewSet.as_view({
         'get': 'retrieve',
         'put': 'update',

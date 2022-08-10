@@ -347,7 +347,7 @@ class EquipmentAddressDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(EquipmentAddressDetailView, self).get_context_data(**kwargs)
 
-        self.request.session['equipment_address'] = self.object.address
+        context['equipment_address'] = self.object.address
 
         return context
 

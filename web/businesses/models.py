@@ -184,9 +184,8 @@ class BusinessAddressModel(models.Model):
         db_table = 'business_address_db'
         ordering = ['business']
 
-
     def __str__(self):
-        return '%s %s' % (self.business, self.street)
+        return '%s, %s, %s - %s - CEP: %s' % (self.street, self.street_number, self.district, self.city, self.zip_code)
 
     def get_address_by_business(self, business):
         return self.objects.get_queryset(business=business)

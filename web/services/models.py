@@ -75,7 +75,7 @@ class EquipmentAddressModel(models.Model):
 
     def __str__(self):
 
-        return '%s %s %s' % (self.equipment, self.qty, self.address)
+        return 'Quantidade: %s  no endereço: %s' % (self.qty, self.address)
 
     def get_absolute_url(self):
         business_slug = self.address.business.slug

@@ -147,7 +147,7 @@ class ServiceModel(models.Model):
     #id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     business = models.ForeignKey(BusinessModel, related_name='category_professional_business', on_delete=models.CASCADE,)
     title = models.CharField('Título*', max_length=150)
-    slug = models.CharField('realcesuabeleza/seu_salao*',unique=True, max_length=150)
+    slug = models.CharField('',unique=True, max_length=150)
     description = models.CharField('Descrição*', max_length=1000, null=True, blank=True)
     is_active = models.BooleanField(default=True, help_text='Designates whether this service should be treated as active. Unselect this instead of deleting service.', verbose_name='business service active')
     schedule_active = models.BooleanField('Permitir que o cliente agende online', default=True)

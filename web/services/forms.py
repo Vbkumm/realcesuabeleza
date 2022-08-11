@@ -71,3 +71,10 @@ class EquipmentAddressForm(forms.ModelForm):
         self.fields['address'].choices = self.address
 
 
+class ServiceForm(forms.ModelForm):
+    
+    class Meta:
+        model = ServiceModel
+        fields = ['service_category', 'title', 'description', 'is_active', 'schedule_active', 'cancel_schedule_active', 'equipments',]
+
+#criar form servico e conexao ao equipamento

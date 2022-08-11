@@ -1,4 +1,5 @@
 from django import forms
+from realcesuabeleza.settings import CHOICES_MIN_TIME
 from businesses.models import BusinessAddressModel
 from .models import (ServiceModel,
                      ServiceCategoryModel,
@@ -37,6 +38,16 @@ class ProfessionalCategoryChoiceField(forms.ModelChoiceField):
         return obj.category_professional
 
 
+class EquipmentField(forms.ModelChoiceField):
+
+    def __init__(self, obj_label=None, *args, **kwargs):
+        super(EquipmentField, self).__init__(*args, **kwargs)
+        self.obj_label = obj_label
+
+    def label_from_instance(self, obj):
+        return f'{obj.title}'
+
+
 class ServiceCategoryForm(forms.ModelForm):
     is_active = forms.BooleanField(label='Categoria ativa?', initial=True)
 
@@ -71,10 +82,59 @@ class EquipmentAddressForm(forms.ModelForm):
         self.fields['address'].choices = self.address
 
 
-class ServiceForm(forms.ModelForm):
-    
+class ServiceFormOne(forms.ModelForm):
+    service_category = ServiceCategoryChoiceField(label='Selecione uma catergoria de serviço',
+                                                  queryset=ServiceCategoryModel.objects.all(),
+                                                  empty_label="(Add uma nova se nåo encontrar)",
+                                                  )
+    title = forms.CharField(label='Qual nome do serviço?',
+                            widget=forms.TextInput(attrs={'placeholder': 'Ex. Coloração'})
+                            )
+
     class Meta:
         model = ServiceModel
-        fields = ['service_category', 'title', 'description', 'is_active', 'schedule_active', 'cancel_schedule_active', 'equipments',]
+        fields = ['service_category', 'title', ]
 
-#criar form servico e conexao ao equipamento
+
+class ServiceFormTwo(forms.ModelForm):
+    description = forms.CharField(label='', widget=forms.Textarea(
+        attrs={'rows': 4, 'placeholder': 'Aqui você pode descrever melhor o serviçø com até 1000 caracteres.'}
+    ),
+                                          max_length=1000,
+                                          help_text='Número maximo de caracteres 1000.'
+                                          )
+    is_active = forms.ChoiceField(label='Este serviço esta ativo?', choices=((False, 'Sim, serviço online.'), (True, 'Não, serviço offline.')),
+                                       widget=forms.RadioSelect)
+    schedule_active = forms.ChoiceField(label='Serviço pode ser agendado por clintes?', choices=((True, 'Sim, serviço com agendamento online.'), (False, 'Não, serviço so pode ser agendo pela equipe.')),
+                                                widget=forms.RadioSelect)
+    cancel_schedule_active = forms.ChoiceField(label='Agendamento deste serviço pode ser cancelado por clintes?', choices=((True, 'Sim, serviço com cancelamento de agendamento online.'), (False, 'Não, serviço so pode ter agendamento cancelado pela equipe.')),
+                                                       widget=forms.RadioSelect)
+
+    class Meta:
+        model = ServiceModel
+        fields = ['description', 'is_active', 'schedule_active', 'cancel_schedule_active',]
+
+
+class ServiceEquipmentForm(forms.ModelForm):
+    equipment = EquipmentField(label='Selecione um equipamento para realizar o serviço, lembrando que você pode adicionar um novo ou ativar um equipamento ja cadastrado caso não encontre na lista.',
+                                      queryset=EquipmentModel.objects.all(),
+                                      empty_label="Lista de equipamentos cadastrados e ativos.",
+                                      )
+    equipment_time = forms.IntegerField(label='Qual tempo de utilização do equipamento?', widget=forms.Select(choices=CHOICES_MIN_TIME))
+    equipment_complement = forms.ChoiceField(label='Este equipamento é usado simutaniamente com algum outro equipamento?', choices=((True, 'Sim, o equipamento é usado em conjunto com o equipamento que escolherei a seguir.'), (False, 'Não, este equipamento faz parte de uma etapa do serviço e não complementa nenhum.')),
+                                             widget=forms.RadioSelect)
+
+    equipment_replaced = EquipmentField(label='Caso tenha marcado sim para opção a anterior, ou se marcou não e deseja incluir este equipamento como substitudo para outro, selecione aqui o equipamento',
+                                        queryset=EquipmentModel.objects.all(),
+                                        empty_label="Selecione um dos equipamentos que já fazem parte do serviço.",
+                                        required=False,
+                                        )
+
+    def __init__(self, *args, **kwargs):
+        self.equipment_replaced = kwargs.pop('equipment_replaced', None)
+        super(ServiceEquipmentForm, self).__init__(*args, **kwargs)
+        self.fields['equipment_replaced'].queryset = self.equipment_replaced
+
+    class Meta:
+        model = ServiceEquipmentModel
+        fields = ['equipment', 'equipment_time', 'equipment_complement', 'equipment_replaced', ]

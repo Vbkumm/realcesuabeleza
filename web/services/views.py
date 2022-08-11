@@ -1,6 +1,11 @@
+import os
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.shortcuts import HttpResponseRedirect, Http404, get_object_or_404
+from formtools.wizard.views import SessionWizardView
+from django.urls import reverse_lazy, reverse
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
@@ -21,8 +26,10 @@ from .serializers import (ServiceCategorySerializer,
                           ServiceEquipmentSerializer,
                           EquipmentAddressSerializer,)
 from .forms import (ServiceCategoryForm,
+                    ServiceFormOne,
+                    ServiceFormTwo,
                     EquipmentForm,
-                    EquipmentAddressForm
+                    EquipmentAddressForm,
                     )
 
 
@@ -80,8 +87,7 @@ class ServiceCategoryCreateView(SuccessMessageMixin, CreateView):
 
     def get_success_url(self):
         slug = self.kwargs['slug']
-        service_category_slug = self.object.slug
-        return reverse_lazy("service_category_detail", kwargs={'slug': slug, 'service_category_slug': service_category_slug})
+        return reverse_lazy("service_wizard_create", kwargs={'slug': slug,})
 
 
 class ServiceCategoryDetailView(DetailView):
@@ -132,6 +138,35 @@ class ServiceViewSet(viewsets.ViewSet):
         service = ServiceModel.objects.get(slug=kwargs['service_slug'])
         service.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
+class ServiceWizardCreateView(SuccessMessageMixin, SessionWizardView):
+    form_list = [ServiceFormOne, ServiceFormTwo]
+    template_name = 'services/service_wizard_create.html'
+    success_message = "Serviço criado com sucesso!"
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'service_storage'))
+
+    def get_context_data(self, **kwargs):
+        context = super(ServiceWizardCreateView, self).get_context_data(**kwargs)
+        context['business_slug'] = self.kwargs.get('slug')
+
+        return context
+
+    def done(self, form_list, **kwargs):
+        # get merged dictionary from all fields
+        form_dict = self.get_all_cleaned_data()
+        service = ServiceModel()
+        service.created = timezone.now()
+        service.created_by = self.request.user
+        for k, v in form_dict.items():
+            if k != 'tags':
+                setattr(service, k, v)
+        service.save()
+
+        self.request.session['service_session'] = True
+
+        return HttpResponseRedirect(reverse("service:equipment_service_first_create", kwargs={'slug': service.slug}))
 
 
 class ServiceDetailView(DetailView):

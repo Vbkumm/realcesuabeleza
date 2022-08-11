@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import (ServiceViewSet,
+                    ServiceWizardCreateView,
                     ServiceDetailView,
                     ServiceCategoryViewSet,
                     ServiceCategoryCreateView,
@@ -24,8 +25,8 @@ urlpatterns = [
         'put': 'update',
         'delete': 'destroy'
     })),
+    path('<str:slug>/service/', ServiceWizardCreateView.as_view(), name='service_wizard_create'),
     path('<str:slug>/service/<str:service_slug>/', ServiceDetailView.as_view(), name='service_detail'),
-
 
     path('<str:slug>/service_category/api/', ServiceCategoryViewSet.as_view({
         'get': 'list',

@@ -29,6 +29,7 @@ from .forms import (ServiceCategoryForm,
                     ServiceFormOne,
                     ServiceFormTwo,
                     EquipmentForm,
+                    ServiceEquipmentForm,
                     EquipmentAddressForm,
                     )
 
@@ -157,6 +158,7 @@ class ServiceWizardCreateView(SuccessMessageMixin, SessionWizardView):
         # get merged dictionary from all fields
         form_dict = self.get_all_cleaned_data()
         service = ServiceModel()
+        service.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
         service.created = timezone.now()
         service.created_by = self.request.user
         for k, v in form_dict.items():
@@ -166,7 +168,7 @@ class ServiceWizardCreateView(SuccessMessageMixin, SessionWizardView):
 
         self.request.session['service_session'] = True
 
-        return HttpResponseRedirect(reverse("service:equipment_service_first_create", kwargs={'slug': service.slug}))
+        return HttpResponseRedirect(reverse("service_equipment_create", kwargs={'slug': service.business.slug, 'service_slug': service.slug}))
 
 
 class ServiceDetailView(DetailView):
@@ -290,6 +292,41 @@ class ServiceEquipmentViewSet(viewsets.ViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
+class ServiceEquipmentCreateView(SuccessMessageMixin, CreateView):
+    model = ServiceEquipmentModel
+    template_name = 'services/service_equipment_create.html'
+    form_class = ServiceEquipmentForm
+    success_message = "Equipamento adicionado ao serviço com sucesso!"
+
+    def get_context_data(self, **kwargs):
+        context = super(ServiceEquipmentCreateView, self).get_context_data(**kwargs)
+        context['business_slug'] = self.kwargs.get('slug')
+        service = ServiceModel.objects.get(slug=self.kwargs.get('service_slug'))
+        context['service'] = service
+        self.request.session['service_slug'] = service.slug
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(ServiceEquipmentCreateView, self).get_form_kwargs()
+        business = BusinessModel.objects.filter(slug=self.kwargs.get('slug')).first()
+        equipment_list = EquipmentModel.objects.filter(business=business)
+        kwargs['equipment_replaced'] = equipment_list#sumir qdo primeira e tirar equipamento escolhido
+        kwargs['equipment'] = equipment_list
+
+        return kwargs
+
+    def form_valid(self, model):
+        model.instance.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        model.instance.service = get_object_or_404(ServiceModel, slug=self.kwargs.get('service_slug'))
+        model.instance.created_by = self.request.user
+        model.instance.created = timezone.now()
+        return super(ServiceEquipmentCreateView, self).form_valid(model)
+
+    def get_success_url(self):
+        return reverse_lazy("service_equipment_list", kwargs={'slug': self.object.business.slug, 'service_slug': self.object.service.slug})
+
+
 class ServiceEquipmentDetailView(DetailView):
     model = ServiceEquipmentModel
     template_name = 'services/service_equipment_detail.html'
@@ -370,7 +407,11 @@ class EquipmentAddressCreateView(SuccessMessageMixin, CreateView):
     def get_success_url(self):
         slug = self.kwargs['slug']
         equipment_slug = self.kwargs['equipment_slug']
-        return reverse_lazy("equipment_detail", kwargs={'slug': slug, 'equipment_slug': equipment_slug})
+        if 'service_slug' in self.request.session:
+            service_slug =self.request.session['service_slug']
+            return reverse_lazy("service_equipment_list", kwargs={'slug': slug, 'service_slug': service_slug})
+        else:
+            return reverse_lazy("equipment_detail", kwargs={'slug': slug, 'equipment_slug': equipment_slug})
 
 
 class EquipmentAddressDetailView(DetailView):

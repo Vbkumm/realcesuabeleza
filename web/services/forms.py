@@ -132,8 +132,10 @@ class ServiceEquipmentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.equipment_replaced = kwargs.pop('equipment_replaced', None)
+        self.equipment = kwargs.pop('equipment', None)
         super(ServiceEquipmentForm, self).__init__(*args, **kwargs)
         self.fields['equipment_replaced'].queryset = self.equipment_replaced
+        self.fields['equipment'].queryset = self.equipment
 
     class Meta:
         model = ServiceEquipmentModel

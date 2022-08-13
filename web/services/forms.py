@@ -117,9 +117,10 @@ class ServiceFormTwo(forms.ModelForm):
 
 class ServiceEquipmentForm(forms.ModelForm):
     equipment = EquipmentField(label='Selecione um equipamento para realizar o serviço, lembrando que você pode adicionar um novo ou ativar um equipamento ja cadastrado caso não encontre na lista.',
-                                      queryset=EquipmentModel.objects.all(),
-                                      empty_label="Lista de equipamentos cadastrados e ativos.",
-                                      )
+                               queryset=EquipmentModel.objects.all(),
+                               empty_label="Lista de equipamentos cadastrados e ativos.",
+                               required=True,
+                               )
     equipment_time = forms.IntegerField(label='Qual tempo de utilização do equipamento?', widget=forms.Select(choices=CHOICES_MIN_TIME))
     equipment_complement = forms.ChoiceField(label='Este equipamento é usado simutaniamente com algum outro equipamento?', choices=((True, 'Sim, o equipamento é usado em conjunto com o equipamento que escolherei a seguir.'), (False, 'Não, este equipamento faz parte de uma etapa do serviço e não complementa nenhum.')),
                                              widget=forms.RadioSelect)
@@ -134,7 +135,14 @@ class ServiceEquipmentForm(forms.ModelForm):
         self.equipment_replaced = kwargs.pop('equipment_replaced', None)
         self.equipment = kwargs.pop('equipment', None)
         super(ServiceEquipmentForm, self).__init__(*args, **kwargs)
-        self.fields['equipment_replaced'].queryset = self.equipment_replaced
+        if self.equipment_replaced:
+            self.fields['equipment_replaced'].queryset = self.equipment_replaced
+        else:
+            self.fields['equipment_replaced'].label = ""
+            self.fields['equipment_replaced'].widget = forms.HiddenInput()
+            self.fields['equipment_complement'].widget = forms.HiddenInput()
+            self.fields['equipment_complement'].initial = False
+            self.fields['equipment_complement'].label = ""
         self.fields['equipment'].queryset = self.equipment
 
     class Meta:

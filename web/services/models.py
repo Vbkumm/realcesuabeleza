@@ -212,7 +212,7 @@ class ServiceEquipmentModel(models.Model):
     service = models.ForeignKey(ServiceModel, related_name='service', on_delete=models.CASCADE)
     equipment = models.ForeignKey(EquipmentModel, related_name='equipment', on_delete=models.CASCADE)
     equipment_time = models.IntegerField('Qual tempo em minutos de uso deste equipamento?', default=0)
-    equipment_complement = models.BooleanField('Este equipamento é usado simutaniamente com algum outro equipamento?',default=False)
+    equipment_complement = models.BooleanField('Este equipamento é usado simutaniamente com algum outro equipamento?', default=False)
     equipment_replaced = models.ForeignKey(EquipmentModel, related_name='equipment_replaced', on_delete=models.SET_NULL, null=True, blank=True)
 
     updated_at = models.DateTimeField(null=True)
@@ -270,4 +270,8 @@ class ServiceEquipmentModel(models.Model):
             equipment_qty_and_time.append([address, equipment_service, equipment_qtd, equipment_service.equipment_complement, equipment_service.equipment_replaced, equipment_hour, schedule_hour])
 
         return final_equipment_list_by_service.append([service_total_time, equipment_qty_and_time])
+
+
+def get_service_equipment(service):
+    return ServiceEquipmentModel.objects.filter(service=service)
 

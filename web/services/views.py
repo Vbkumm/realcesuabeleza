@@ -19,6 +19,7 @@ from .models import (ServiceCategoryModel,
                      EquipmentModel,
                      ServiceEquipmentModel,
                      EquipmentAddressModel,
+                     get_service_equipment,
                      )
 from .serializers import (ServiceCategorySerializer,
                           ServiceSerializer,
@@ -310,8 +311,9 @@ class ServiceEquipmentCreateView(SuccessMessageMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super(ServiceEquipmentCreateView, self).get_form_kwargs()
         business = BusinessModel.objects.filter(slug=self.kwargs.get('slug')).first()
+        service = ServiceModel.objects.get(slug=self.kwargs.get('service_slug'))
         equipment_list = EquipmentModel.objects.filter(business=business)
-        kwargs['equipment_replaced'] = equipment_list#sumir qdo primeira e tirar equipamento escolhido
+        kwargs['equipment_replaced'] = get_service_equipment(service)
         kwargs['equipment'] = equipment_list
 
         return kwargs

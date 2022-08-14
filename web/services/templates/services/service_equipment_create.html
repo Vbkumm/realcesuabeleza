@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_title %}Adicionando equipamento ao serviço {{ service.title }}{% endblock %}
+
+{% block stylesheet %}
+{% endblock %}
+
+{% block javascript %}
+{% endblock %}
+
+{% block breadcrumb %}
+{% endblock %}
+
+{% block content %}
+<div class="row mt-md-3 justify-content-center">
+    <div class="col-lg-8 col-md-8 col-sm-10">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-header rounded-top">
+                    <div class="row justify-content-center">
+                        <h4>Adicionando equipamento ao serviço {{ service.title }}</h4>
+                    </div>
+                    {% if service_session %}
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="row mt-2 justify-content-center">
+                        <div class="col-4 text-success">
+                            <div class="row justify-content-center">
+                                <small class="">título</small>
+                            </div>
+                            <div class="row justify-content-center">
+                                <i class="fa fa-id-card" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                        <div class="col-4 text-success">
+                            <div class="row justify-content-center">
+                                <small class="">descrição</small>
+                            </div>
+                            <div class="row justify-content-center">
+                                <i class="fa fa-commenting" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                        <div class="col-4  text-success">
+                            <div class="row justify-content-center">
+                                <small class="">equipamentos</small>
+                            </div>
+                            <div class="row justify-content-center">
+                                <i class="fa fa-cogs" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </div>
+                <div class="card-body text-dark">
+                    <div class="row justify-content-end">
+                        <a href="{% url 'equipment_create' business_slug %}" class="btn ins-ic mr-3 mb-2 p-1 btn-secondary" title="Adicione um novo equipamento!" data-toggle="tooltip" data-placement="right">
+                            <div class="col">
+                                <i class="fa fa-plus fa-1x" aria-hidden="true"></i>
+                                Equipamento
+                            </div>
+                        </a>
+                    </div>
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        {% include 'includes/form.html' %}
+
+                        <div class="row mr-1 justify-content-center">
+                            <button type="submit" class="btn btn-success mt-3 px-5">Salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -13,7 +13,8 @@ from .views import (ServiceViewSet,
                     EquipmentAddressViewSet,
                     EquipmentAddressDetailView,
                     EquipmentAddressCreateView,
-                    ServiceEquipmentCreateView,)
+                    ServiceEquipmentCreateView,
+                    ServiceEquipmentListView,)
 
 
 urlpatterns = [
@@ -56,6 +57,7 @@ urlpatterns = [
     path('<str:slug>/equipment/<str:equipment_slug>/', EquipmentDetailView.as_view(), name='equipment_detail'),
 
     path('<str:slug>/service/<str:service_slug>/service_equipment_create/', ServiceEquipmentCreateView.as_view(), name='service_equipment_create'),
+    path('<str:slug>/service/<str:service_slug>/service_equipment_list/', ServiceEquipmentListView.as_view(), name='service_equipment_list'),
 
     path('<str:slug>/service_equipment/api/', ServiceEquipmentViewSet.as_view({
         'get': 'list',

@@ -275,3 +275,6 @@ class ServiceEquipmentModel(models.Model):
 def get_service_equipment(service):
     return ServiceEquipmentModel.objects.filter(service=service)
 
+
+def get_service_equipment_time(service):
+    service_equipment_list = get_service_equipment(service)

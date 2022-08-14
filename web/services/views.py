@@ -329,6 +329,7 @@ class ServiceEquipmentCreateView(SuccessMessageMixin, CreateView):
         return reverse_lazy("service_equipment_list", kwargs={'slug': self.object.business.slug, 'service_slug': self.object.service.slug})
 
 
+@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
 class ServiceEquipmentDetailView(DetailView):
     model = ServiceEquipmentModel
     template_name = 'services/service_equipment_detail.html'
@@ -340,6 +341,25 @@ class ServiceEquipmentDetailView(DetailView):
 
         context['service_equipment_time'] = self.object.equipment_time
 
+        return context
+
+
+@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
+class ServiceEquipmentListView(ListView):
+    template_name = 'services/service_equipment_list.html'
+    model = ServiceEquipmentModel
+    context_object_name = 'service_equipment_list'
+
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(service__slug=self.kwargs.get('service_slug'))
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(ServiceEquipmentListView, self).get_context_data(**kwargs)
+        context['business_slug'] = self.kwargs.get('slug')
+        service = ServiceModel.objects.get(slug=self.kwargs.get('service_slug'))
+        context['service'] = service
+        self.request.session['service_equipment_list_slug'] = service.slug
         return context
 
 
@@ -410,8 +430,8 @@ class EquipmentAddressCreateView(SuccessMessageMixin, CreateView):
         slug = self.kwargs['slug']
         equipment_slug = self.kwargs['equipment_slug']
         if 'service_slug' in self.request.session:
-            service_slug =self.request.session['service_slug']
-            return reverse_lazy("service_equipment_list", kwargs={'slug': slug, 'service_slug': service_slug})
+            service_slug = self.request.session['service_slug']
+            return reverse_lazy("service_equipment_create", kwargs={'slug': slug, 'service_slug': service_slug})
         else:
             return reverse_lazy("equipment_detail", kwargs={'slug': slug, 'equipment_slug': equipment_slug})
 

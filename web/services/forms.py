@@ -125,9 +125,8 @@ class ServiceEquipmentForm(forms.ModelForm):
     equipment_complement = forms.ChoiceField(label='Este equipamento é usado simutaniamente com algum outro equipamento?', choices=((True, 'Sim, o equipamento é usado em conjunto com o equipamento que escolherei a seguir.'), (False, 'Não, este equipamento faz parte de uma etapa do serviço e não complementa nenhum.')),
                                              widget=forms.RadioSelect)
 
-    equipment_replaced = EquipmentField(label='Caso tenha marcado sim para opção a anterior, ou se marcou não e deseja incluir este equipamento como substitudo para outro, selecione aqui o equipamento',
-                                        queryset=EquipmentModel.objects.all(),
-                                        empty_label="Selecione um dos equipamentos que já fazem parte do serviço.",
+    equipment_replaced = forms.ChoiceField(label='Caso tenha marcado sim para opção a anterior, ou se marcou não e deseja incluir este equipamento como substitudo para outro, selecione aqui o equipamento',
+                                        choices=[],
                                         required=False,
                                         )
 
@@ -136,7 +135,9 @@ class ServiceEquipmentForm(forms.ModelForm):
         self.equipment = kwargs.pop('equipment', None)
         super(ServiceEquipmentForm, self).__init__(*args, **kwargs)
         if self.equipment_replaced:
-            self.fields['equipment_replaced'].queryset = self.equipment_replaced
+            print(self.equipment)
+            print(self.equipment_replaced)
+            self.fields['equipment_replaced'].choices = self.equipment_replaced
         else:
             self.fields['equipment_replaced'].label = ""
             self.fields['equipment_replaced'].widget = forms.HiddenInput()

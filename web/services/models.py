@@ -274,8 +274,9 @@ class ServiceEquipmentModel(models.Model):
 
 def get_service_equipment(service):
     service_equipment_list = ServiceEquipmentModel.objects.filter(service=service)
-    equipment_list = ([i.equipment.pk for i in service_equipment_list])
-    return equipment_list
+    equipment_replaced_list_service = ([i.equipment.pk for i in service_equipment_list])
+    equipment_replaced_list = EquipmentModel.objects.filter(pk__in=equipment_replaced_list_service)
+    return equipment_replaced_list
 
 
 def get_service_equipment_time(service):

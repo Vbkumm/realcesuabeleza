@@ -312,11 +312,8 @@ class ServiceEquipmentCreateView(SuccessMessageMixin, CreateView):
         kwargs = super(ServiceEquipmentCreateView, self).get_form_kwargs()
         business = BusinessModel.objects.filter(slug=self.kwargs.get('slug')).first()
         service = ServiceModel.objects.get(slug=self.kwargs.get('service_slug'))
-        equipment_list = EquipmentModel.objects.filter(business=business)
-        equipment_replaced_list_service = get_service_equipment(service)
-        equipment_replaced_list = EquipmentModel.objects.filter(pk__in=equipment_replaced_list_service)
-        kwargs['equipment_replaced'] = equipment_replaced_list
-        kwargs['equipment'] = equipment_list
+        kwargs['equipment_replaced'] = get_service_equipment(service)
+        kwargs['equipment'] = EquipmentModel.objects.filter(business=business)
 
         return kwargs
 

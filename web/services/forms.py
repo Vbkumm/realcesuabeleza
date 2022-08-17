@@ -150,10 +150,8 @@ class ServiceEquipmentForm(forms.ModelForm):
         cleaned_data = super().clean()
         equipment_complement = cleaned_data.get('equipment_complement')
         equipment_replaced = cleaned_data.get('equipment_replaced')
-        print(f'equipment_complement {equipment_complement}')
         if equipment_complement:
-            if not equipment_replaced:
-                self.fields['equipment_replaced'].required = True
+            if not equipment_replaced and equipment_complement == 'True':
                 raise forms.ValidationError(f'Necessario escolher equipamento que é usado simutaniamente!')
         else:
             raise forms.ValidationError(f'Necessario responder se este equipamento é usado simutaniamente com algum outro equipamento!')

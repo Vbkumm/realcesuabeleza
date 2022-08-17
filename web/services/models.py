@@ -274,8 +274,7 @@ class ServiceEquipmentModel(models.Model):
 
 def get_service_equipment(service):
     service_equipment_list = ServiceEquipmentModel.objects.filter(service=service)
-    equipment_list = ([[i.equipment, i.equipment.title] for i in service_equipment_list])
-    equipment_list.insert(0, ['', 'Se sim, escolha um equipamento'])
+    equipment_list = ([i.equipment.pk for i in service_equipment_list])
     return equipment_list
 
 

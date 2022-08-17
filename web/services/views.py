@@ -313,17 +313,24 @@ class ServiceEquipmentCreateView(SuccessMessageMixin, CreateView):
         business = BusinessModel.objects.filter(slug=self.kwargs.get('slug')).first()
         service = ServiceModel.objects.get(slug=self.kwargs.get('service_slug'))
         equipment_list = EquipmentModel.objects.filter(business=business)
-        kwargs['equipment_replaced'] = get_service_equipment(service)
+        equipment_replaced_list_service = get_service_equipment(service)
+        equipment_replaced_list = EquipmentModel.objects.filter(pk__in=equipment_replaced_list_service)
+        kwargs['equipment_replaced'] = equipment_replaced_list
         kwargs['equipment'] = equipment_list
 
         return kwargs
 
-    def form_valid(self, model):
-        model.instance.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
-        model.instance.service = get_object_or_404(ServiceModel, slug=self.kwargs.get('service_slug'))
-        model.instance.created_by = self.request.user
-        model.instance.created = timezone.now()
-        return super(ServiceEquipmentCreateView, self).form_valid(model)
+    def form_valid(self, form):
+        if form.is_valid():
+            business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+            service = get_object_or_404(ServiceModel, slug=self.kwargs.get('service_slug'))
+            form.instance.business = business
+            form.instance.service = service
+            form.instance.created_by = self.request.user
+            form.instance.created = timezone.now()
+            return super(ServiceEquipmentCreateView, self).form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def get_success_url(self):
         return reverse_lazy("service_equipment_list", kwargs={'slug': self.object.business.slug, 'service_slug': self.object.service.slug})

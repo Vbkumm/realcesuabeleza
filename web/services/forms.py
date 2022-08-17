@@ -126,17 +126,16 @@ class ServiceEquipmentForm(forms.ModelForm):
                                              widget=forms.RadioSelect)
 
     equipment_replaced = forms.ChoiceField(label='Caso tenha marcado sim para opção a anterior, ou se marcou não e deseja incluir este equipamento como substitudo para outro, selecione aqui o equipamento',
-                                        choices=[],
-                                        required=False,
-                                        )
+                                           choices=[],
+                                           required=False,
+                                           )
 
     def __init__(self, *args, **kwargs):
         self.equipment_replaced = kwargs.pop('equipment_replaced', None)
         self.equipment = kwargs.pop('equipment', None)
         super(ServiceEquipmentForm, self).__init__(*args, **kwargs)
         if self.equipment_replaced:
-            print(self.equipment)
-            print(self.equipment_replaced)
+            self.fields['equipment_complement'].required = True
             self.fields['equipment_replaced'].choices = self.equipment_replaced
         else:
             self.fields['equipment_replaced'].label = ""
@@ -145,6 +144,11 @@ class ServiceEquipmentForm(forms.ModelForm):
             self.fields['equipment_complement'].initial = False
             self.fields['equipment_complement'].label = ""
         self.fields['equipment'].queryset = self.equipment
+
+    def clean(self):
+        super(ServiceEquipmentForm, self).clean()
+        if self.cleaned_data['equipment_complement']:
+            self.fields['equipment_replaced'].required = True
 
     class Meta:
         model = ServiceEquipmentModel

@@ -103,7 +103,7 @@ class ServiceFormTwo(forms.ModelForm):
                                           max_length=1000,
                                           help_text='Número maximo de caracteres 1000.'
                                           )
-    is_active = forms.ChoiceField(label='Este serviço esta ativo?', choices=((False, 'Sim, serviço online.'), (True, 'Não, serviço offline.')),
+    is_active = forms.ChoiceField(label='Este serviço esta ativo?', choices=((True, 'Sim, serviço online.'), (False, 'Não, serviço offline.')),
                                        widget=forms.RadioSelect)
     schedule_active = forms.ChoiceField(label='Serviço pode ser agendado por clintes?', choices=((True, 'Sim, serviço com agendamento online.'), (False, 'Não, serviço so pode ser agendo pela equipe.')),
                                                 widget=forms.RadioSelect)

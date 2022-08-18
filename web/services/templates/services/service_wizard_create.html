@@ -69,7 +69,7 @@
                                 <i class="fa fa-1x fa-undo" aria-hidden="true"></i>
                             </a>
                             {% else %}
-                            <a href="/" class="btn btn-sm text-white btn-dark" data-toggle="tooltip" data-placement="bottom" title="Voltar pagina pricipal">
+                            <a href="{% url 'business_detail' business_slug %}" class="btn btn-sm text-white btn-dark" data-toggle="tooltip" data-placement="bottom" title="Voltar pagina pricipal">
                                 <i class="fa fa-1x fa-undo" aria-hidden="true"></i>
                             </a>
                             {% endif %}

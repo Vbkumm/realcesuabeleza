@@ -13,7 +13,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
 from lib.templatetags.permissions import requires_business_owner_or_app_staff
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView
-from businesses.models import BusinessModel, BusinessAddressModel
+from businesses.models import BusinessModel, BusinessAddressModel, BusinessLogoQrcodeModel
 from .models import (ServiceCategoryModel,
                      ServiceModel,
                      EquipmentModel,
@@ -100,7 +100,17 @@ class ServiceCategoryDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ServiceCategoryDetailView, self).get_context_data(**kwargs)
-
+        business = BusinessModel.objects.get(slug=self.kwargs.get('slug'))
+        service_category = ServiceCategoryModel.objects.get(slug=self.kwargs.get('service_category_slug'))
+        context['business_title'] = business.title
+        logo_qrcode = BusinessLogoQrcodeModel.objects.filter(business=business).first()
+        if logo_qrcode.logo_img:
+            context['logo'] = logo_qrcode.logo_img
+        if logo_qrcode.favicon:
+            context['favicon'] = logo_qrcode.favicon
+        context['service_list'] = ServiceModel.objects.filter(business=business, service_category=service_category)
+        self.request.session['business_slug'] = business.slug
+        self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
         self.request.session['service_category_slug'] = self.object.slug
         self.request.session['service_category_title'] = self.object.title
 

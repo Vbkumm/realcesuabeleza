@@ -279,5 +279,21 @@ def get_service_equipment(service):
     return equipment_replaced_list
 
 
+def get_hours_min(number):
+    if number >= 60:
+        hour = number/60
+        return f'{hour} horas'
+    return f'{number} minutos'
+
+
 def get_service_equipment_time(service):
-    service_equipment_list = get_service_equipment(service)
+    equipment_and_time = []
+    equipment_list_by_service = []
+    service_equipment_list = ServiceEquipmentModel.objects.filter(service=service)
+    equipment_total_time = 0
+    for equipment_service in service_equipment_list:
+        if equipment_service.equipment_complement is False:
+            equipment_total_time += equipment_service.equipment_time
+            equipment_and_time.append([equipment_service.equipment.title, equipment_service.equipment_time])
+    equipment_list_by_service.append([get_hours_min(equipment_total_time), equipment_and_time])
+    return equipment_list_by_service

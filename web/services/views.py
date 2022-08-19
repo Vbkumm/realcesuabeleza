@@ -20,6 +20,7 @@ from .models import (ServiceCategoryModel,
                      ServiceEquipmentModel,
                      EquipmentAddressModel,
                      get_service_equipment,
+                     get_service_equipment_time,
                      )
 from .serializers import (ServiceCategorySerializer,
                           ServiceSerializer,
@@ -101,14 +102,16 @@ class ServiceCategoryDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ServiceCategoryDetailView, self).get_context_data(**kwargs)
         business = BusinessModel.objects.get(slug=self.kwargs.get('slug'))
-        service_category = ServiceCategoryModel.objects.get(slug=self.kwargs.get('service_category_slug'))
+        if self.request.user:
+            context['user_in'] = self.request.user in business.users.all()
+            context['user_id'] = self.request.user.id
         context['business_title'] = business.title
         logo_qrcode = BusinessLogoQrcodeModel.objects.filter(business=business).first()
         if logo_qrcode.logo_img:
             context['logo'] = logo_qrcode.logo_img
         if logo_qrcode.favicon:
             context['favicon'] = logo_qrcode.favicon
-        context['service_list'] = ServiceModel.objects.filter(business=business, service_category=service_category)
+        context['service_list'] = ServiceModel.objects.filter(business=business, service_category=self.object)
         self.request.session['business_slug'] = business.slug
         self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
         self.request.session['service_category_slug'] = self.object.slug
@@ -190,6 +193,22 @@ class ServiceDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ServiceDetailView, self).get_context_data(**kwargs)
+        business = BusinessModel.objects.get(slug=self.kwargs.get('slug'))
+        if self.request.user:
+            context['user_in'] = self.request.user in business.users.all()
+            context['user_id'] = self.request.user.id
+        service_category = ServiceCategoryModel.objects.get(business=business, slug=self.object.service_category.slug)
+        context['business_title'] = business.title
+        logo_qrcode = BusinessLogoQrcodeModel.objects.filter(business=business).first()
+        if logo_qrcode.logo_img:
+            context['logo'] = logo_qrcode.logo_img
+        if logo_qrcode.favicon:
+            context['favicon'] = logo_qrcode.favicon
+        context['service_time'] = get_service_equipment_time(self.object)[0][0]
+        self.request.session['business_slug'] = business.slug
+        self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
+        self.request.session['service_category_slug'] = service_category.slug
+        self.request.session['service_category_title'] = service_category.title
 
         self.request.session['service_slug'] = self.object.slug
         self.request.session['service_title'] = self.object.title

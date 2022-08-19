@@ -6,7 +6,7 @@ from django.utils.duration import _get_duration_components
 from django.urls import reverse
 from django.utils.html import mark_safe
 from markdown import markdown
-from .utils import timer_increase
+from .utils import timer_increase, get_hours_min
 from businesses.models import BusinessModel, BusinessAddressModel
 from professionals.utils import _generate_unique_slug
 
@@ -277,13 +277,6 @@ def get_service_equipment(service):
     equipment_replaced_list_service = ([i.equipment.pk for i in service_equipment_list])
     equipment_replaced_list = EquipmentModel.objects.filter(pk__in=equipment_replaced_list_service)
     return equipment_replaced_list
-
-
-def get_hours_min(number):
-    if number >= 60:
-        hour = number/60
-        return f'{hour} horas'
-    return f'{number} minutos'
 
 
 def get_service_equipment_time(service):

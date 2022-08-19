@@ -30,3 +30,14 @@ def time_is_between(timer, timer_range):
         return timer_range[0] <= timer < timer_range[1]
     else:
         return None
+
+
+def get_hours_min(number):
+    if number >= 60:
+        hour = int(number / 60)
+        minutes = number - (60 * hour)
+        if minutes:
+            return f'{hour} horas e {minutes} minutos.'
+        return f'{hour} horas.'
+    return f'{number} minutos.'
+

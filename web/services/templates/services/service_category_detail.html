@@ -13,6 +13,7 @@
 
 {% endblock %}
 {% block stylesheet %}
+
 {% endblock %}
 {% block breadcrumb %}{% endblock %}
 {% block head_title %}
@@ -38,17 +39,52 @@
             </div>
 
         </div>
-        <div class="container">
-            <div class="card-columns">
-            {% for service in service_list %}
-                <div class="card m-2" style="max-width: 28rem;">
-                    <div class="row rounded-top py-2 px-5 justify-content-center text-light bg-dark">
-                        <a href="{% url 'service_detail' request.session.business_slug service.slug %}" class="btn text-white btn-dark" data-toggle="tooltip" data-placement="bottom" title="Ir para {{ service.title }}">
-                        {{ service.title }}
-                        </a>
+
+        <div class="row">
+            <div class="container">
+                <div class="card-columns">
+
+                {% for service, time in service_list %}
+                    <div class="card m-1">
+                        <!--=========
+                        <div class="card-body">
+                            <div class="card-img-actions">
+
+                                <img src="eder.png" class="card-img img-fluid" width="96" height="350" alt="">
+
+
+                            </div>
+                        </div>
+                        ======-->
+
+                        <div class="card-body bg-light text-center">
+                            <div class="mb-2">
+                                <h6 class="font-weight-semibold mb-2">
+                                    <a href="{% url 'service_detail' request.session.business_slug service.slug %}" class="text-default mb-2" data-abc="true">{{ service.title }}</a>
+                                </h6>
+                                {{time.0.0}}
+                            </div>
+
+                            <h3 class="mb-0 font-weight-semibold">R$250.99</h3>
+
+                            <div class="text-warning">
+                                <i class="fa fa-star star"></i>
+                                <i class="fa fa-star star"></i>
+                                <i class="fa fa-star star"></i>
+                                <i class="fa fa-star star"></i>
+                                <i class="fa fa-star star"></i>
+                            </div>
+
+                            <div class="text-muted mb-3">34 reviews</div>
+
+                            <button type="button" class="btn bg-cart">Agendar</button>
+
+
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+
+            </div>
             </div>
         </div>
     </div>

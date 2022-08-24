@@ -187,7 +187,7 @@ class ServiceModel(models.Model):
 
     def get_total_time_service(self):
 
-        equipment_list = self.equipments
+        return self.equipments
 
 
 def get_service_active_by_category(business, category):
@@ -227,49 +227,14 @@ class ServiceEquipmentModel(models.Model):
         ordering = ["service"]
 
     def __str__(self):
-        return '%s %s %s %s %s' % (self.service, self.equipment, self.equipment_time, self.equipment_complement, self.equipment_replaced)
+        return '%s %s %s %s' % (self.equipment, self.equipment_time, self.equipment_complement, self.equipment_replaced)
 
     def get_absolute_url(self):
         business_slug = self.service.business.slug
         return reverse('service_equipment_detail',  kwargs={"slug": business_slug, "pk": self.pk})
 
-    def get_equipments_by_service(self, service):
-        return self.objects.get_queryset(service=service)
-
-    def get_service_equipment_time(self, address=None, service=None, equipments_extra_time=None, hour=None):
-        """
-        Retorna tempo de uso do equipamento para execução do serviço se nao for usado como complementar ou substituto.
-        """
-        service_total_time = 0
-        equipments_extra_time = equipments_extra_time
-        equipment_qty_and_time = []
-        schedule_hour = hour
-        final_equipment_list_by_service = []
-        equipment_service_list = self.objects.get_queryset(service=service)
-        for equipment_service in equipment_service_list:
-            equipment_time = equipment_service.ept_time
-            if equipments_extra_time:
-                for extra_time in equipments_extra_time:
-                    if extra_time.service_equipment == equipment_service:
-                        equipment_time += extra_time.extra_time
-
-            equipment_replaced_list = self.objects.get_queryset(service=service, ept_replaced=equipment_service.equipment)
-            equipment_qtd_address = EquipmentAddressModel.objects.filter(address=address, equipment=equipment_service.equipment).first()
-            equipment_qtd = equipment_qtd_address.qty
-            equipment_hour = schedule_hour#hora inicial do equipamento
-            schedule_hour = timer_increase(schedule_hour, equipment_time)#hora final do equipameto
-            if equipment_replaced_list:
-                for equipment_replaced in equipment_replaced_list:
-                    equipment_replaced_qtd_address = EquipmentAddressModel.objects.filter(address=address, equipment=equipment_replaced.equipment).first()
-                    equipment_replaced_qtd = equipment_replaced_qtd_address.qty
-                    equipment_qtd += equipment_replaced_qtd
-
-            if not equipment_service.ept_complement or equipment_service.ept_replaced:
-                service_total_time += equipment_time
-
-            equipment_qty_and_time.append([address, equipment_service, equipment_qtd, equipment_service.equipment_complement, equipment_service.equipment_replaced, equipment_hour, schedule_hour])
-
-        return final_equipment_list_by_service.append([service_total_time, equipment_qty_and_time])
+    def get_equipment_time(self):
+        return get_hours_min(self.equipment_time)
 
 
 def get_service_equipment(service):
@@ -287,6 +252,11 @@ def get_service_equipment_time(service):
     for equipment_service in service_equipment_list:
         if equipment_service.equipment_complement is False:
             equipment_total_time += equipment_service.equipment_time
-            equipment_and_time.append([equipment_service.equipment.title, equipment_service.equipment_time])
+            equipment_and_time.append([equipment_service.equipment.title, get_hours_min(equipment_service.equipment_time)])
     equipment_list_by_service.append([get_hours_min(equipment_total_time), equipment_and_time])
     return equipment_list_by_service
+
+
+def get_service_equipment_time_list(business, service_category):
+    service_list = ServiceModel.objects.filter(business=business, service_category=service_category)
+    return [[i, get_service_equipment_time(i)] for i in service_list]

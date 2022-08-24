@@ -39,6 +39,18 @@
             </div>
 
         </div>
+
+            {% for equipment_time in service_equipment_time_list %}
+        <div class="row">
+            <div class="col-4">
+                {{ equipment_time.0 }}
+            </div>
+            <div class="col-4">
+                {{ equipment_time.1 }}
+            </div>
+        </div>
+            {% endfor %}
+
     </div>
 </div>
 

@@ -21,6 +21,7 @@ from .models import (ServiceCategoryModel,
                      EquipmentAddressModel,
                      get_service_equipment,
                      get_service_equipment_time,
+                     get_service_equipment_time_list,
                      )
 from .serializers import (ServiceCategorySerializer,
                           ServiceSerializer,
@@ -111,7 +112,7 @@ class ServiceCategoryDetailView(DetailView):
             context['logo'] = logo_qrcode.logo_img
         if logo_qrcode.favicon:
             context['favicon'] = logo_qrcode.favicon
-        context['service_list'] = ServiceModel.objects.filter(business=business, service_category=self.object)
+        context['service_list'] = get_service_equipment_time_list(business=business, service_category=self.object)
         self.request.session['business_slug'] = business.slug
         self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
         self.request.session['service_category_slug'] = self.object.slug
@@ -205,6 +206,7 @@ class ServiceDetailView(DetailView):
         if logo_qrcode.favicon:
             context['favicon'] = logo_qrcode.favicon
         context['service_time'] = get_service_equipment_time(self.object)[0][0]
+        context['service_equipment_time_list'] = get_service_equipment_time(self.object)[0][1]
         self.request.session['business_slug'] = business.slug
         self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
         self.request.session['service_category_slug'] = service_category.slug

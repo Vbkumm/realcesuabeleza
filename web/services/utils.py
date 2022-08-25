@@ -33,11 +33,21 @@ def time_is_between(timer, timer_range):
 
 
 def get_hours_min(number):
+    minute_text = 'minutos'
+    if number == 1:
+        minute_text = 'minuto'
     if number >= 60:
         hour = int(number / 60)
         minutes = number - (60 * hour)
+        hour_text = 'horas'
+        if hour == 1:
+            hour_text = 'hora'
         if minutes:
-            return f'{hour} horas e {minutes} minutos.'
-        return f'{hour} horas.'
-    return f'{number} minutos.'
+            if minutes == 1:
+                minute_text = 'minuto'
+            return f'{hour} {hour_text} e {minutes} {minute_text}.'
+        return f'{hour} {hour_text}.'
+    return f'{number} {minute_text}.'
 
+
+CHOICES_MIN_TIME = [(i, get_hours_min(i)) for i in range(1, 700)]

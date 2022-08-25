@@ -189,6 +189,9 @@ class ServiceModel(models.Model):
 
         return self.equipments
 
+    def business_service_pk(self):
+        return self.pk
+
 
 def get_service_active_by_category(business, category):
     services = ServiceModel.objects.filter(business=business, service_category=category, is_active=True)

@@ -40,7 +40,7 @@
 
         </div>
 
-        <div class="row">
+        <div class="row mt-2">
             <div class="container">
                 <div class="card-columns">
 
@@ -59,14 +59,17 @@
 
                         <div class="card-body bg-light text-center">
                             <div class="mb-2">
-                                <h6 class="font-weight-semibold mb-2">
+                                <h2 class="font-weight-semibold mb-2">
                                     <a href="{% url 'service_detail' request.session.business_slug service.slug %}" class="text-default mb-2" data-abc="true">{{ service.title }}</a>
-                                </h6>
-                                {{time.0.0}}
+                                </h2>
+
+                                {% if service.description %}
+                                <p class="text-justify">{{ service.description }}</p>
+                                {% endif %}
+                                <h6>{{time.0.0}}</h6>
                             </div>
 
                             <h3 class="mb-0 font-weight-semibold">R$250.99</h3>
-
                             <div class="text-warning">
                                 <i class="fa fa-star star"></i>
                                 <i class="fa fa-star star"></i>
@@ -74,7 +77,6 @@
                                 <i class="fa fa-star star"></i>
                                 <i class="fa fa-star star"></i>
                             </div>
-
                             <div class="text-muted mb-3">34 reviews</div>
 
                             <button type="button" class="btn bg-cart">Agendar</button>

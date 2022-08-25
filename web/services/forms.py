@@ -1,5 +1,5 @@
 from django import forms
-from realcesuabeleza.settings import CHOICES_MIN_TIME
+from .utils import CHOICES_MIN_TIME
 from businesses.models import BusinessAddressModel
 from .models import (ServiceModel,
                      ServiceCategoryModel,

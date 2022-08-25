@@ -223,7 +223,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 LOGIN_URL = '/accounts/login/'
 LOGOUT_REDIRECT_URL = "/"
 
-CHOICES_MIN_TIME = [(i, i) for i in range(1, 900)]
+
 CHOICES_WEEKDAY = [(i, i) for i in range(0, 7)]
 
 WEEKDAYS_CHOICES = (

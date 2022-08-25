@@ -1,11 +1,12 @@
 from django.db import models
 from django.db.models import Q, F
-from realcesuabeleza.settings import CHOICES_MIN_TIME, CHOICES_WEEKDAY
+from realcesuabeleza.settings import CHOICES_WEEKDAY
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from datetime import time, timezone
 from django.urls import reverse
 from django.utils.text import slugify
+from services.utils import CHOICES_MIN_TIME
 from .utils import timer_increase, validate_date, _generate_unique_slug
 from businesses.models import BusinessModel, BusinessAddressModel
 from services.models import ServiceModel, ServiceCategoryModel

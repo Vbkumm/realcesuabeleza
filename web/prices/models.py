@@ -13,15 +13,15 @@ User = get_user_model()
 class PriceModel(models.Model):
     value = models.DecimalField('Qual valor?', max_digits=10, decimal_places=2, null=True, blank=True)
     old_value = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    service = models.ForeignKey(ServiceModel, related_name='price_service', on_delete=models.CASCADE, null=True, blank=True)
-    #combo = models.ForeignKey(ComboModel, related_name='price_combo', on_delete=models.CASCADE, null=True, blank=True)
-    #product = models.ForeignKey(ProductModel, related_name='price_product', on_delete=models.CASCADE, null=True, blank=True)
+    service = models.OneToOneField(ServiceModel, related_name='price_service', on_delete=models.CASCADE, null=True, blank=True)
+    #combo = models.OneToOneField(ComboModel, related_name='price_combo', on_delete=models.CASCADE, null=True, blank=True)
+    #product = models.OneToOneField(ProductModel, related_name='price_product', on_delete=models.CASCADE, null=True, blank=True)
     is_active = models.BooleanField('Preço visisvel?', default=False)
     updated_at = models.DateTimeField(null=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
-    value_tracker = FieldTracker(fields=['price_value'])
+    value_tracker = FieldTracker(fields=['value'])
 
     def save(self, *args, **kwargs):
         if not self.value:
@@ -41,13 +41,13 @@ class PriceModel(models.Model):
     def get_absolute_url(self):
         return reverse('price_detail', kwargs={'pk': self.pk})
 
-    @receiver(post_save, sender=ServiceModel)
-    def get_price_service_create(sender, instance, created,  **kwargs):
-        if created:
-            service_created_by = instance.created_by
-
-            PriceModel.objects.create(service=instance, created_by=service_created_by)
-            instance.service_author.save()
+    # @receiver(post_save, sender=ServiceModel)
+    # def get_price_service_create(sender, instance, created,  **kwargs):
+    #     if created:
+    #         service_created_by = instance.created_by
+    #
+    #         PriceModel.objects.create(service=instance, created_by=service_created_by)
+    #         instance.service_author.save()
 
     # @receiver(post_save, sender=ComboModel)
     # def get_price_combo_create(sender, instance, created,  **kwargs):

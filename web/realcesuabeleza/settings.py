@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'accounts',
     'businesses',
     'customers',
+    'prices',
     'professionals',
     'services',
     'schedules',

@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from model_utils import FieldTracker
@@ -41,13 +42,12 @@ class PriceModel(models.Model):
     def get_absolute_url(self):
         return reverse('price_detail', kwargs={'pk': self.pk})
 
-    # @receiver(post_save, sender=ServiceModel)
-    # def get_price_service_create(sender, instance, created,  **kwargs):
-    #     if created:
-    #         service_created_by = instance.created_by
-    #
-    #         PriceModel.objects.create(service=instance, created_by=service_created_by)
-    #         instance.service_author.save()
+    @receiver(post_save, sender=ServiceModel)
+    def get_price_service_create(sender, instance, created,  **kwargs):
+        if created:
+            service_created_by = instance.created_by
+            PriceModel.objects.create(service=instance, created_by=service_created_by, created=timezone.now())
+            instance.save()
 
     # @receiver(post_save, sender=ComboModel)
     # def get_price_combo_create(sender, instance, created,  **kwargs):

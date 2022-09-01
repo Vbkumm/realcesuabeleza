@@ -44,8 +44,7 @@ class PriceServiceUpdateView(SuccessMessageMixin, UpdateView):
             return self.form_invalid(form)
 
     def get_success_url(self, *args, **kwargs):
-        service = ServiceModel.objects.get(id=self.kwargs.get('pk'))
-        if 'service_list_session' in self.request.session:
-            return reverse("service:service_active_list")
-        else:
-            return reverse("service:service_detail", kwargs={'pk': service.pk})
+        business = self.kwargs.get('slug')
+        service = self.kwargs.get('service_slug')
+
+        return HttpResponseRedirect(reverse("service_equipment_create", kwargs={'slug': business, 'service_slug': service}))

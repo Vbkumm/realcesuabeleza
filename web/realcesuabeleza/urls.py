@@ -29,6 +29,7 @@ urlpatterns = [
     path('', include('customers.urls')),
     path('', include('professionals.urls')),
     path('', include('services.urls')),
+    path('', include('prices.urls')),
     path('terms/', TermsView.as_view(), name="terms"),
     path('cookies/', CookiesView.as_view(), name="cookies"),
     path('rest-auth/', include('rest_auth.urls')),

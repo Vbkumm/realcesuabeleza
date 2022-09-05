@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block head_title %}Editar valor - {{ price.price_service.title }}{% endblock %}
+{% block head_title %}Editar valor - {{ price.service.title }}{% endblock %}
 
 {% block stylesheet %}
 {% endblock %}
@@ -19,7 +19,7 @@
             <div class="card-body">
                 <div class="card-header rounded-top">
                     <div class="row justify-content-center">
-                        <h4>Editar valor - {{ price.price_service.title }}</h4>
+                        <h4>Editar valor - {{ price.service.title }}</h4>
                     </div>
                 </div>
                 <div class="card-body text-dark">
@@ -27,9 +27,9 @@
                         {% csrf_token %}
                         {% include 'includes/form.html' %}
                         <div class="row mr-1 justify-content-center">
-                            {% if service_list_session %}
-                            <a href="{% url 'service:service_active_list' %}" class="btn btn-sm mr-1 mt-1 px-5 text-white btn-secondary" data-toggle="tooltip" data-placement="bottom" title="cancelar">
-                                cancelar
+                            {% if service_session %}
+                            <a href="{% url 'service_equipment_create' business_slug service_slug %}" class="btn btn-sm mr-1 mt-1 px-5 text-white btn-secondary" data-toggle="tooltip" data-placement="bottom" title="cancelar">
+                                pular
                             </a>
                             {% else %}
                             <a href="{% url 'service_detail' business_slug service_slug  %}" class="btn btn-sm mr-1 mt-1 px-5 text-white btn-secondary" data-toggle="tooltip" data-placement="bottom" title="cancelar">

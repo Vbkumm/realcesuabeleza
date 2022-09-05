@@ -6,5 +6,5 @@ class PriceForm(forms.ModelForm):
 
     class Meta:
         model = PriceModel
-        fields = ['price_value', 'price_active', ]
+        fields = ['value', 'is_active', ]
 

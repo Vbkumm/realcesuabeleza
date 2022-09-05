@@ -14,6 +14,7 @@ from django.views.generic import ListView, DetailView, DeleteView, UpdateView, C
 from lib.templatetags.permissions import requires_business_owner_or_app_staff
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView
 from businesses.models import BusinessModel, BusinessAddressModel, BusinessLogoQrcodeModel
+from prices.models import PriceModel
 from .models import (ServiceCategoryModel,
                      ServiceModel,
                      EquipmentModel,
@@ -182,8 +183,8 @@ class ServiceWizardCreateView(SuccessMessageMixin, SessionWizardView):
         service.save()
 
         self.request.session['service_session'] = True
-
-        return HttpResponseRedirect(reverse("service_equipment_create", kwargs={'slug': service.business.slug, 'service_slug': service.slug}))
+        price = PriceModel.objects.get(service=service)
+        return HttpResponseRedirect(reverse("price_service_update", kwargs={'slug': service.business.slug, 'service_slug': service.slug, 'pk': price}))
 
 
 class ServiceDetailView(DetailView):

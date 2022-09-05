@@ -46,5 +46,7 @@ class PriceServiceUpdateView(SuccessMessageMixin, UpdateView):
     def get_success_url(self, *args, **kwargs):
         business = self.kwargs.get('slug')
         service = self.kwargs.get('service_slug')
-
-        return HttpResponseRedirect(reverse("service_equipment_create", kwargs={'slug': business, 'service_slug': service}))
+        if 'service_session' in self.request.session:
+            return HttpResponseRedirect(reverse("service_equipment_create", kwargs={'slug': business, 'service_slug': service}))
+        else:
+            return HttpResponseRedirect(reverse('service_detail', kwargs={'slug': business, 'service_slug': service}))

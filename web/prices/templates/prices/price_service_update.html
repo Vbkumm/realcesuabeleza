@@ -28,11 +28,11 @@
                         {% include 'includes/form.html' %}
                         <div class="row mr-1 justify-content-center">
                             {% if service_session %}
-                            <a href="{% url 'service_equipment_create' business_slug service_slug %}" class="btn btn-sm mr-1 mt-1 px-5 text-white btn-secondary" data-toggle="tooltip" data-placement="bottom" title="cancelar">
+                            <a href="{% url 'service_equipment_create' business_slug service.slug %}" class="btn btn-sm mr-1 mt-1 px-5 text-white btn-secondary" data-toggle="tooltip" data-placement="bottom" title="cancelar">
                                 pular
                             </a>
                             {% else %}
-                            <a href="{% url 'service_detail' business_slug service_slug  %}" class="btn btn-sm mr-1 mt-1 px-5 text-white btn-secondary" data-toggle="tooltip" data-placement="bottom" title="cancelar">
+                            <a href="{% url 'service_detail' business_slug service.slug  %}" class="btn btn-sm mr-1 mt-1 px-5 text-white btn-secondary" data-toggle="tooltip" data-placement="bottom" title="cancelar">
                                 cancelar
                             </a>
                             {% endif %}

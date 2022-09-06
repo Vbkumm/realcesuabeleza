@@ -82,3 +82,5 @@ def flush_session(request):
         del request.session['service_category_title']
     if 'service_slug' in request.session:
         del request.session['service_slug']
+    if 'service_session' in request.session:
+        del request.session['service_session']

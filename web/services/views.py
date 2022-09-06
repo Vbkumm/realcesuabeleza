@@ -14,7 +14,7 @@ from django.views.generic import ListView, DetailView, DeleteView, UpdateView, C
 from lib.templatetags.permissions import requires_business_owner_or_app_staff
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView
 from businesses.models import BusinessModel, BusinessAddressModel, BusinessLogoQrcodeModel
-from prices.models import PriceModel
+from prices.models import PriceModel, get_service_equipment_time_and_price_in_list
 from .models import (ServiceCategoryModel,
                      ServiceModel,
                      EquipmentModel,
@@ -113,12 +113,13 @@ class ServiceCategoryDetailView(DetailView):
             context['logo'] = logo_qrcode.logo_img
         if logo_qrcode.favicon:
             context['favicon'] = logo_qrcode.favicon
-        context['service_list'] = get_service_equipment_time_list(business=business, service_category=self.object)
+        context['service_list'] = get_service_equipment_time_and_price_in_list(business=business, service_category=self.object)
         self.request.session['business_slug'] = business.slug
         self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
         self.request.session['service_category_slug'] = self.object.slug
         self.request.session['service_category_title'] = self.object.title
-
+        if 'service_session' in self.request.session:
+            del self.request.session['service_session']
         return context
 
 
@@ -184,7 +185,7 @@ class ServiceWizardCreateView(SuccessMessageMixin, SessionWizardView):
 
         self.request.session['service_session'] = True
         price = PriceModel.objects.get(service=service)
-        return HttpResponseRedirect(reverse("price_service_update", kwargs={'slug': service.business.slug, 'service_slug': service.slug, 'pk': price}))
+        return HttpResponseRedirect(reverse("prices:price_service_update", kwargs={'slug': service.business.slug, 'service_slug': service.slug, 'pk': price.pk}))
 
 
 class ServiceDetailView(DetailView):
@@ -208,6 +209,7 @@ class ServiceDetailView(DetailView):
             context['favicon'] = logo_qrcode.favicon
         context['service_time'] = get_service_equipment_time(self.object)[0][0]
         context['service_equipment_time_list'] = get_service_equipment_time(self.object)[0][1]
+        context['service_price'] = PriceModel.objects.filter(service=self.object).first()
         self.request.session['business_slug'] = business.slug
         self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
         self.request.session['service_category_slug'] = service_category.slug

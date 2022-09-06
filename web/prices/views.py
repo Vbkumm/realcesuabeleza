@@ -16,7 +16,6 @@ class PriceServiceUpdateView(SuccessMessageMixin, UpdateView):
 
     form_class = PriceForm
     model = PriceModel
-    pk_url_kwarg = 'price_pk'
     context_object_name = 'price'
     template_name = 'prices/price_service_update.html'
     success_message = "Alterações realizadas com sucesso!"
@@ -31,22 +30,16 @@ class PriceServiceUpdateView(SuccessMessageMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        price = self.get_form()
-        price.instance.price_service = ServiceModel.objects.get(id=self.kwargs.get('pk'))
-        price.instance.old_price_value = price.instance.price_value_tracker.previous('price_value')
-        price.instance.price_updated_at = timezone.now()
-        price.instance.price_updated_by = self.request.user
-        price.save()
-        form = PriceForm(data=self.request.POST, instance=self.object)
-        if form.is_valid():
-            return super().form_valid(form)
-        else:
-            return self.form_invalid(form)
+        form.instance.service = ServiceModel.objects.get(slug=self.kwargs.get('service_slug'))
+        form.instance.old_value = form.instance.value_tracker.previous('price_value')
+        form.instance.updated_at = timezone.now()
+        form.instance.updated_by = self.request.user
+        return super().form_valid(form)
 
     def get_success_url(self, *args, **kwargs):
         business = self.kwargs.get('slug')
         service = self.kwargs.get('service_slug')
         if 'service_session' in self.request.session:
-            return HttpResponseRedirect(reverse("service_equipment_create", kwargs={'slug': business, 'service_slug': service}))
+            return reverse_lazy("service_equipment_create", kwargs={'slug': business, 'service_slug': service})
         else:
-            return HttpResponseRedirect(reverse('service_detail', kwargs={'slug': business, 'service_slug': service}))
+            return reverse_lazy('service_detail', kwargs={'slug': business, 'service_slug': service})

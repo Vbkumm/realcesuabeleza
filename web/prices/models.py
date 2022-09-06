@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from model_utils import FieldTracker
-from services.models import ServiceModel
+from services.models import ServiceModel, get_service_equipment_time_list
 
 
 User = get_user_model()
@@ -64,3 +64,8 @@ class PriceModel(models.Model):
     #
     #         PriceModel.objects.create(price_product=instance, price_user=author)
     #         instance.author.save()
+
+
+def get_service_equipment_time_and_price_in_list(business, service_category):
+    service_list = get_service_equipment_time_list(business, service_category)
+    return [[i[0], i[1], PriceModel.objects.filter(service=i[0]).first()] for i in service_list]

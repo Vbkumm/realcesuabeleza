@@ -17,7 +17,7 @@ class PriceModel(models.Model):
     service = models.OneToOneField(ServiceModel, related_name='price_service', on_delete=models.CASCADE, null=True, blank=True)
     #combo = models.OneToOneField(ComboModel, related_name='price_combo', on_delete=models.CASCADE, null=True, blank=True)
     #product = models.OneToOneField(ProductModel, related_name='price_product', on_delete=models.CASCADE, null=True, blank=True)
-    is_active = models.BooleanField('Preço visisvel?', default=False)
+    is_active = models.BooleanField('Preço visisvel?', default=True)
     updated_at = models.DateTimeField(null=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)

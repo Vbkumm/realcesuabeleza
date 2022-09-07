@@ -28,10 +28,10 @@
                         <h4>Novo  serviço</h4>
                     </div>
                     <div class="progress" style="height: 10px;">
-                        <div class="progress-bar bg-success" role="progressbar" {% if wizard.steps.step1 == 1 %}  style="width: 25%;" aria-valuenow="25" {% endif %} {% if wizard.steps.step1 == 2 %}  style="width: 50%;" aria-valuenow="50" {% endif %} {% if wizard.steps.step1 == 3 %}  style="width: 75%;" aria-valuenow="75" {% endif %} aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-success" role="progressbar" {% if wizard.steps.step1 == 1 %}  style="width: 20%;" aria-valuenow="20" {% endif %} {% if wizard.steps.step1 == 2 %}  style="width: 40%;" aria-valuenow="40" {% endif %} aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                     <div class="row mt-2 justify-content-center">
-                        <div class="col-4 text-success">
+                        <div class="col-3 text-success">
                             <div class="row justify-content-center">
                                 <small class="">título</small>
                             </div>
@@ -39,7 +39,7 @@
                                 <i class="fa fa-id-card" aria-hidden="true"></i>
                             </div>
                         </div>
-                        <div class="col-4 {% if wizard.steps.step1 > 1 %} text-success {% else %} text-muted {% endif %}">
+                        <div class="col-3 {% if wizard.steps.step1 > 1 %} text-success {% else %} text-muted {% endif %}">
                             <div class="row justify-content-center">
                                 <small class="">descrição</small>
                             </div>
@@ -47,7 +47,15 @@
                                 <i class="fa fa-comment" aria-hidden="true"></i>
                             </div>
                         </div>
-                        <div class="col-4 {% if wizard.steps.step1 > 2 %} text-success {% else %} text-muted {% endif %}">
+                        <div class="col-3 {% if wizard.steps.step1 > 1 %} text-success {% else %} text-muted {% endif %}">
+                            <div class="row justify-content-center">
+                                <small class="">preço</small>
+                            </div>
+                            <div class="row justify-content-center">
+                                <i class="far fa-money-bill" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                        <div class="col-3 {% if wizard.steps.step1 > 2 %} text-success {% else %} text-muted {% endif %}">
                             <div class="row justify-content-center">
                                 <small class="">equipamentos</small>
                             </div>
@@ -104,7 +112,7 @@
 
                     </form>
                     <div class="row justify-content-end">
-                        <small class="text-muted text-right">{{ wizard.steps.step1 }} de {{ wizard.steps.count }} + <i class="fa fa-cogs" aria-hidden="true"></i></small>
+                        <small class="text-muted text-right">{{ wizard.steps.step1 }} de {{ wizard.steps.count }} + <i class="far fa-money-bill" aria-hidden="true"></i> + <i class="fa fa-cogs" aria-hidden="true"></i></small>
                     </div>
                 </div>
             </div>

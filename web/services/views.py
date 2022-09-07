@@ -398,6 +398,8 @@ class ServiceEquipmentListView(ListView):
         service = ServiceModel.objects.get(slug=self.kwargs.get('service_slug'))
         context['service'] = service
         self.request.session['service_equipment_list_slug'] = service.slug
+        if 'service_session' in self.request.session:
+            del self.request.session['service_session']
         return context
 
 

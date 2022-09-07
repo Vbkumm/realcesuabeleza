@@ -57,7 +57,7 @@ class ServiceCategoryForm(forms.ModelForm):
 
 
 class EquipmentForm(forms.ModelForm):
-    is_active = forms.BooleanField(label='Categoria ativa?', initial=True)
+    is_active = forms.BooleanField(label='Equipamento ativo?', initial=True)
 
     class Meta:
         model = EquipmentModel
@@ -65,7 +65,7 @@ class EquipmentForm(forms.ModelForm):
 
 
 class EquipmentAddressForm(forms.ModelForm):
-    is_active = forms.BooleanField(label='Categoria ativa?', initial=True)
+    is_active = forms.BooleanField(label='Equipamento ativo neste endereço?', initial=True)
     address = BusinessAddressChoiceField(label='Selecione o endereço deste equipamento',
                                            queryset=BusinessAddressModel.objects.all(),
                                            empty_label="(Add uma nova se nåo encontrar)",
@@ -98,7 +98,7 @@ class ServiceFormOne(forms.ModelForm):
 
 class ServiceFormTwo(forms.ModelForm):
     description = forms.CharField(label='', widget=forms.Textarea(
-        attrs={'rows': 4, 'placeholder': 'Aqui você pode descrever melhor o serviçø com até 1000 caracteres.'}
+        attrs={'rows': 4, 'placeholder': 'Aqui você pode descrever melhor o serviço com até 1000 caracteres.'}
     ),
                                           max_length=1000,
                                           help_text='Número maximo de caracteres 1000.'

@@ -1,7 +1,10 @@
 from rest_framework import viewsets, status
+from django.utils.decorators import method_decorator
+from django.views.generic import UpdateView, CreateView, DetailView
+from django.urls import reverse_lazy
+from django.contrib.messages.views import SuccessMessageMixin
 from rest_framework.response import Response
-from django.views.generic import ListView, DetailView, DeleteView, UpdateView
-
+from lib.templatetags.permissions import requires_business_owner_or_app_staff
 from .models import (ProfessionalUserModel,
                      ProfessionalModel,
                      ProfessionalServiceCategoryModel,
@@ -24,6 +27,8 @@ from .serializers import (ProfessionalUserSerializer,
                           ProfessionalNoSkillSerializer,
                           OpenScheduleSerializer,
                           CloseScheduleSerializer,)
+from .forms import (ProfessionalCategoryForm,
+                    )
 
 
 class ProfessionalViewSet(viewsets.ViewSet):
@@ -105,6 +110,32 @@ class ProfessionalCategoryViewSet(viewsets.ViewSet):
         professional_category = ProfessionalCategoryModel.objects.get(slug=kwargs['professional_category_slug'])
         professional_category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
+class ProfessionalCategoryCreateView(SuccessMessageMixin, CreateView):
+    model = ProfessionalCategoryModel
+    template_name = 'professionals/professional_category_create.html'
+    form_class = ProfessionalCategoryForm
+    success_message = "Categoria de profissional criada com sucesso!"
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfessionalCategoryCreateView, self).get_context_data(**kwargs)
+        if 'professional_category_list_session' in self.request.session:
+            del self.request.session['professional_category_list_session']
+            context['professional_category_list_session'] = True
+        if 'category_service_list_session' in self.request.session:
+            del self.request.session['category_service_list_session']
+            context['category_service_list_session'] = True
+
+        return context
+
+    def form_valid(self, model):
+        model.instance.category_professional_author = self.request.user
+        return super().form_valid(model)
+
+    def get_success_url(self):
+        return reverse_lazy('professional:professional_category_list')
 
 
 class ProfessionalCategoryDetailView(DetailView):

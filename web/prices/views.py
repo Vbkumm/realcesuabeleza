@@ -1,8 +1,6 @@
 from django.utils.decorators import method_decorator
-from django.contrib.admin.views.decorators import staff_member_required
-from django.views.generic import UpdateView, CreateView, DetailView
-from django.urls import reverse, reverse_lazy
-from django.shortcuts import HttpResponseRedirect
+from django.views.generic import UpdateView
+from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from .models import PriceModel
 from .forms import PriceForm

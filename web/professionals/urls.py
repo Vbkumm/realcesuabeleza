@@ -2,7 +2,8 @@ from django.urls import path
 from .views import (ProfessionalViewSet,
                     ProfessionalDetailView,
                     ProfessionalCategoryViewSet,
-                    ProfessionalCategoryDetailView)
+                    ProfessionalCategoryDetailView,
+                    ProfessionalCategoryCreateView,)
 
 
 urlpatterns = [
@@ -16,7 +17,7 @@ urlpatterns = [
         'delete': 'destroy'
     })),
     path('<str:slug>/professional/<str:professional_slug>/', ProfessionalDetailView.as_view(), name='professional_detail'),
-
+    path('<str:slug>/professional_category/', ProfessionalCategoryCreateView.as_view(), name='professional_category_create'),
     path('<str:slug>/professional_category/api/', ProfessionalCategoryViewSet.as_view({
         'get': 'list',
         'post': 'create'

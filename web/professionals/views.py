@@ -2,9 +2,12 @@ from rest_framework import viewsets, status
 from django.utils.decorators import method_decorator
 from django.views.generic import UpdateView, CreateView, DetailView
 from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from django.contrib.messages.views import SuccessMessageMixin
 from rest_framework.response import Response
 from lib.templatetags.permissions import requires_business_owner_or_app_staff
+from businesses.models import BusinessModel
 from .models import (ProfessionalUserModel,
                      ProfessionalModel,
                      ProfessionalServiceCategoryModel,
@@ -121,21 +124,18 @@ class ProfessionalCategoryCreateView(SuccessMessageMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(ProfessionalCategoryCreateView, self).get_context_data(**kwargs)
-        if 'professional_category_list_session' in self.request.session:
-            del self.request.session['professional_category_list_session']
-            context['professional_category_list_session'] = True
-        if 'category_service_list_session' in self.request.session:
-            del self.request.session['category_service_list_session']
-            context['category_service_list_session'] = True
+        context['business_slug'] = self.kwargs.get('slug')
 
         return context
 
     def form_valid(self, model):
-        model.instance.category_professional_author = self.request.user
+        model.instance.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        model.instance.created_by = self.request.user
+        model.instance.created = timezone.now()
         return super().form_valid(model)
 
     def get_success_url(self):
-        return reverse_lazy('professional:professional_category_list')
+        return reverse_lazy('professional_category_detail')
 
 
 class ProfessionalCategoryDetailView(DetailView):

@@ -12,4 +12,4 @@ class ProfessionalCategoryForm(forms.ModelForm):
 
     class Meta:
         model = ProfessionalCategoryModel
-        fields = ['category_professional', ]
+        fields = ['category_professional', 'is_active' ]

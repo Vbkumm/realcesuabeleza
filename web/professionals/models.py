@@ -19,7 +19,7 @@ class ProfessionalCategoryModel(models.Model):
     """
     Cadastro de categorias de profissionais do salao
     """
-    id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    #id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     business = models.ForeignKey(BusinessModel, related_name='business_professional_category', on_delete=models.CASCADE,)
     title = models.CharField('Qual nova categoria de profissional?', max_length=100,)
     slug = models.CharField(unique=True, max_length=150)
@@ -32,6 +32,8 @@ class ProfessionalCategoryModel(models.Model):
 
     class Meta:
         verbose_name_plural = "professionals_category_list"
+        verbose_name = "professionals_category"
+        db_table = 'professionals_category_db'
         ordering = ['business',]
 
     def __str__(self):

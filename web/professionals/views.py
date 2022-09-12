@@ -135,7 +135,8 @@ class ProfessionalCategoryCreateView(SuccessMessageMixin, CreateView):
         return super().form_valid(model)
 
     def get_success_url(self):
-        return reverse_lazy('professional_category_detail')
+        business_slug = self.kwargs.get('slug')
+        return reverse_lazy('professional_category_detail', kwargs={'slug': business_slug, 'professional_category_slug': self.object.slug})
 
 
 class ProfessionalCategoryDetailView(DetailView):

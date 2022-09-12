@@ -28,7 +28,8 @@ def _generate_unique_slug(self):
     else:
         unique_slug = slugify(self.title)
     num = 1
-    while self.__class__.objects.filter(slug=unique_slug).exclude(id=self.id).exists():
-        unique_slug = '{}-{}'.format(unique_slug, num)
+    new_unique_slug = unique_slug
+    while self.__class__.objects.filter(slug=new_unique_slug).exclude(id=self.id).exists():
+        new_unique_slug = '{}-{}'.format(unique_slug, num)
         num += 1
-    return unique_slug
+    return new_unique_slug

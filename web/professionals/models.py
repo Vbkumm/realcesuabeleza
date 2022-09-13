@@ -126,8 +126,7 @@ class ProfessionalModel(models.Model):
         return reverse('professional_detail',  kwargs={"slug": self.business.slug, 'professional_slug': self.slug})
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.slug).lower()
-
+        self.slug = _generate_unique_slug(self)
         super(ProfessionalModel, self).save(*args, **kwargs)
 
     def get_professional_by_business(self, business):

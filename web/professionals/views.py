@@ -1,8 +1,12 @@
+import os
 from rest_framework import viewsets, status
 from django.utils.decorators import method_decorator
 from django.views.generic import UpdateView, CreateView, DetailView
-from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy, reverse
+from formtools.wizard.views import SessionWizardView
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.shortcuts import get_object_or_404, HttpResponseRedirect
 from django.utils import timezone
 from django.contrib.messages.views import SuccessMessageMixin
 from rest_framework.response import Response
@@ -31,6 +35,8 @@ from .serializers import (ProfessionalUserSerializer,
                           OpenScheduleSerializer,
                           CloseScheduleSerializer,)
 from .forms import (ProfessionalCategoryForm,
+                    ProfessionalFormOne,
+                    ProfessionalFormTwo,
                     )
 
 
@@ -65,6 +71,34 @@ class ProfessionalViewSet(viewsets.ViewSet):
         professional = ProfessionalModel.objects.get(slug=kwargs['professional_slug'])
         professional.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
+class ProfessionalWizardCreateView(SuccessMessageMixin, SessionWizardView):
+    form_list = [ProfessionalFormOne, ProfessionalFormTwo]
+    template_name = 'professionals/professional_wizard_create.html'
+    success_message = "Serviço criado com sucesso!"
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'professional_storage'))
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfessionalWizardCreateView, self).get_context_data(**kwargs)
+        context['business_slug'] = self.kwargs.get('slug')
+        self.request.session['professional_create_session'] = True
+        return context
+
+    def done(self, form_list, **kwargs):
+        # get merged dictionary from all fields
+        form_dict = self.get_all_cleaned_data()
+        professional = ProfessionalModel()
+        professional.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        professional.created = timezone.now()
+        professional.created_by = self.request.user
+        for k, v in form_dict.items():
+            if k != 'tags':
+                setattr(professional, k, v)
+        professional.save()
+
+        return HttpResponseRedirect(reverse("professionals:professional_detail", kwargs={'slug': professional.business.slug, 'professional_slug': professional.slug}))
 
 
 class ProfessionalDetailView(DetailView):
@@ -136,7 +170,10 @@ class ProfessionalCategoryCreateView(SuccessMessageMixin, CreateView):
 
     def get_success_url(self):
         business_slug = self.kwargs.get('slug')
-        return reverse_lazy('professional_category_detail', kwargs={'slug': business_slug, 'professional_category_slug': self.object.slug})
+        if 'professional_create_session' in self.request.session:
+            return reverse_lazy('professional_wizard_create', kwargs={'slug': business_slug,})
+        else:
+            return reverse_lazy('professional_category_detail', kwargs={'slug': business_slug, 'professional_category_slug': self.object.slug})
 
 
 class ProfessionalCategoryDetailView(DetailView):

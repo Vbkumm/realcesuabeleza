@@ -78,7 +78,7 @@ class ProfessionalAdmin(admin.ModelAdmin):
     inlines = [ProfessionalExtraSkillAdmin, ProfessionalNoSkillAdmin, ProfessionalScheduleAdmin]
     fieldsets = [
         (None,               {'fields': ['business']}),
-        (None,               {'fields': ['name']}),
+        (None,               {'fields': ['title']}),
         (None,               {'fields': ['began_date']}),
         (None,               {'fields': ['birth_date']}),
         (None,               {'fields': ['federal_id']}),
@@ -90,9 +90,9 @@ class ProfessionalAdmin(admin.ModelAdmin):
         (None,               {'fields': ['is_active']}),
         (None,               {'fields': ['created_by']}),
     ]
-    list_display = ('business', 'name', 'is_active')
+    list_display = ('business', 'title', 'is_active')
     list_filter = ['is_active']
-    search_fields = ['business', 'name']
+    search_fields = ['business', 'title']
 
 
 admin.site.register(ProfessionalModel, ProfessionalAdmin)

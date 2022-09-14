@@ -94,7 +94,7 @@ class ProfessionalModel(models.Model):
     """
     business = models.ForeignKey(BusinessModel, related_name='professional_business', on_delete=models.CASCADE,)
     began_date = models.DateField('Qual data de inicio do profissional?', null=True)
-    name = models.CharField('Qual o nome do profissional?', max_length=150, null=True)
+    title = models.CharField('Qual o nome do profissional?', max_length=150, null=True)
     federal_id = models.CharField(blank=True, max_length=15, null=True, unique=True, verbose_name='cpf')
     birth_date = models.CharField('Data de aniversário do profissional*', max_length=150, blank=True, null=True)
     slug = models.CharField(unique=True, max_length=150)
@@ -120,12 +120,14 @@ class ProfessionalModel(models.Model):
         ordering = ['business']
 
     def __str__(self):
-        return '%s %s %s' % (self.pk, self.name, self.business)
+        return '%s %s %s' % (self.pk, self.title, self.business)
 
     def get_absolute_url(self):
-        return reverse('professional_detail',  kwargs={"slug": self.business.slug, 'professional_slug': self.slug})
+        return reverse('professional_detail',  kwargs={"slug": self.business.title, 'professional_slug': self.slug})
 
     def save(self, *args, **kwargs):
+        print(f'sefmolels {self.title}')
+
         self.slug = _generate_unique_slug(self)
         super(ProfessionalModel, self).save(*args, **kwargs)
 

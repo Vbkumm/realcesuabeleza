@@ -23,7 +23,7 @@ def validate_date(date_):
 
 
 def _generate_unique_slug(self):
-    if self.business:
+    if self.title:
         unique_slug = slugify(self.title + '__' + self.business.title)
     else:
         unique_slug = slugify(self.title)

@@ -37,6 +37,9 @@ from .serializers import (ProfessionalUserSerializer,
 from .forms import (ProfessionalCategoryForm,
                     ProfessionalFormOne,
                     ProfessionalFormTwo,
+                    ProfessionalFormTree,
+                    ProfessionalFormFour,
+                    ProfessionalSelectCategoryForm,
                     )
 
 
@@ -75,7 +78,7 @@ class ProfessionalViewSet(viewsets.ViewSet):
 
 @method_decorator(requires_business_owner_or_app_staff, name='dispatch')
 class ProfessionalWizardCreateView(SuccessMessageMixin, SessionWizardView):
-    form_list = [ProfessionalFormOne, ProfessionalFormTwo]
+    form_list = [ProfessionalFormOne, ProfessionalFormTwo, ProfessionalFormTree, ProfessionalFormFour]
     template_name = 'professionals/professional_wizard_create.html'
     success_message = "Serviço criado com sucesso!"
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'professional_storage'))
@@ -90,15 +93,48 @@ class ProfessionalWizardCreateView(SuccessMessageMixin, SessionWizardView):
         # get merged dictionary from all fields
         form_dict = self.get_all_cleaned_data()
         professional = ProfessionalModel()
-        professional.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        professional.business = business
         professional.created = timezone.now()
         professional.created_by = self.request.user
         for k, v in form_dict.items():
             if k != 'tags':
                 setattr(professional, k, v)
+
         professional.save()
 
-        return HttpResponseRedirect(reverse("professionals:professional_detail", kwargs={'slug': professional.business.slug, 'professional_slug': professional.slug}))
+        return HttpResponseRedirect(reverse("professional_select_category_update", kwargs={'slug': business.slug, 'professional_slug': professional.slug}))
+
+
+@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
+class ProfessionalSelectCategoryUpdateView(SuccessMessageMixin, UpdateView):
+
+    form_class = ProfessionalSelectCategoryForm
+    model = ProfessionalModel
+    #context_object_name = 'professional'
+    slug_url_kwarg = 'professional_slug'
+    template_name = 'professionals/professional_select_category_update.html'
+    success_message = "Alterações realizadas com sucesso!"
+    
+    def get_context_data(self, **kwargs):
+
+        context = super(ProfessionalSelectCategoryUpdateView, self).get_context_data(**kwargs)
+        context['business_slug'] = self.kwargs.get('slug')
+        professional = ProfessionalModel.objects.get(slug=self.kwargs.get('professional_slug'))
+        context['professional'] = professional
+        self.request.session['professional_slug'] = professional.slug
+        return context
+
+    def form_valid(self, form):
+        form.instance.updated_at = timezone.now()
+        form.instance.updated_by = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self, *args, **kwargs):
+        business = self.kwargs.get('slug')
+        professional = self.kwargs.get('professional_slug')
+
+        return reverse_lazy("professional_detail", kwargs={'slug': business, 'professional_slug': professional})
 
 
 class ProfessionalDetailView(DetailView):
@@ -111,7 +147,7 @@ class ProfessionalDetailView(DetailView):
         context = super(ProfessionalDetailView, self).get_context_data(**kwargs)
 
         self.request.session['professional_slug'] = self.object.slug
-        self.request.session['professional_name'] = self.object.name
+        self.request.session['professional_name'] = self.object.title
 
         return context
 

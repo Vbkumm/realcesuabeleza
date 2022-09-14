@@ -138,6 +138,30 @@
 
 $(valida_cnpj_cpf('#id_1-federal_id'))
 
+$(function() {
+    $("#datepicker").datepicker({
+        onSelect: function(date, inst) {
+
+            $("#id_1-customer_birth_date").val($(this).val());
+
+        },
+        minDate: "-99y", maxDate: "+1D",
+        showOtherMonths: true,
+        selectOtherMonths: true,
+        changeYear: true,
+        defaultDate: +1,
+
+        dateFormat: 'dd/mm/yy',
+        dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'],
+        dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+        dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+        monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+        monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+
+    });
+});
+
+
 </script>
 {{ wizard.form.media }}
 {% endblock %}

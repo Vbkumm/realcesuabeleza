@@ -207,11 +207,11 @@ class ServiceDetailView(DetailView):
             context['logo'] = logo_qrcode.logo_img
         if logo_qrcode.favicon:
             context['favicon'] = logo_qrcode.favicon
+        self.request.session['business_slug'] = business.slug
+        self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
         context['service_time'] = get_service_equipment_time(self.object)[0][0]
         context['service_equipment_time_list'] = get_service_equipment_time(self.object)[0][1]
         context['service_price'] = PriceModel.objects.filter(service=self.object).first()
-        self.request.session['business_slug'] = business.slug
-        self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
         self.request.session['service_category_slug'] = service_category.slug
         self.request.session['service_category_title'] = service_category.title
 

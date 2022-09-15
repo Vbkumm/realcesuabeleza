@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.contrib.messages.views import SuccessMessageMixin
 from rest_framework.response import Response
 from lib.templatetags.permissions import requires_business_owner_or_app_staff
-from businesses.models import BusinessModel
+from businesses.models import BusinessModel, BusinessLogoQrcodeModel
 from .models import (ProfessionalUserModel,
                      ProfessionalModel,
                      ProfessionalServiceCategoryModel,
@@ -115,7 +115,7 @@ class ProfessionalSelectCategoryUpdateView(SuccessMessageMixin, UpdateView):
     slug_url_kwarg = 'professional_slug'
     template_name = 'professionals/professional_select_category_update.html'
     success_message = "Alterações realizadas com sucesso!"
-    
+
     def get_context_data(self, **kwargs):
 
         context = super(ProfessionalSelectCategoryUpdateView, self).get_context_data(**kwargs)
@@ -123,6 +123,8 @@ class ProfessionalSelectCategoryUpdateView(SuccessMessageMixin, UpdateView):
         professional = ProfessionalModel.objects.get(slug=self.kwargs.get('professional_slug'))
         context['professional'] = professional
         self.request.session['professional_slug'] = professional.slug
+        if "professional_create_session" in self.request.session:
+            context['professional_create_session'] = True
         return context
 
     def form_valid(self, form):
@@ -145,7 +147,18 @@ class ProfessionalDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ProfessionalDetailView, self).get_context_data(**kwargs)
-
+        business = BusinessModel.objects.get(slug=self.kwargs.get('slug'))
+        if self.request.user:
+            context['user_in'] = self.request.user in business.users.all()
+            context['user_id'] = self.request.user.id
+            context['business_title'] = business.title
+        logo_qrcode = BusinessLogoQrcodeModel.objects.filter(business=business).first()
+        if logo_qrcode.logo_img:
+            context['logo'] = logo_qrcode.logo_img
+        if logo_qrcode.favicon:
+            context['favicon'] = logo_qrcode.favicon
+        self.request.session['business_slug'] = business.slug
+        self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
         self.request.session['professional_slug'] = self.object.slug
         self.request.session['professional_name'] = self.object.title
 

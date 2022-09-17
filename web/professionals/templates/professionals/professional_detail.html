@@ -36,7 +36,11 @@
                     <i class="fa fa-undo" aria-hidden="true"></i>
                 </a>
             </div>
-
+        </div>
+        <div class="row justify-content-center">
+            {% for category in object.category.all %}
+            {{ category.title }}
+            {% endfor %}
         </div>
     </div>
 </div>

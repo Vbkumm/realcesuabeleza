@@ -82,13 +82,20 @@
     <div id='professionals' class="card">
         <div class="card-header">
             <div class="row rounded-top p-3 text-{{ bg_color.1 }} align-items-center"  style="background-color: {{ bg_color.0 }};">
-                <h6>Profissionais</h6>
+                <div class="col-8">
+                    <h6>Profissionais</h6>
+                </div>
+                <div class="col-4">
+                    <a class="border-0 text-light" href="{% url 'professional_wizard_create' business.slug %}">
+                        Novo Profissional
+                    </a>
+                </div>
             </div>
             {% for professional in professional_list %}
 
             <a class="border-0 text-dark" href="{% url 'professional_detail' business.slug professional.slug  %}">
 
-                {{ professional.name }}
+                {{ professional.title }}
             </a>
             {% endfor %}
             <div class="row rounded-top p-3 text-{{ bg_color.1 }} align-items-center"  style="background-color: {{ bg_color.0 }};">

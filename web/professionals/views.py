@@ -125,6 +125,7 @@ class ProfessionalSelectCategoryUpdateView(SuccessMessageMixin, UpdateView):
         self.request.session['professional_slug'] = professional.slug
         if "professional_create_session" in self.request.session:
             context['professional_create_session'] = True
+            context['professional_slug'] = professional.slug
         return context
 
     def form_valid(self, form):
@@ -208,6 +209,10 @@ class ProfessionalCategoryCreateView(SuccessMessageMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super(ProfessionalCategoryCreateView, self).get_context_data(**kwargs)
         context['business_slug'] = self.kwargs.get('slug')
+        if "professional_create_session" in self.request.session:
+            context['professional_create_session'] = True
+        if "professional_slug" in self.request.session:
+            context['professional_slug'] = self.request.session['professional_slug']
 
         return context
 

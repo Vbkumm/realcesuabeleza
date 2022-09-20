@@ -27,7 +27,11 @@
                         {% csrf_token %}
                         {% include 'includes/form.html' %}
                         <div class="row mr-1 justify-content-center">
-                            <a href="{% url 'business_detail' business_slug %}" class="btn btn-sm mr-1 mt-1 px-4 btn-secondary" >cancelar</a>
+                            {% if professional_slug %}
+                            <a href="{% url 'professional_select_category_update' business_slug  professional_slug %}" class="btn btn-sm mr-1 mt-1 px-4 btn-secondary" >voltar</a>
+                            {% else %}
+                            <a href="{% url 'business_detail' business_slug  %}" class="btn btn-sm mr-1 mt-1 px-4 btn-secondary" >cancelar</a>
+                            {% endif %}
                             <button type="submit" class="btn btn-sm mt-1 px-5 btn-success">salvar</button>
                         </div>
                     </form>

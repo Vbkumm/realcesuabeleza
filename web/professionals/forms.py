@@ -1,10 +1,11 @@
 from django import forms
 from lib.templatetags.validators import FEDERAL_ID_VALIDATE
+from services.forms import ServiceCategoryChoiceField
+from services.models import ServiceCategoryModel
 from .models import (ProfessionalModel,
                      ProfessionalServiceCategoryModel,
                      ProfessionalCategoryModel,
                      )
-
 
 
 class ProfessionalCategoryChoiceField(forms.ModelMultipleChoiceField):
@@ -87,3 +88,15 @@ class ProfessionalFormFour(forms.ModelForm):
     class Meta:
         model = ProfessionalModel
         fields = ['is_active', 'schedule_active', 'cancel_schedule_active', ]
+
+
+class ProfessionalServiceCategoryForm(forms.ModelForm):
+    service_category = ServiceCategoryChoiceField(label='Selecione as catergoria de serviço',
+                                                  queryset=ServiceCategoryModel.objects.all(),
+                                                  empty_label="(Add uma nova se nåo encontrar)",
+                                                  )
+
+    class Meta:
+        model = ProfessionalServiceCategoryModel
+        fields = ['service_category', ]
+

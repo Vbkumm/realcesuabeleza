@@ -124,7 +124,7 @@ class ProfessionalSelectCategoryUpdateView(SuccessMessageMixin, UpdateView):
         context['professional'] = professional
         self.request.session['professional_slug'] = professional.slug
         if "professional_create_session" in self.request.session:
-            context['professional_create_session'] = True
+            self.request.session['professional_create_session'] = True
             context['professional_slug'] = professional.slug
         return context
 
@@ -210,7 +210,7 @@ class ProfessionalCategoryCreateView(SuccessMessageMixin, CreateView):
         context = super(ProfessionalCategoryCreateView, self).get_context_data(**kwargs)
         context['business_slug'] = self.kwargs.get('slug')
         if "professional_create_session" in self.request.session:
-            context['professional_create_session'] = True
+            self.request.session['professional_create_session'] = True
         if "professional_slug" in self.request.session:
             context['professional_slug'] = self.request.session['professional_slug']
 
@@ -224,8 +224,8 @@ class ProfessionalCategoryCreateView(SuccessMessageMixin, CreateView):
 
     def get_success_url(self):
         business_slug = self.kwargs.get('slug')
-        if 'professional_create_session' in self.request.session:
-            return reverse_lazy('professional_wizard_create', kwargs={'slug': business_slug,})
+        if 'professional_create_session' and 'professional_slug' in self.request.session:
+            return reverse_lazy('professional_select_category_update', kwargs={'slug': business_slug, 'professional_slug': self.request.session['professional_slug']})
         else:
             return reverse_lazy('professional_category_detail', kwargs={'slug': business_slug, 'professional_category_slug': self.object.slug})
 

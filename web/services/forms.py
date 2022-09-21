@@ -159,3 +159,4 @@ class ServiceEquipmentForm(forms.ModelForm):
     class Meta:
         model = ServiceEquipmentModel
         fields = ['equipment', 'equipment_time', 'equipment_complement', 'equipment_replaced', ]
+

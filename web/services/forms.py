@@ -85,11 +85,22 @@ class EquipmentAddressForm(forms.ModelForm):
 class ServiceFormOne(forms.ModelForm):
     service_category = ServiceCategoryChoiceField(label='Selecione uma catergoria de serviço',
                                                   queryset=ServiceCategoryModel.objects.all(),
-                                                  empty_label="(Add uma nova se nåo encontrar)",
+                                                  empty_label="(Adicione uma nova categoria se nåo encontrar a desejada)",
                                                   )
     title = forms.CharField(label='Qual nome do serviço?',
                             widget=forms.TextInput(attrs={'placeholder': 'Ex. Coloração'})
                             )
+
+    def __init__(self, *args, **kwargs):
+        self.service_category = kwargs.pop('service_category', None)
+        super(ServiceFormOne, self).__init__(*args, **kwargs)
+        print(f'service_category ==={self.service_category}')
+        if self.service_category:
+            self.fields['service_category'].queryset = self.service_category
+        else:
+            self.fields['service_category'].choices = []
+            self.fields['service_category'].label = 'Primeiro adicione uma categoria de serviço!'
+            self.fields['service_category'].widget = forms.HiddenInput()
 
     class Meta:
         model = ServiceModel

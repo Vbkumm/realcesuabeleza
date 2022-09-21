@@ -171,6 +171,17 @@ class ServiceWizardCreateView(SuccessMessageMixin, SessionWizardView):
 
         return context
 
+    def get_form_kwargs(self, step=None):
+        kwargs = super(ServiceWizardCreateView, self).get_form_kwargs(step)
+        business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+
+        if step is None:
+            step = self.steps.current
+
+        if step == '0':
+            kwargs['service_category'] = ServiceCategoryModel.objects.filter(business=business, is_active=True)
+        return kwargs
+
     def done(self, form_list, **kwargs):
         # get merged dictionary from all fields
         form_dict = self.get_all_cleaned_data()

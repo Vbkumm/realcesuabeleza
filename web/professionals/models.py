@@ -55,8 +55,8 @@ class ProfessionalServiceCategoryModel(models.Model):
     """
     Relaciona as categorias de serviços do salão as categorias de profissional que as executam
     """
-    service_category = models.ForeignKey(ServiceCategoryModel, on_delete=models.CASCADE)
     professional_category = models.ForeignKey(ProfessionalCategoryModel, related_name='professional_category_set', on_delete=models.CASCADE, blank=True)
+    service_category = models.ForeignKey(ServiceCategoryModel, on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 

@@ -32,6 +32,11 @@ class ProfessionalCategoryForm(forms.ModelForm):
 class ProfessionalSelectCategoryForm(forms.ModelForm):
     category = ProfessionalCategoryChoiceField(label='Marque as habilidades que esse profissional possui?',queryset=ProfessionalCategoryModel.objects.all(), widget=forms.CheckboxSelectMultiple, required=True)
 
+    def __init__(self, *args, **kwargs):
+        category = kwargs.pop('category', None)
+        super(ProfessionalSelectCategoryForm, self).__init__(*args, **kwargs)
+        self.fields['category'].choices = category
+
     class Meta:
         model = ProfessionalModel
         fields = ['category',]

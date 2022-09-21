@@ -128,6 +128,12 @@ class ProfessionalSelectCategoryUpdateView(SuccessMessageMixin, UpdateView):
             context['professional_slug'] = professional.slug
         return context
 
+    def get_form_kwargs(self):
+        kwargs = super(ProfessionalSelectCategoryUpdateView, self).get_form_kwargs()
+        business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        kwargs['category'] = ProfessionalCategoryModel.objects.filter(business=business, is_active=True,)
+        return kwargs
+
     def form_valid(self, form):
         form.instance.updated_at = timezone.now()
         form.instance.updated_by = self.request.user

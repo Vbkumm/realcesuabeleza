@@ -86,7 +86,7 @@ class ProfessionalAdmin(admin.ModelAdmin):
         (None,               {'fields': ['schedule_active']}),
         (None,               {'fields': ['cancel_schedule_active']}),
         (None,               {'fields': ['_views']}),
-        (None,               {'fields': ['category']}),
+        (None,               {'fields': ['categories']}),
         (None,               {'fields': ['is_active']}),
         (None,               {'fields': ['created_by']}),
     ]

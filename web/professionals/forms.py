@@ -33,9 +33,14 @@ class ProfessionalSelectCategoryForm(forms.ModelForm):
     category = ProfessionalCategoryChoiceField(label='Marque as habilidades que esse profissional possui?',queryset=ProfessionalCategoryModel.objects.all(), widget=forms.CheckboxSelectMultiple, required=True)
 
     def __init__(self, *args, **kwargs):
-        category = kwargs.pop('category', None)
+        self.category = kwargs.pop('category', None)
         super(ProfessionalSelectCategoryForm, self).__init__(*args, **kwargs)
-        self.fields['category'].choices = category
+        if self.category:
+            self.fields['category'].queryset = self.category
+        else:
+            self.fields['category'].choices = []
+            self.fields['category'].label = 'Primeiro adicione uma categoria de profissional!'
+            self.fields['category'].widget = forms.HiddenInput()
 
     class Meta:
         model = ProfessionalModel
@@ -95,13 +100,13 @@ class ProfessionalFormFour(forms.ModelForm):
         fields = ['is_active', 'schedule_active', 'cancel_schedule_active', ]
 
 
-class ProfessionalServiceCategoryForm(forms.ModelForm):
+class ProfessionalCategoryUpdateServicesCategoryForm(forms.ModelForm):
     service_category = ServiceCategoryChoiceField(label='Selecione as catergoria de serviço',
                                                   queryset=ServiceCategoryModel.objects.all(),
                                                   empty_label="(Add uma nova se nåo encontrar)",
                                                   )
 
     class Meta:
-        model = ProfessionalServiceCategoryModel
+        model = ProfessionalCategoryModel
         fields = ['service_category', ]
 

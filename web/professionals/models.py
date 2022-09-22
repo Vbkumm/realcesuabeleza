@@ -98,7 +98,7 @@ class ProfessionalModel(models.Model):
     federal_id = models.CharField(blank=True, max_length=15, null=True, unique=True, verbose_name='cpf')
     birth_date = models.CharField('Data de aniversário do profissional*', max_length=150, blank=True, null=True)
     slug = models.CharField(unique=True, max_length=150)
-    category = models.ManyToManyField(ProfessionalCategoryModel, related_name='professional_category', blank=True)
+    categories = models.ManyToManyField(ProfessionalCategoryModel, related_name='professional_category', blank=True)
     is_active = models.BooleanField(default=True, help_text='Designates whether this professional should be treated as active. Unselect this instead of deleting professional.', verbose_name='professional business active')
     schedule_active = models.BooleanField('Profissional credenciado ao agendamento online. Marque se sim!', default=False)
     cancel_schedule_active = models.BooleanField('Profissional credenciado a cancelar agendamentos feitos por ele em sua agenda? Marque se sim!', default=False)
@@ -197,6 +197,7 @@ class ProfessionalExtraSkillModel(models.Model):
 
     class Meta:
         ordering = ['professional']
+
 
 class ProfessionalNoSkillModel(models.Model):
     """

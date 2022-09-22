@@ -94,7 +94,6 @@ class ServiceFormOne(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.service_category = kwargs.pop('service_category', None)
         super(ServiceFormOne, self).__init__(*args, **kwargs)
-        print(f'service_category ==={self.service_category}')
         if self.service_category:
             self.fields['service_category'].queryset = self.service_category
         else:

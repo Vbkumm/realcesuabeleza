@@ -40,6 +40,7 @@ from .forms import (ProfessionalCategoryForm,
                     ProfessionalFormTree,
                     ProfessionalFormFour,
                     ProfessionalSelectCategoryForm,
+                    ProfessionalCategoryUpdateServicesCategoryForm,
                     )
 
 
@@ -224,6 +225,38 @@ class ProfessionalCategoryCreateView(SuccessMessageMixin, CreateView):
 
     def form_valid(self, model):
         model.instance.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        model.instance.created_by = self.request.user
+        model.instance.created = timezone.now()
+        return super().form_valid(model)
+
+    def get_success_url(self):
+        business_slug = self.kwargs.get('slug')
+        if 'professional_create_session' and 'professional_slug' in self.request.session:
+            return reverse_lazy('professional_select_category_update', kwargs={'slug': business_slug, 'professional_slug': self.request.session['professional_slug']})
+        else:
+            return reverse_lazy('professional_category_detail', kwargs={'slug': business_slug, 'professional_category_slug': self.object.slug})
+
+
+@method_decorator(requires_business_owner_or_app_staff, name='dispatch')
+class ProfessionalCategoryUpdateServicesCategoryView(SuccessMessageMixin, UpdateView):
+    model = ProfessionalCategoryModel
+    form_class = ProfessionalCategoryUpdateServicesCategoryForm
+    template_name = 'professional_category_update_services_category.html'
+    slug_url_kwarg = 'professional_category_slug'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfessionalCategoryUpdateServicesCategoryView, self).get_context_data(**kwargs)
+        context['business_slug'] = self.kwargs.get('slug')
+        if "professional_create_session" in self.request.session:
+            self.request.session['professional_create_session'] = True
+        if "professional_slug" in self.request.session:
+            context['professional_slug'] = self.request.session['professional_slug']
+
+        return context
+
+    def form_valid(self, model):
+        model.instance.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+
         model.instance.created_by = self.request.user
         model.instance.created = timezone.now()
         return super().form_valid(model)

@@ -12,6 +12,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from rest_framework.response import Response
 from lib.templatetags.permissions import requires_business_owner_or_app_staff
 from businesses.models import BusinessModel, BusinessLogoQrcodeModel
+from services.models import ServiceCategoryModel
 from .models import (ProfessionalUserModel,
                      ProfessionalModel,
                      ProfessionalServiceCategoryModel,
@@ -232,7 +233,7 @@ class ProfessionalCategoryCreateView(SuccessMessageMixin, CreateView):
     def get_success_url(self):
         business_slug = self.kwargs.get('slug')
         if 'professional_create_session' and 'professional_slug' in self.request.session:
-            return reverse_lazy('professional_select_category_update', kwargs={'slug': business_slug, 'professional_slug': self.request.session['professional_slug']})
+            return reverse_lazy('professional_category_update_services_category', kwargs={'slug': business_slug, 'professional_category_slug': self.object.slug})
         else:
             return reverse_lazy('professional_category_detail', kwargs={'slug': business_slug, 'professional_category_slug': self.object.slug})
 
@@ -241,7 +242,7 @@ class ProfessionalCategoryCreateView(SuccessMessageMixin, CreateView):
 class ProfessionalCategoryUpdateServicesCategoryView(SuccessMessageMixin, UpdateView):
     model = ProfessionalCategoryModel
     form_class = ProfessionalCategoryUpdateServicesCategoryForm
-    template_name = 'professional_category_update_services_category.html'
+    template_name = 'professionals/professional_category_update_services_category.html'
     slug_url_kwarg = 'professional_category_slug'
 
     def get_context_data(self, **kwargs):
@@ -254,9 +255,16 @@ class ProfessionalCategoryUpdateServicesCategoryView(SuccessMessageMixin, Update
 
         return context
 
+    def get_form_kwargs(self):
+
+        kwargs = super(ProfessionalCategoryUpdateServicesCategoryView, self).get_form_kwargs()
+        business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
+        kwargs['service_category'] = ServiceCategoryModel.objects.filter(business=business, is_active=True,)
+        return kwargs
+
     def form_valid(self, model):
         model.instance.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
-
+        model.instance.professional_category = get_object_or_404(ProfessionalCategoryModel, professional_category_slug=self.kwargs.get('professional_category_slug'))
         model.instance.created_by = self.request.user
         model.instance.created = timezone.now()
         return super().form_valid(model)

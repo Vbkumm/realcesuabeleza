@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load i18n %}
+
+{% block head %}
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.9.0/themes/base/jquery-ui.css">
+<script src="{% static 'js/valida_cpf_cnpj.js' %}"></script>
+{% endblock %}
+
+{% block head_title %}Adicionando categorias de serviços a {{ object.title }}{% endblock %}
+
+{% block stylesheet %}
+{% endblock %}
+
+{% block breadcrumb %}
+{% endblock %}
+
+{% block content %}
+<div class="row mt-md-3 justify-content-center">
+    <div class="col-lg-8 col-md-8 col-sm-10">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-header rounded-top">
+
+                <div class="row justify-content-center">
+                    <h4>Adicionando categorias de serviço a {{ object.title }}</h4>
+                </div>
+
+                <div class="card-body">
+                    <form action="" method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+
+                        <table>
+                            {% include 'includes/form.html' %}
+
+                        </table>
+
+
+                        <div class="row my-2 justify-content-center">
+
+                            <a href="{% url 'professional_category_detail' business_slug object.slug %}" class="btn mt-3 px-2 mr-2 btn-secondary" title="Adicione uma nova categoria de profissional!" data-toggle="tooltip" data-placement="right">
+                                <div class="col">
+                                    Voltar
+                                </div>
+                            </a>
+
+
+                            <input type="submit" class="btn btn-success mt-3 px-5" value="{% if wizard.steps.step1 == 4 %}{% trans 'salvar' %}{% else %}{% trans 'avançar' %}{% endif %}"/>
+                        </div>
+
+                    </form>
+                    <div class="row justify-content-end">
+                        <small class="text-muted text-right">2 de 2</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+
+</script>
+{{ wizard.form.media }}
+{% endblock %}

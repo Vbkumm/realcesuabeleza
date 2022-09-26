@@ -106,6 +106,16 @@ class ProfessionalCategoryUpdateServicesCategoryForm(forms.ModelForm):
                                                   empty_label="(Add uma nova se nåo encontrar)",
                                                   )
 
+    def __init__(self, *args, **kwargs):
+        self.service_category = kwargs.pop('service_category', None)
+        super(ProfessionalCategoryUpdateServicesCategoryForm, self).__init__(*args, **kwargs)
+        if self.service_category:
+            self.fields['service_category'].queryset = self.service_category
+        else:
+            self.fields['service_category'].choices = []
+            self.fields['service_category'].label = 'Primeiro adicione uma categoria de serviço!'
+            self.fields['service_category'].widget = forms.HiddenInput()
+
     class Meta:
         model = ProfessionalCategoryModel
         fields = ['service_category', ]

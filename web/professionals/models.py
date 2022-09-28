@@ -23,7 +23,6 @@ class ProfessionalCategoryModel(models.Model):
     business = models.ForeignKey(BusinessModel, related_name='business_professional_category', on_delete=models.CASCADE,)
     title = models.CharField('Qual nova categoria de profissional?', max_length=100,)
     slug = models.CharField(unique=True, max_length=150)
-    service_category = models.ManyToManyField(ServiceCategoryModel, blank=True, related_name='professional_category_through_service_category', through="ProfessionalServiceCategoryModel")
     is_active = models.BooleanField(default=True, help_text='Designates whether this professional category should be treated as active. Unselect this instead of deleting professional category.', verbose_name='business category active')
     updated_at = models.DateTimeField(null=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
@@ -55,8 +54,10 @@ class ProfessionalServiceCategoryModel(models.Model):
     """
     Relaciona as categorias de serviços do salão as categorias de profissional que as executam
     """
-    professional_category = models.ForeignKey(ProfessionalCategoryModel, related_name='professional_category_set', on_delete=models.CASCADE, blank=True)
-    service_category = models.ForeignKey(ServiceCategoryModel, on_delete=models.CASCADE)
+    professional_category = models.OneToOneField(ProfessionalCategoryModel, related_name='professional_category_set', on_delete=models.CASCADE)
+    service_category = models.ManyToManyField(ServiceCategoryModel)
+    updated_at = models.DateTimeField(null=True)
+    updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -64,7 +65,7 @@ class ProfessionalServiceCategoryModel(models.Model):
         verbose_name_plural = "service_category_professional_category_list"
         verbose_name = "service_category_professional_category"
         db_table = 'service_category_professional_category_db'
-        ordering = ['service_category']
+        ordering = ['professional_category']
 
 
 class ProfessionalQuerySet(models.QuerySet):
@@ -95,7 +96,7 @@ class ProfessionalModel(models.Model):
     business = models.ForeignKey(BusinessModel, related_name='professional_business', on_delete=models.CASCADE,)
     began_date = models.DateField('Qual data de inicio do profissional?', null=True)
     title = models.CharField('Qual o nome do profissional?', max_length=150, null=True)
-    federal_id = models.CharField(blank=True, max_length=15, null=True, unique=True, verbose_name='cpf')
+    federal_id = models.CharField(blank=True, max_length=15, null=True, verbose_name='cpf')
     birth_date = models.CharField('Data de aniversário do profissional*', max_length=150, blank=True, null=True)
     slug = models.CharField(unique=True, max_length=150)
     categories = models.ManyToManyField(ProfessionalCategoryModel, related_name='professional_category', blank=True)

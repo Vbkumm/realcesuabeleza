@@ -86,3 +86,9 @@ def flush_session(request):
         del request.session['service_session']
     if 'professional_create_session' in request.session:
         del request.session['professional_create_session']
+    if 'professional_name' in request.session:
+        del request.session['professional_name']
+    if 'professional_birth_date' in request.session:
+        del request.session['professional_birth_date']
+    if 'professional_began_date' in request.session:
+        del request.session['professional_began_date']

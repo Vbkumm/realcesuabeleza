@@ -6,7 +6,7 @@ from .views import (ProfessionalViewSet,
                     ProfessionalCategoryCreateView,
                     ProfessionalWizardCreateView,
                     ProfessionalSelectCategoryUpdateView,
-                    ProfessionalCategoryUpdateServicesCategoryView)
+                    ProfessionalCategorySetServicesCategoryView)
 
 
 urlpatterns = [
@@ -33,7 +33,7 @@ urlpatterns = [
         'delete': 'destroy'
     })),
     path('<str:slug>/professional_category/<str:professional_category_slug>/', ProfessionalCategoryDetailView.as_view(), name='professional_category_detail'),
-    path('<str:slug>/professional_category/<str:professional_category_slug>/professional_category_update_services_category/', ProfessionalCategoryUpdateServicesCategoryView.as_view(), name='professional_category_update_services_category'),
+    path('<str:slug>/professional_category/<str:professional_category_slug>/professional_category_set_services_category/', ProfessionalCategorySetServicesCategoryView.as_view(), name='professional_category_set_services_category'),
 
 ]
 

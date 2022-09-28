@@ -5,6 +5,7 @@ from django.views.generic import UpdateView, CreateView, DetailView
 from django.urls import reverse_lazy, reverse
 from formtools.wizard.views import SessionWizardView
 from django.conf import settings
+from datetime import datetime
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import get_object_or_404, HttpResponseRedirect
 from django.utils import timezone
@@ -90,6 +91,20 @@ class ProfessionalWizardCreateView(SuccessMessageMixin, SessionWizardView):
         context['business_slug'] = self.kwargs.get('slug')
         self.request.session['professional_create_session'] = True
         return context
+
+    def get_form_kwargs(self, step=None):
+        kwargs = super(ProfessionalWizardCreateView, self).get_form_kwargs(step)
+        if step == '1':
+            professional_name = self.get_cleaned_data_for_step('0')['title']
+            self.request.session['professional_name'] = professional_name
+        if step == '2':
+            professional_birth_date = self.get_cleaned_data_for_step('1')['birth_date']
+            self.request.session['professional_birth_date'] = str(datetime.strftime(professional_birth_date, "%d-%m-%Y"))
+        if step == '3':
+            professional_began_date = self.get_cleaned_data_for_step('2')['began_date']
+            self.request.session['professional_began_date'] = str(datetime.strftime(professional_began_date, "%d-%m-%Y"))
+
+        return kwargs
 
     def done(self, form_list, **kwargs):
         # get merged dictionary from all fields
@@ -233,38 +248,37 @@ class ProfessionalCategoryCreateView(SuccessMessageMixin, CreateView):
     def get_success_url(self):
         business_slug = self.kwargs.get('slug')
         if 'professional_create_session' and 'professional_slug' in self.request.session:
-            return reverse_lazy('professional_category_update_services_category', kwargs={'slug': business_slug, 'professional_category_slug': self.object.slug})
+            return reverse_lazy('professional_category_set_services_category', kwargs={'slug': business_slug, 'professional_category_slug': self.object.slug})
         else:
             return reverse_lazy('professional_category_detail', kwargs={'slug': business_slug, 'professional_category_slug': self.object.slug})
 
 
 @method_decorator(requires_business_owner_or_app_staff, name='dispatch')
-class ProfessionalCategoryUpdateServicesCategoryView(SuccessMessageMixin, UpdateView):
-    model = ProfessionalCategoryModel
+class ProfessionalCategorySetServicesCategoryView(SuccessMessageMixin, CreateView):
+    model = ProfessionalServiceCategoryModel
     form_class = ProfessionalCategoryUpdateServicesCategoryForm
-    template_name = 'professionals/professional_category_update_services_category.html'
-    slug_url_kwarg = 'professional_category_slug'
+    template_name = 'professionals/professional_category_set_services_category.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ProfessionalCategoryUpdateServicesCategoryView, self).get_context_data(**kwargs)
+        context = super(ProfessionalCategorySetServicesCategoryView, self).get_context_data(**kwargs)
         context['business_slug'] = self.kwargs.get('slug')
         if "professional_create_session" in self.request.session:
             self.request.session['professional_create_session'] = True
         if "professional_slug" in self.request.session:
             context['professional_slug'] = self.request.session['professional_slug']
-
+        context['professional_category_slug'] = self.kwargs.get('professional_category_slug')
         return context
 
     def get_form_kwargs(self):
 
-        kwargs = super(ProfessionalCategoryUpdateServicesCategoryView, self).get_form_kwargs()
+        kwargs = super(ProfessionalCategorySetServicesCategoryView, self).get_form_kwargs()
         business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
         kwargs['service_category'] = ServiceCategoryModel.objects.filter(business=business, is_active=True,)
         return kwargs
 
     def form_valid(self, model):
         model.instance.business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
-        model.instance.professional_category = get_object_or_404(ProfessionalCategoryModel, professional_category_slug=self.kwargs.get('professional_category_slug'))
+        model.instance.professional_category = get_object_or_404(ProfessionalCategoryModel, slug=self.kwargs.get('professional_category_slug'))
         model.instance.created_by = self.request.user
         model.instance.created = timezone.now()
         return super().form_valid(model)
@@ -274,7 +288,7 @@ class ProfessionalCategoryUpdateServicesCategoryView(SuccessMessageMixin, Update
         if 'professional_create_session' and 'professional_slug' in self.request.session:
             return reverse_lazy('professional_select_category_update', kwargs={'slug': business_slug, 'professional_slug': self.request.session['professional_slug']})
         else:
-            return reverse_lazy('professional_category_detail', kwargs={'slug': business_slug, 'professional_category_slug': self.object.slug})
+            return reverse_lazy('professional_category_detail', kwargs={'slug': business_slug, 'professional_category_slug': self.kwargs.get('professional_category_slug')})
 
 
 class ProfessionalCategoryDetailView(DetailView):

@@ -101,7 +101,7 @@ class ProfessionalFormFour(forms.ModelForm):
 
 
 class ProfessionalCategoryUpdateServicesCategoryForm(forms.ModelForm):
-    service_category = ProfessionalCategoryChoiceField(queryset=ProfessionalCategoryModel.objects.all(), widget=forms.RadioSelect)
+    service_category = ProfessionalCategoryChoiceField(queryset=ProfessionalCategoryModel.objects.all(), widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, *args, **kwargs):
         self.service_category = kwargs.pop('service_category', None)
@@ -114,6 +114,6 @@ class ProfessionalCategoryUpdateServicesCategoryForm(forms.ModelForm):
             self.fields['service_category'].widget = forms.HiddenInput()
 
     class Meta:
-        model = ProfessionalCategoryModel
+        model = ProfessionalServiceCategoryModel
         fields = ['service_category', ]
 

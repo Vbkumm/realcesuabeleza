@@ -30,21 +30,21 @@ class ProfessionalCategoryForm(forms.ModelForm):
 
 
 class ProfessionalSelectCategoryForm(forms.ModelForm):
-    category = ProfessionalCategoryChoiceField(label='Marque as habilidades que esse profissional possui?',queryset=ProfessionalCategoryModel.objects.all(), widget=forms.CheckboxSelectMultiple, required=True)
+    categories = ProfessionalCategoryChoiceField(label='Marque as habilidades que esse profissional possui?',queryset=ProfessionalCategoryModel.objects.all(), widget=forms.CheckboxSelectMultiple, required=True)
 
     def __init__(self, *args, **kwargs):
-        self.category = kwargs.pop('category', None)
+        self.categories = kwargs.pop('categories', None)
         super(ProfessionalSelectCategoryForm, self).__init__(*args, **kwargs)
-        if self.category:
-            self.fields['category'].queryset = self.category
+        if self.categories:
+            self.fields['categories'].queryset = self.categories
         else:
-            self.fields['category'].choices = []
-            self.fields['category'].label = 'Primeiro adicione uma categoria de profissional!'
-            self.fields['category'].widget = forms.HiddenInput()
+            self.fields['categories'].choices = []
+            self.fields['categories'].label = 'Primeiro adicione uma categoria de profissional!'
+            self.fields['categories'].widget = forms.HiddenInput()
 
     class Meta:
         model = ProfessionalModel
-        fields = ['category',]
+        fields = ['categories',]
 
 
 class ProfessionalFormOne(forms.ModelForm):
@@ -101,7 +101,7 @@ class ProfessionalFormFour(forms.ModelForm):
 
 
 class ProfessionalCategoryUpdateServicesCategoryForm(forms.ModelForm):
-    service_category = ProfessionalCategoryChoiceField(queryset=ProfessionalCategoryModel.objects.all(), widget=forms.CheckboxSelectMultiple)
+    service_category = ProfessionalCategoryChoiceField(label='Selecione as categorias de serviço que esta categoria de profissional executa',queryset=ProfessionalCategoryModel.objects.all(), widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, *args, **kwargs):
         self.service_category = kwargs.pop('service_category', None)

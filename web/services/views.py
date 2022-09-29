@@ -11,9 +11,10 @@ from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
-from lib.templatetags.permissions import requires_business_owner_or_app_staff
+from lib.templatetags.permissions import requires_business_owner_or_app_staff, flush_session
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView
 from businesses.models import BusinessModel, BusinessAddressModel, BusinessLogoQrcodeModel
+from businesses.utils import rgb_color_generator
 from prices.models import PriceModel, get_service_equipment_time_and_price_in_list
 from .models import (ServiceCategoryModel,
                      ServiceModel,
@@ -208,16 +209,29 @@ class ServiceDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ServiceDetailView, self).get_context_data(**kwargs)
         business = BusinessModel.objects.get(slug=self.kwargs.get('slug'))
+        flush_session(self.request)
+
         if self.request.user:
             context['user_in'] = self.request.user in business.users.all()
             context['user_id'] = self.request.user.id
         service_category = ServiceCategoryModel.objects.get(business=business, slug=self.object.service_category.slug)
         context['business_title'] = business.title
         logo_qrcode = BusinessLogoQrcodeModel.objects.filter(business=business).first()
-        if logo_qrcode.logo_img:
-            context['logo'] = logo_qrcode.logo_img
-        if logo_qrcode.favicon:
-            context['favicon'] = logo_qrcode.favicon
+        if logo_qrcode:
+            context['qr_code'] = logo_qrcode.qrcode_img
+            if logo_qrcode.logo_rgb_color:
+                bg_color = rgb_color_generator(logo_qrcode.logo_rgb_color).split(",")
+                context['bg_color'] = bg_color
+                self.request.session['text_color'] = bg_color[1]
+                self.request.session['background_color'] = bg_color[0]
+                nav_color = 'light'
+                if bg_color[1] == 'light':
+                    nav_color = 'dark'
+                self.request.session['nav_color'] = nav_color
+            if logo_qrcode.logo_img:
+                context['logo'] = logo_qrcode.logo_img
+            if logo_qrcode.favicon:
+                context['favicon'] = logo_qrcode.favicon
         self.request.session['business_slug'] = business.slug
         self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
         context['service_time'] = get_service_equipment_time(self.object)[0][0]

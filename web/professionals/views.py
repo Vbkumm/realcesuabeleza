@@ -11,8 +11,9 @@ from django.shortcuts import get_object_or_404, HttpResponseRedirect
 from django.utils import timezone
 from django.contrib.messages.views import SuccessMessageMixin
 from rest_framework.response import Response
-from lib.templatetags.permissions import requires_business_owner_or_app_staff
+from lib.templatetags.permissions import requires_business_owner_or_app_staff, flush_session
 from businesses.models import BusinessModel, BusinessLogoQrcodeModel
+from businesses.utils import rgb_color_generator
 from services.models import ServiceCategoryModel
 from .models import (ProfessionalUserModel,
                      ProfessionalModel,
@@ -148,10 +149,11 @@ class ProfessionalSelectCategoryUpdateView(SuccessMessageMixin, UpdateView):
     def get_form_kwargs(self):
         kwargs = super(ProfessionalSelectCategoryUpdateView, self).get_form_kwargs()
         business = get_object_or_404(BusinessModel, slug=self.kwargs.get('slug'))
-        kwargs['category'] = ProfessionalCategoryModel.objects.filter(business=business, is_active=True,)
+        kwargs['categories'] = ProfessionalCategoryModel.objects.filter(business=business, is_active=True,)
         return kwargs
 
     def form_valid(self, form):
+
         form.instance.updated_at = timezone.now()
         form.instance.updated_by = self.request.user
         return super().form_valid(form)
@@ -171,16 +173,29 @@ class ProfessionalDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ProfessionalDetailView, self).get_context_data(**kwargs)
+        flush_session(self.request)
         business = BusinessModel.objects.get(slug=self.kwargs.get('slug'))
         if self.request.user:
             context['user_in'] = self.request.user in business.users.all()
             context['user_id'] = self.request.user.id
             context['business_title'] = business.title
         logo_qrcode = BusinessLogoQrcodeModel.objects.filter(business=business).first()
-        if logo_qrcode.logo_img:
-            context['logo'] = logo_qrcode.logo_img
-        if logo_qrcode.favicon:
-            context['favicon'] = logo_qrcode.favicon
+        if logo_qrcode:
+            context['qr_code'] = logo_qrcode.qrcode_img
+            if logo_qrcode.logo_rgb_color:
+                bg_color = rgb_color_generator(logo_qrcode.logo_rgb_color).split(",")
+                context['bg_color'] = bg_color
+                self.request.session['text_color'] = bg_color[1]
+                self.request.session['background_color'] = bg_color[0]
+                nav_color = 'light'
+                if bg_color[1] == 'light':
+                    nav_color = 'dark'
+                self.request.session['nav_color'] = nav_color
+            if logo_qrcode.logo_img:
+                context['logo'] = logo_qrcode.logo_img
+            if logo_qrcode.favicon:
+                context['favicon'] = logo_qrcode.favicon
+        context['professional_category_list'] = self.object.categories.all()
         self.request.session['business_slug'] = business.slug
         self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
         self.request.session['professional_slug'] = self.object.slug
@@ -267,6 +282,7 @@ class ProfessionalCategorySetServicesCategoryView(SuccessMessageMixin, CreateVie
         if "professional_slug" in self.request.session:
             context['professional_slug'] = self.request.session['professional_slug']
         context['professional_category_slug'] = self.kwargs.get('professional_category_slug')
+        context['professional_category'] = ProfessionalCategoryModel.objects.get(slug=self.kwargs.get('professional_category_slug'))
         return context
 
     def get_form_kwargs(self):

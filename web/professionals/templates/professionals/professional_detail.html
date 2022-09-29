@@ -37,10 +37,18 @@
                 </a>
             </div>
         </div>
-        <div class="row justify-content-center">
-            {% for category in object.category.all %}
+        <div class="row text-dark justify-content-center">
+            {% if professional_category_list %}
+            <a href="{% url 'professional_select_category_update' request.session.business_slug object.slug %}" class="text-dark" data-toggle="tooltip" data-placement="bottom" title="Voltar para {{ object.business.title }}">
+            {% for category in professional_category_list %}
             {{ category.title }}
             {% endfor %}
+            </a>
+            {% else %}
+            <a href="{% url 'professional_select_category_update' request.session.business_slug object.slug %}" class="btn text-white btn-dark" data-toggle="tooltip" data-placement="bottom" title="Voltar para {{ object.business.title }}">
+                Adicione uma categoria de profissional
+            </a>
+            {% endif %}
         </div>
     </div>
 </div>

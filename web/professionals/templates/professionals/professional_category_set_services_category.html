@@ -24,9 +24,29 @@
                 <div class="card-header rounded-top">
 
                 <div class="row justify-content-center">
-                    <h4>Adicionando categorias de serviço a {{ object.title }}</h4>
+                    <h4>Nova categoria de Profissional: {{ professional_category.title }}</h4>
                 </div>
-
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar"  style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="row mt-2 justify-content-center">
+                        <div class="col-5 text-success">
+                            <div class="row justify-content-center">
+                                <small class="">{{ professional_category.title }}</small>
+                            </div>
+                            <div class="row justify-content-center">
+                                <i class="fa fa-id-card" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                        <div class="col-5 text-success">
+                            <div class="row justify-content-center">
+                                <small class="">categoria de serviço</small>
+                            </div>
+                            <div class="row justify-content-center">
+                                <i class="fa fa-id-card" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
                 <div class="card-body">
                     <form action="" method="post" enctype="multipart/form-data" novalidate>
                         {% csrf_token %}

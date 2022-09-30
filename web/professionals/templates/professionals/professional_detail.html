@@ -38,18 +38,21 @@
             </div>
         </div>
         <div class="row text-dark justify-content-center">
-            {% if professional_category_list %}
+            {% if is_owner %}
             <a href="{% url 'professional_select_category_update' request.session.business_slug object.slug %}" class="text-dark" data-toggle="tooltip" data-placement="bottom" title="Voltar para {{ object.business.title }}">
-            {% for category in professional_category_list %}
-            {{ category.title }}
-            {% endfor %}
-            </a>
-            {% else %}
-            <a href="{% url 'professional_select_category_update' request.session.business_slug object.slug %}" class="btn text-white btn-dark" data-toggle="tooltip" data-placement="bottom" title="Voltar para {{ object.business.title }}">
-                Adicione uma categoria de profissional
-            </a>
             {% endif %}
+            {% if professional_category_list %}
+            {% for category in professional_category_list %}
+            {{ category.title }}</br>
+            {% endfor %}
+            {% else %}
+                Adicione uma categoria de profissional
+            {% endif %}
+            </a>
         </div>
+        {% for service in professional_service_list %}
+        {{ service.title }}<br/>
+        {% endfor %}
     </div>
 </div>
 

@@ -85,6 +85,8 @@ class BusinessDetailView(DetailView):
         if self.request.user:
             context['user_in'] = self.request.user in self.object.users.all()
             context['user_id'] = self.request.user.id
+            if self.request.user in self.object.owners.all():
+                context['is_owner'] = True
         logo_qrcode = BusinessLogoQrcodeModel.objects.filter(business=self.object).first()
         if logo_qrcode:
             context['qr_code'] = logo_qrcode.qrcode_img
@@ -101,8 +103,6 @@ class BusinessDetailView(DetailView):
                 context['logo'] = logo_qrcode.logo_img
             if logo_qrcode.favicon:
                 context['favicon'] = logo_qrcode.favicon
-        if self.request.user.is_authenticated:
-            context['is_owner'] = BusinessModel.objects.filter(slug=self.object.slug, owners=self.request.user).exists()
         context['services_categories'] = get_categories_by_business(business=self.object)
         context['professional_list'] = get_professionals_by_business(business=self.object)
         phone_and_address_list = get_phones_by_addresses_by_business(business=self.object)

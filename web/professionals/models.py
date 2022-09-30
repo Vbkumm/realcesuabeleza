@@ -68,6 +68,17 @@ class ProfessionalServiceCategoryModel(models.Model):
         ordering = ['professional_category']
 
 
+def get_services_by_service_category(professional_category_list):
+    professional_service_list = []
+    for professional_category in professional_category_list:
+        service_categories = ProfessionalServiceCategoryModel.objects.filter(professional_category=professional_category).first()
+        if service_categories:
+            for category in service_categories.service_category.all():
+                service_list = ServiceModel.objects.filter(service_category=category)
+                professional_service_list += service_list
+    return professional_service_list
+
+
 class ProfessionalQuerySet(models.QuerySet):
     def search(self, query=None):
         qs = self

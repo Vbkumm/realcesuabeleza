@@ -25,7 +25,8 @@ from .models import (ProfessionalUserModel,
                      ProfessionalExtraSkillModel,
                      ProfessionalNoSkillModel,
                      OpenScheduleModel,
-                     CloseScheduleModel)
+                     CloseScheduleModel,
+                     get_services_by_service_category)
 from .serializers import (ProfessionalUserSerializer,
                           ProfessionalSerializer,
                           ProfessionalServiceCategorySerializer,
@@ -178,7 +179,9 @@ class ProfessionalDetailView(DetailView):
         if self.request.user:
             context['user_in'] = self.request.user in business.users.all()
             context['user_id'] = self.request.user.id
-            context['business_title'] = business.title
+            if self.request.user in business.owners.all():
+                context['is_owner'] = True
+        context['business_title'] = business.title
         logo_qrcode = BusinessLogoQrcodeModel.objects.filter(business=business).first()
         if logo_qrcode:
             context['qr_code'] = logo_qrcode.qrcode_img
@@ -195,7 +198,9 @@ class ProfessionalDetailView(DetailView):
                 context['logo'] = logo_qrcode.logo_img
             if logo_qrcode.favicon:
                 context['favicon'] = logo_qrcode.favicon
-        context['professional_category_list'] = self.object.categories.all()
+        professional_category_list = self.object.categories.all()
+        context['professional_category_list'] = professional_category_list
+        context['professional_service_list'] = get_services_by_service_category(professional_category_list)
         self.request.session['business_slug'] = business.slug
         self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
         self.request.session['professional_slug'] = self.object.slug

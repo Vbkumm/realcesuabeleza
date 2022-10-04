@@ -51,7 +51,9 @@
             </a>
         </div>
         {% for service in professional_service_list %}
+        <a href="{% url 'service_detail' request.session.business_slug service.slug %}" class="text-dark" data-toggle="tooltip" data-placement="bottom" title="Ir para {{ service.title }}">
         {{ service.title }}<br/>
+        </a>
         {% endfor %}
     </div>
 </div>

@@ -198,6 +198,20 @@ def get_professionals_by_business(business=None):
     return ProfessionalModel.objects.filter(business=business, is_active=True)
 
 
+def get_professional_by_service(service):
+    professional_list = []
+    professional_category_list = ProfessionalServiceCategoryModel.objects.filter(service_category=service.service_category)
+    professionals_in_business = ProfessionalModel.objects.filter(business=service.business, is_active=True)
+    for service_professional_category in professional_category_list:
+        for professional in professionals_in_business:
+            if service in professional.extra_skills.all():
+                professional_list.append(professional)
+            if service_professional_category.professional_category in professional.categories.all():
+                if service not in professional.no_skills.all():
+                    professional_list.append(professional)
+    return professional_list
+
+
 class ProfessionalExtraSkillModel(models.Model):
     """
     Relaciona serviços do salão o qual não fazem parte da categoria de profissional mas o profissional executa

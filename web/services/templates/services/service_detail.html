@@ -39,7 +39,7 @@
             </div>
 
         </div>
-
+        Equipamentos:
             {% for equipment_time in service_equipment_time_list %}
         <div class="row">
             <div class="col-4">
@@ -50,6 +50,14 @@
             </div>
         </div>
             {% endfor %}
+        Profissionais:
+        {% for professional in professional_list%}
+        <div class="row">
+            <div class="col-4 text-dark">
+                {{professional.title}}<br/>
+            </div>
+        </div>
+        {% endfor %}
 
     </div>
 </div>

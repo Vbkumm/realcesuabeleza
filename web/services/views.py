@@ -15,6 +15,7 @@ from lib.templatetags.permissions import requires_business_owner_or_app_staff, f
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView
 from businesses.models import BusinessModel, BusinessAddressModel, BusinessLogoQrcodeModel
 from businesses.utils import rgb_color_generator
+from professionals.models import get_professional_by_service
 from prices.models import PriceModel, get_service_equipment_time_and_price_in_list
 from .models import (ServiceCategoryModel,
                      ServiceModel,
@@ -210,12 +211,14 @@ class ServiceDetailView(DetailView):
         context = super(ServiceDetailView, self).get_context_data(**kwargs)
         business = BusinessModel.objects.get(slug=self.kwargs.get('slug'))
         flush_session(self.request)
-
         if self.request.user:
             context['user_in'] = self.request.user in business.users.all()
             context['user_id'] = self.request.user.id
+            if self.request.user in business.owners.all():
+                context['is_owner'] = True
         service_category = ServiceCategoryModel.objects.get(business=business, slug=self.object.service_category.slug)
         context['business_title'] = business.title
+        context['professional_list'] = get_professional_by_service(self.object)
         logo_qrcode = BusinessLogoQrcodeModel.objects.filter(business=business).first()
         if logo_qrcode:
             context['qr_code'] = logo_qrcode.qrcode_img
@@ -239,7 +242,6 @@ class ServiceDetailView(DetailView):
         context['service_price'] = PriceModel.objects.filter(service=self.object).first()
         self.request.session['service_category_slug'] = service_category.slug
         self.request.session['service_category_title'] = service_category.title
-
         self.request.session['service_slug'] = self.object.slug
         self.request.session['service_title'] = self.object.title
 

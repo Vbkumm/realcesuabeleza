@@ -50,11 +50,24 @@
             {% endif %}
             </a>
         </div>
-        {% for service in professional_service_list %}
+        <div class="row text-dark justify-content-center">
+            Seviços que {{ professional.title }} tem habilidade:
+            {% for service in professional_service_list %}
         <a href="{% url 'service_detail' request.session.business_slug service.slug %}" class="text-dark" data-toggle="tooltip" data-placement="bottom" title="Ir para {{ service.title }}">
         {{ service.title }}<br/>
         </a>
         {% endfor %}
+        </div>
+        {% if is_owner %}
+        <div class="row p-3 text-dark justify-content-center">
+            <div class="col-8">
+            Seviços que {{ professional.title }} não tem habilidade:
+            {% for professional_no_skill_service in  professional_no_skill_service_list %}
+                {{ professional_no_skill_service.title }} -
+            {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 

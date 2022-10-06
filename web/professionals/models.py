@@ -68,9 +68,9 @@ class ProfessionalServiceCategoryModel(models.Model):
         ordering = ['professional_category']
 
 
-def get_services_by_professional(professional, professional_category_list):
+def get_services_by_professional(professional):
     professional_service_list = []
-    for professional_category in professional_category_list:
+    for professional_category in professional.categories.all():
         service_categories = ProfessionalServiceCategoryModel.objects.filter(professional_category=professional_category).first()
         if service_categories:
             for category in service_categories.service_category.all():
@@ -229,6 +229,12 @@ class ProfessionalExtraSkillModel(models.Model):
 
     class Meta:
         ordering = ['professional']
+
+
+def get_services_no_skill_by_professional(professional):
+    professional_service_skill_list = get_services_by_professional(professional)
+    professional_service_no_skill_list = [i for i in ServiceModel.objects.filter(business=professional.business, is_active=True) if i not in professional_service_skill_list]
+    return professional_service_no_skill_list
 
 
 class ProfessionalNoSkillModel(models.Model):

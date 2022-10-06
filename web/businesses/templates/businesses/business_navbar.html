@@ -43,7 +43,7 @@
                         {% if redirect_field_value %}
                         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
                         {% endif %}
-                        <button class="btn {% if request.session.text_color %} text-{{ request.session.text_color }} {% else %} text-light {% endif %}" type="submit" {% if request.session.background_color  %} style="background-color: {{ request.session.background_color }};" {% else %} style="background-color: #000000;" {% endif %}  title="{{ user.email }} deseja sair do {{ business.title }}"><i class="fas fa-2x fa-sign-out-alt" aria-hidden="true"></i></button>
+                        <button class="btn {% if request.session.text_color %} text-{{ request.session.text_color }} {% else %} text-light {% endif %}" type="submit" {% if request.session.background_color  %} style="background-color: {{ request.session.background_color }};" {% else %} style="background-color: #000000;" {% endif %}  title="{{ user.email }} deseja sair do {{ request.session.business_title }}"><i class="fas fa-2x fa-sign-out-alt" aria-hidden="true"></i></button>
                     </form>
                 </div>
 
@@ -56,14 +56,14 @@
                         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
                         {% endif %}
                         <input type='hidden' name='users' value={{user_id}}>
-                        <button class="btn {% if request.session.text_color %} text-{{ request.session.text_color }} {% else %} text-light {% endif %}" type="submit" {% if request.session.background_color  %} style="background-color: {{ request.session.background_color }};" {% else %} style="background-color: #000000;" {% endif %} title="Entrar {{ business.title }}"><i class="fas fa-2x py-2 fa-sign-in-alt" aria-hidden="true"></i></button>
+                        <button class="btn {% if request.session.text_color %} text-{{ request.session.text_color }} {% else %} text-light {% endif %}" type="submit" {% if request.session.background_color  %} style="background-color: {{ request.session.background_color }};" {% else %} style="background-color: #000000;" {% endif %} title="Entrar {{ request.session.business_title }}"><i class="fas fa-2x py-2 fa-sign-in-alt" aria-hidden="true"></i></button>
                     </form>
                 </div>
 
             {% endif %}
         {% else %}
             <div class="{% if request.session.text_color %} text-{{ request.session.text_color }} {% else %} text-light {% endif %}">
-                <a class="{% if request.session.text_color %} text-{{ request.session.text_color }} {% else %} text-light {% endif %}" href="{% url 'account_login' %}" title="Entrar {{ business.title }}" {% if request.session.background_color  %} style="background-color: {{ request.session.background_color }};" {% else %} style="background-color: #000000;" {% endif %} >
+                <a class="{% if request.session.text_color %} text-{{ request.session.text_color }} {% else %} text-light {% endif %}" href="{% url 'account_login' %}" title="Entrar {{ request.session.business_title }}" {% if request.session.background_color  %} style="background-color: {{ request.session.background_color }};" {% else %} style="background-color: #000000;" {% endif %} >
                 <i class="fas fa-2x py-2 fa-sign-in-alt" aria-hidden="true"></i>
                 </a>
             </div>

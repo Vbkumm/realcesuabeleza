@@ -7,7 +7,7 @@ from formtools.wizard.views import SessionWizardView
 from django.conf import settings
 from datetime import datetime
 from django.core.files.storage import FileSystemStorage
-from django.shortcuts import get_object_or_404, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, HttpResponseRedirect, Http404
 from django.utils import timezone
 from django.contrib.messages.views import SuccessMessageMixin
 from rest_framework.response import Response
@@ -46,6 +46,8 @@ from .forms import (ProfessionalCategoryForm,
                     ProfessionalFormFour,
                     ProfessionalSelectCategoryForm,
                     ProfessionalCategoryUpdateServicesCategoryForm,
+                    ProfessionalNotSkillForm,
+                    ProfessionalExtraSkillForm,
                     )
 
 
@@ -209,6 +211,43 @@ class ProfessionalDetailView(DetailView):
         self.request.session['professional_name'] = self.object.title
 
         return context
+
+
+def professional_extra_skill_add(request, pk):
+    professional_skill = get_object_or_404(ProfessionalExtraSkillModel, service_professional_skill__professional_name__pk=pk)
+    professional_extra_service_add_form = ProfessionalExtraSkillForm(request.POST or None)
+
+    if request.method == 'POST' and professional_extra_service_add_form.is_valid():
+        professional_add_skill = professional_extra_service_add_form.cleaned_data['professional_extra_service']
+        if professional_add_skill in professional_skill.professional_extra_service.all():
+            professional_skill.professional_extra_service.remove(professional_add_skill)
+
+        else:
+            professional_skill.professional_extra_service.add(professional_add_skill)
+
+        professional_skill.save()
+
+        return HttpResponseRedirect(reverse_lazy("professional:professional_detail",  kwargs={'pk': pk}))
+
+    raise Http404()
+
+
+def professional_not_skill_add(request, pk):
+    professional_skill = get_object_or_404(ProfessionalNoSkillModel, service_professional_skill__professional_name__pk=pk)
+    professional_not_service_add_form = ProfessionalNotSkillForm(request.POST or None)
+
+    if request.method == 'POST' and professional_not_service_add_form.is_valid():
+        professional_not_skill = professional_not_service_add_form.cleaned_data['professional_service_out']
+        if professional_not_skill in professional_skill.professional_service_out.all():
+            professional_skill.professional_service_out.remove(professional_not_skill)
+        else:
+            professional_skill.professional_service_out.add(professional_not_skill)
+
+        professional_skill.save()
+
+        return HttpResponseRedirect(reverse_lazy("professional:professional_detail",  kwargs={'pk': pk}))
+
+    raise Http404()
 
 
 class ProfessionalCategoryViewSet(viewsets.ViewSet):

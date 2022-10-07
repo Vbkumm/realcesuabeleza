@@ -1,7 +1,7 @@
 from django import forms
 from lib.templatetags.validators import FEDERAL_ID_VALIDATE
 from services.forms import ServiceCategoryChoiceField
-from services.models import ServiceCategoryModel
+from services.models import ServiceCategoryModel, ServiceModel
 from .models import (ProfessionalModel,
                      ProfessionalServiceCategoryModel,
                      ProfessionalCategoryModel,
@@ -117,3 +117,10 @@ class ProfessionalCategoryUpdateServicesCategoryForm(forms.ModelForm):
         model = ProfessionalServiceCategoryModel
         fields = ['service_category', ]
 
+
+class ProfessionalExtraSkillForm(forms.Form):
+    service = forms.ModelChoiceField(queryset=ServiceModel.objects.all())
+
+
+class ProfessionalNotSkillForm(forms.Form):
+    service = forms.ModelChoiceField(queryset=ServiceModel.objects.all())

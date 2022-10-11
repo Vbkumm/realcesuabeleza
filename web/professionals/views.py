@@ -213,31 +213,31 @@ class ProfessionalDetailView(DetailView):
         return context
 
 
-def professional_extra_skill_add(request, pk):
-    professional_skill = get_object_or_404(ProfessionalExtraSkillModel, service_professional_skill__professional_name__pk=pk)
-    professional_extra_service_add_form = ProfessionalExtraSkillForm(request.POST or None)
+def professional_extra_skill_set(request, slug, professional_slug):
+    professional_service_skill_list = ProfessionalExtraSkillModel.objects.filter(professional__slug=professional_slug)
+    professional_extra_skill_set_form = ProfessionalExtraSkillForm(request.POST or None)
 
-    if request.method == 'POST' and professional_extra_service_add_form.is_valid():
-        professional_add_skill = professional_extra_service_add_form.cleaned_data['professional_extra_service']
-        if professional_add_skill in professional_skill.professional_extra_service.all():
-            professional_skill.professional_extra_service.remove(professional_add_skill)
+    if request.method == 'POST' and professional_extra_skill_set_form.is_valid():
+        professional_add_skill = professional_extra_skill_set_form.cleaned_data['service']
+        if professional_service_skill in professional_service_skill_list:
+            professional_service_skill.professional_extra_service.remove(professional_add_skill)
 
         else:
-            professional_skill.professional_extra_service.add(professional_add_skill)
+            professional_service_skill.professional_extra_service.add(professional_add_skill)
 
-        professional_skill.save()
+        professional_service_skill.save()
 
-        return HttpResponseRedirect(reverse_lazy("professional:professional_detail",  kwargs={'pk': pk}))
+        return HttpResponseRedirect(reverse_lazy("professional_detail",  kwargs={'slug': slug, 'professional_slug': professional_slug}))
 
     raise Http404()
 
 
-def professional_not_skill_add(request, pk):
-    professional_skill = get_object_or_404(ProfessionalNoSkillModel, service_professional_skill__professional_name__pk=pk)
-    professional_not_service_add_form = ProfessionalNotSkillForm(request.POST or None)
+def professional_not_skill_set(request, slug, professional_slug):
+    professional_skill = ProfessionalNoSkillModel.objects.filter(professional__slug=professional_slug)
+    professional_not_service_set_form = ProfessionalNotSkillForm(request.POST or None)
 
-    if request.method == 'POST' and professional_not_service_add_form.is_valid():
-        professional_not_skill = professional_not_service_add_form.cleaned_data['professional_service_out']
+    if request.method == 'POST' and professional_not_service_set_form.is_valid():
+        professional_not_skill = professional_not_service_set_form.cleaned_data['service']
         if professional_not_skill in professional_skill.professional_service_out.all():
             professional_skill.professional_service_out.remove(professional_not_skill)
         else:
@@ -245,7 +245,7 @@ def professional_not_skill_add(request, pk):
 
         professional_skill.save()
 
-        return HttpResponseRedirect(reverse_lazy("professional:professional_detail",  kwargs={'pk': pk}))
+        return HttpResponseRedirect(reverse_lazy("professional_detail",  kwargs={'slug': slug, 'professional_slug': professional_slug}))
 
     raise Http404()
 

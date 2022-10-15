@@ -22,12 +22,10 @@ from .models import (ProfessionalUserModel,
                      ProfessionalPhoneModel,
                      ProfessionalAddressModel,
                      ProfessionalScheduleModel,
-                     ProfessionalExtraSkillModel,
-                     ProfessionalNoSkillModel,
                      OpenScheduleModel,
                      CloseScheduleModel,
                      get_services_by_professional,
-                     get_services_no_skill_by_professional)
+                     )
 from .serializers import (ProfessionalUserSerializer,
                           ProfessionalSerializer,
                           ProfessionalServiceCategorySerializer,
@@ -35,8 +33,6 @@ from .serializers import (ProfessionalUserSerializer,
                           ProfessionalPhoneSerializer,
                           ProfessionalAddressSerializer,
                           ProfessionalScheduleSerializer,
-                          ProfessionalExtraSkillSerializer,
-                          ProfessionalNoSkillSerializer,
                           OpenScheduleSerializer,
                           CloseScheduleSerializer,)
 from .forms import (ProfessionalCategoryForm,
@@ -203,7 +199,6 @@ class ProfessionalDetailView(DetailView):
                 context['favicon'] = logo_qrcode.favicon
         context['professional_category_list'] = self.object.categories.all()
         context['professional_service_list'] = get_services_by_professional(self.object)
-        context['professional_no_skill_service_list'] = get_services_no_skill_by_professional(self.object)
         self.request.session['business_slug'] = business.slug
         self.request.session['business_title'] =  business.slug
         self.request.session['logo_qrcode_session_pk'] = logo_qrcode.pk
@@ -211,43 +206,6 @@ class ProfessionalDetailView(DetailView):
         self.request.session['professional_name'] = self.object.title
 
         return context
-
-
-def professional_extra_skill_set(request, slug, professional_slug):
-    professional_service_skill_list = ProfessionalExtraSkillModel.objects.filter(professional__slug=professional_slug)
-    professional_extra_skill_set_form = ProfessionalExtraSkillForm(request.POST or None)
-
-    if request.method == 'POST' and professional_extra_skill_set_form.is_valid():
-        professional_add_skill = professional_extra_skill_set_form.cleaned_data['service']
-        if professional_service_skill in professional_service_skill_list:
-            professional_service_skill.professional_extra_service.remove(professional_add_skill)
-
-        else:
-            professional_service_skill.professional_extra_service.add(professional_add_skill)
-
-        professional_service_skill.save()
-
-        return HttpResponseRedirect(reverse_lazy("professional_detail",  kwargs={'slug': slug, 'professional_slug': professional_slug}))
-
-    raise Http404()
-
-
-def professional_not_skill_set(request, slug, professional_slug):
-    professional_skill = ProfessionalNoSkillModel.objects.filter(professional__slug=professional_slug)
-    professional_not_service_set_form = ProfessionalNotSkillForm(request.POST or None)
-
-    if request.method == 'POST' and professional_not_service_set_form.is_valid():
-        professional_not_skill = professional_not_service_set_form.cleaned_data['service']
-        if professional_not_skill in professional_skill.professional_service_out.all():
-            professional_skill.professional_service_out.remove(professional_not_skill)
-        else:
-            professional_skill.professional_service_out.add(professional_not_skill)
-
-        professional_skill.save()
-
-        return HttpResponseRedirect(reverse_lazy("professional_detail",  kwargs={'slug': slug, 'professional_slug': professional_slug}))
-
-    raise Http404()
 
 
 class ProfessionalCategoryViewSet(viewsets.ViewSet):

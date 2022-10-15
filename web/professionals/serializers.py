@@ -5,8 +5,6 @@ from .models import (ProfessionalModel,
                      ProfessionalUserModel,
                      ProfessionalAddressModel,
                      ProfessionalScheduleModel,
-                     ProfessionalNoSkillModel,
-                     ProfessionalExtraSkillModel,
                      ProfessionalServiceCategoryModel,
                      OpenScheduleModel,
                      CloseScheduleModel,
@@ -44,22 +42,6 @@ class ProfessionalScheduleSerializer(serializers.Serializer):
         model = ProfessionalScheduleModel
         fields = ['id', 'address', 'professional', 'week_days', 'start_hour', 'end_hour', 'fraction_time',
                   'updated_at', 'updated_by', 'created_by',  'created']
-
-
-class ProfessionalNoSkillSerializer(serializers.Serializer):
-    service = serializers.StringRelatedField(many=False)
-
-    class Meta:
-        model = ProfessionalNoSkillModel
-        fields = ['service', 'professional', 'created_by',  'created']
-
-
-class ProfessionalExtraSkillSerializer(serializers.Serializer):
-    service = serializers.StringRelatedField(many=False)
-
-    class Meta:
-        model = ProfessionalExtraSkillModel
-        fields = ['service', 'professional', 'created_by',  'created']
 
 
 class ProfessionalPhoneSerializer(serializers.Serializer):
@@ -131,8 +113,6 @@ class ProfessionalSerializer(serializers.Serializer):
     schedule_active = serializers.BooleanField()
     cancel_schedule_active = serializers.BooleanField()
     addresses = ProfessionalScheduleSerializer(source='professional_schedule', many=True)
-    extra_skills = ProfessionalExtraSkillSerializer(source='professional_extra_skill_set', many=True)
-    no_skills = ProfessionalNoSkillSerializer(source='professional_no_skill_set', many=True)
     phones = ProfessionalPhoneSerializer(source='professional_phone', many=True, read_only=True)
     home_addresses = ProfessionalAddressSerializer(source='professional_address', many=True, read_only=True)
     open_schedule = OpenScheduleSerializer(source='open_professionals', many=True, read_only=True)
@@ -143,6 +123,5 @@ class ProfessionalSerializer(serializers.Serializer):
     class Meta:
         model = ProfessionalModel
         fields = ['business', 'began_date', 'name', 'id', 'is_active', 'birth_date', 'federal_id', 'slug',
-                  'category', 'schedule_active', 'cancel_schedule_active', 'addresses', 'extra_skills',
-                  'no_skills','_views', 'updated_at', 'updated_by', 'created_by',  'created']
+                  'category', 'schedule_active', 'cancel_schedule_active', 'addresses', '_views', 'updated_at', 'updated_by', 'created_by',  'created']
 

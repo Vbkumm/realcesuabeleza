@@ -1,8 +1,6 @@
 from django.contrib import admin
 from .models import (ProfessionalCategoryModel,
                      ProfessionalServiceCategoryModel,
-                     ProfessionalExtraSkillModel,
-                     ProfessionalNoSkillModel,
                      ProfessionalModel,
                      ProfessionalUserModel,
                      ProfessionalAddressModel,
@@ -43,20 +41,6 @@ class ProfessionalCategoryAdmin(admin.ModelAdmin):
 admin.site.register(ProfessionalCategoryModel, ProfessionalCategoryAdmin)
 
 
-class ProfessionalExtraSkillAdmin(admin.StackedInline):
-
-    model = ProfessionalExtraSkillModel
-    extra = 0
-    fields = ['service', 'professional', 'created_by']
-
-
-class ProfessionalNoSkillAdmin(admin.StackedInline):
-
-    model = ProfessionalNoSkillModel
-    extra = 0
-    fields = ['service', 'professional', 'created_by']
-
-
 class ProfessionalScheduleAdmin(admin.StackedInline):
 
     model = ProfessionalScheduleModel
@@ -75,7 +59,6 @@ class ProfessionalScheduleAdmin(admin.StackedInline):
 
 
 class ProfessionalAdmin(admin.ModelAdmin):
-    inlines = [ProfessionalExtraSkillAdmin, ProfessionalNoSkillAdmin, ProfessionalScheduleAdmin]
     fieldsets = [
         (None,               {'fields': ['business']}),
         (None,               {'fields': ['title']}),

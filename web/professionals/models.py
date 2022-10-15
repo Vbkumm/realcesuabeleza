@@ -1,11 +1,12 @@
 from django.db import models
 from django.db.models import Q, F
+from django.db.models.signals import post_save
 from realcesuabeleza.settings import CHOICES_WEEKDAY
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.dispatch import receiver
 from datetime import time, timezone
 from django.urls import reverse
-from django.utils.text import slugify
 from services.utils import CHOICES_MIN_TIME
 from .utils import timer_increase, validate_date, _generate_unique_slug
 from businesses.models import BusinessModel, BusinessAddressModel
@@ -122,8 +123,6 @@ class ProfessionalModel(models.Model):
     cancel_schedule_active = models.BooleanField('Profissional credenciado a cancelar agendamentos feitos por ele em sua agenda? Marque se sim!', default=False)
     _views = models.PositiveIntegerField(default=0)
     addresses = models.ManyToManyField(BusinessAddressModel, related_name='professional_through_addresses_work', blank=True, through="ProfessionalScheduleModel")
-    extra_skills = models.ManyToManyField(ServiceModel, related_name='professional_through_extra_skill', blank=True, through="ProfessionalExtraSkillModel")
-    no_skills = models.ManyToManyField(ServiceModel, related_name='professional_through_no_skill', blank=True, through="ProfessionalNoSkillModel")
     updated_at = models.DateTimeField(null=True)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.SET_NULL, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
@@ -144,9 +143,8 @@ class ProfessionalModel(models.Model):
         return reverse('professional_detail',  kwargs={"slug": self.business.title, 'professional_slug': self.slug})
 
     def save(self, *args, **kwargs):
-        print(f'sefmolels {self.title}')
-
         self.slug = _generate_unique_slug(self)
+
         super(ProfessionalModel, self).save(*args, **kwargs)
 
     def get_professional_by_business(self, business):
@@ -218,36 +216,48 @@ def get_professional_by_service(service):
     return professional_list
 
 
-class ProfessionalExtraSkillModel(models.Model):
-    """
-    Relaciona serviços do salão o qual não fazem parte da categoria de profissional mas o profissional executa
-    """
-    service = models.ForeignKey(ServiceModel, on_delete=models.CASCADE)
-    professional = models.ForeignKey(ProfessionalModel, related_name='professional_extra_skill_set', on_delete=models.CASCADE)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True)
+class ProfessionalServicesSkillModel(models.Model):
+
+    ''' Controle de habilidades de servicos do profissional '''
+
+    service_skills = models.ManyToManyField(ServiceModel, related_name='professional_service_skill', blank=True,)
+    service_no_skills = models.ManyToManyField(ServiceModel, related_name='professional_service_no_skill', blank=True,)
+    professional = models.OneToOneField(ProfessionalModel, related_name='service_professional_skill', on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ['professional']
+        verbose_name_plural = "professional_skill_list"
+        verbose_name = "professional_skill"
+        db_table = 'professional_skill_db'
 
+    @receiver(post_save, sender=ProfessionalModel)
+    def get_professional_skill_create(sender, instance, created, **kwargs):
+        if created:
+            professional_skill = ProfessionalServicesSkillModel.objects.create(professional=instance)
+            if instance.categories.all():
+                for category in instance.categories.all():
+                    service_category_list = ProfessionalServiceCategoryModel.objects.filter(professional_category=category)
+                    if service_category_list:
+                        for service_category in service_category_list:
+                            service_list = ServiceModel.objects.filter(business=instance.business, service_category=service_category)
+                            if service_list:
+                                for service in service_list:
+                                    professional_skill.service_skills.set(service)
+            professional_skill.save()
 
-def get_services_no_skill_by_professional(professional):
-    professional_service_skill_list = get_services_by_professional(professional)
-    professional_service_no_skill_list = [i for i in ServiceModel.objects.filter(business=professional.business, is_active=True) if i not in professional_service_skill_list]
-    return professional_service_no_skill_list
-
-
-class ProfessionalNoSkillModel(models.Model):
-    """
-    Relaciona serviços do salão o qual fazem parte da categoria de profissional mas o profissional não executa
-    """
-    service = models.ForeignKey(ServiceModel, on_delete=models.CASCADE)
-    professional = models.ForeignKey(ProfessionalModel, related_name='professional_no_skill_set', on_delete=models.CASCADE)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['professional']
+    @receiver(post_save, sender=ServiceModel)
+    def update_service_skill(sender, instance, created, **kwargs):
+        if created:
+            if instance.service_category:
+                professional_category_in_service_category_list = ProfessionalServiceCategoryModel.objects.filter(service_category__in=instance.service_category)
+                if professional_category_in_service_category_list:
+                    for professional_category_in_service_category in professional_category_in_service_category_list:
+                        professional_in_category_list = ProfessionalModel.objects.filter(business=instance.business, categories__in=professional_category_in_service_category)
+                        if professional_in_category_list:
+                            for professional in professional_in_category_list:
+                                professional_skill = ProfessionalServicesSkillModel.objects.filter(professional=professional).first()
+                                if professional_skill:
+                                    professional_skill.service_skills.set(instance)
+                                    professional_skill.save()
 
 
 class ProfessionalUserModel(models.Model):

@@ -77,12 +77,12 @@ def get_services_by_professional(professional):
             for category in service_categories.service_category.all():
                 service_list = ServiceModel.objects.filter(service_category=category, is_active=True)
                 professional_service_list += service_list
-    for extra_skill in professional.extra_skills.all():
-        if extra_skill not in professional_service_list:
-            professional_service_list.append(extra_skill)
-    for no_skill in professional.no_skills.all():
-        if no_skill in professional_service_list:
-            professional_service_list.remove(no_skill)
+    # for extra_skill in professional.extra_skills.all():
+    #     if extra_skill not in professional_service_list:
+    #         professional_service_list.append(extra_skill)
+    # for no_skill in professional.no_skills.all():
+    #     if no_skill in professional_service_list:
+    #         professional_service_list.remove(no_skill)
     return professional_service_list
 
 
@@ -233,15 +233,19 @@ class ProfessionalServicesSkillModel(models.Model):
     def get_professional_skill_create(sender, instance, created, **kwargs):
         if created:
             professional_skill = ProfessionalServicesSkillModel.objects.create(professional=instance)
-            if instance.categories.all():
-                for category in instance.categories.all():
-                    service_category_list = ProfessionalServiceCategoryModel.objects.filter(professional_category=category)
-                    if service_category_list:
-                        for service_category in service_category_list:
-                            service_list = ServiceModel.objects.filter(business=instance.business, service_category=service_category)
-                            if service_list:
-                                for service in service_list:
-                                    professional_skill.service_skills.set(service)
+        else:
+            professional_skill = ProfessionalServicesSkillModel.objects.get(professional=instance)
+        if instance.categories.all():
+            for category in instance.categories.all():
+                service_category_list = ProfessionalServiceCategoryModel.objects.filter(professional_category=category)
+                if service_category_list:
+                    for service_category in service_category_list:
+                        service_list = ServiceModel.objects.filter(business=instance.business, service_category=service_category)
+                        if service_list:
+                            for service in service_list:
+                                if service not in professional_skill.service_no_skills.all():
+                                    if service not in professional_skill.service_skills.all():
+                                        professional_skill.service_skills.set(service)
             professional_skill.save()
 
     @receiver(post_save, sender=ServiceModel)

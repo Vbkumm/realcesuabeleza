@@ -118,9 +118,5 @@ class ProfessionalCategoryUpdateServicesCategoryForm(forms.ModelForm):
         fields = ['service_category', ]
 
 
-class ProfessionalExtraSkillForm(forms.Form):
-    service = forms.ModelChoiceField(queryset=ServiceModel.objects.all())
-
-
-class ProfessionalNotSkillForm(forms.Form):
+class ProfessionalSkillForm(forms.Form):
     service = forms.ModelChoiceField(queryset=ServiceModel.objects.all())

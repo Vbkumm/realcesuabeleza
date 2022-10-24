@@ -17,6 +17,7 @@ from businesses.utils import rgb_color_generator
 from services.models import ServiceCategoryModel
 from .models import (ProfessionalUserModel,
                      ProfessionalModel,
+                     ProfessionalServicesSkillModel,
                      ProfessionalServiceCategoryModel,
                      ProfessionalCategoryModel,
                      ProfessionalPhoneModel,
@@ -42,8 +43,7 @@ from .forms import (ProfessionalCategoryForm,
                     ProfessionalFormFour,
                     ProfessionalSelectCategoryForm,
                     ProfessionalCategoryUpdateServicesCategoryForm,
-                    ProfessionalNotSkillForm,
-                    ProfessionalExtraSkillForm,
+                    ProfessionalSkillForm,
                     )
 
 
@@ -206,6 +206,26 @@ class ProfessionalDetailView(DetailView):
         self.request.session['professional_name'] = self.object.title
 
         return context
+
+    
+def professional_skill_manage(request, slug, professional_slug):
+    business = get_object_or_404(BusinessModel, slug=slug)
+    professional_skill = get_object_or_404(ProfessionalServicesSkillModel, professional__slug=professional_slug)
+    professional_skill_form = ProfessionalSkillForm(request.POST or None)
+
+    if request.method == 'POST' and professional_skill_form.is_valid():
+        professional_skill = professional_skill_form.cleaned_data['service']
+        if professional_skill in professional_skill.professional_extra_service.all():
+            professional_skill.service_skills.remove(professional_skill)
+
+        else:
+            professional_skill.service_skills.add(professional_skill)
+
+        professional_skill.save()
+
+        return HttpResponseRedirect(reverse_lazy("professional_detail",  kwargs={'slug': slug, 'professional_slug': professional_slug,}))
+
+    raise Http404()
 
 
 class ProfessionalCategoryViewSet(viewsets.ViewSet):

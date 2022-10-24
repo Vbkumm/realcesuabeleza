@@ -7,6 +7,7 @@ from .views import (ProfessionalViewSet,
                     ProfessionalWizardCreateView,
                     ProfessionalSelectCategoryUpdateView,
                     ProfessionalCategorySetServicesCategoryView,
+                    professional_skill_manage,
                     )
 
 
@@ -23,8 +24,7 @@ urlpatterns = [
     path('<str:slug>/professional/', ProfessionalWizardCreateView.as_view(), name='professional_wizard_create'),
     path(r'<str:slug>/professional_select_category/<str:professional_slug>/', ProfessionalSelectCategoryUpdateView.as_view(), name='professional_select_category_update'),
     path('<str:slug>/professional/<str:professional_slug>/', ProfessionalDetailView.as_view(), name='professional_detail'),
-    #path('<str:slug>/professional/<str:professional_slug>/professional_extra_skill_set/', professional_extra_skill_set, name='professional_extra_skill_set'),
-    #path('<str:slug>/professional/<str:professional_slug>/professional_not_skill_set/', professional_not_skill_set, name='professional_not_skill_set'),
+    path('<str:slug>/professional/<str:professional_slug>/professional_skill_manage/', professional_skill_manage, name='professional_skill_manage'),
     path('<str:slug>/professional_category/', ProfessionalCategoryCreateView.as_view(), name='professional_category_create'),
     path('<str:slug>/professional_category/api/', ProfessionalCategoryViewSet.as_view({
         'get': 'list',
